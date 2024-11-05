@@ -1,6 +1,6 @@
 import { css, keyframes } from '@emotion/react';
 import closeIcon from '../../assets/icons/close.svg';
-import { useEffect, useState } from 'react';
+import { useTimeout } from '../../hooks';
 
 type Position = {
   top?: string;
@@ -75,22 +75,6 @@ const toastCss = css({
   color: '#ffffff',
   backgroundColor: '#000000'
 });
-
-function useTimeout(duration: number): [boolean, React.Dispatch<React.SetStateAction<boolean>>] {
-  const [timeover, setTimeover] = useState(false);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setTimeover(true);
-    }, duration);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  return [timeover, setTimeover];
-}
 
 export default function Toast({
   icon,

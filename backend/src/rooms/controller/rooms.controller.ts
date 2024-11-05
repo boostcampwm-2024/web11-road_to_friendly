@@ -11,6 +11,6 @@ export class RoomsController {
   @Post()
   createRoom(@Res() response: Response) {
     const roomId = this.roomsService.create();
-    response.redirect(`http://localhost:5173/${ roomId }`);
+    response.redirect(`http://localhost:5173/rooms/${ roomId }`);
   }
 }

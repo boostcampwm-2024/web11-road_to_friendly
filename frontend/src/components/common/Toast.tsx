@@ -3,10 +3,8 @@ import closeIcon from '../../assets/icons/close.svg';
 import { useTimeout } from '../../hooks';
 
 type Position = {
-  top?: string;
   bottom?: string;
   left?: string;
-  right?: string;
 };
 
 type ToastProps = {

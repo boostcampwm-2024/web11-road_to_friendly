@@ -28,7 +28,7 @@ const startButtonStyle = css(
       opacity: 0.8
     }
   },
-  hoverGrowJumpAnimation
+  hoverGrowJumpAnimation()
 );
 
 const headingTextStyle = css({ font: Variables.typography.font_bold_72, color: Variables.colors.text_default });

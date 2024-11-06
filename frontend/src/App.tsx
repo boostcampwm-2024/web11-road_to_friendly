@@ -1,13 +1,14 @@
+import { GlobalStyle } from './styles/GlobalStyle';
 import { Routes, Route } from 'react-router-dom';
 import Room from './pages/room/room';
-import RoomCreateButton from './components/RoomCreateButton';
-import './App.css';
+import LandingPage from './pages/LandingPage';
 
 function App() {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<RoomCreateButton />} />
+     <GlobalStyle />
+       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/rooms/:roomId" element={<Room />} />
       </Routes>
     </>

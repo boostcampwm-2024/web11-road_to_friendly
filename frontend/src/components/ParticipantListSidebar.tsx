@@ -21,7 +21,7 @@ const SidebarTriggerArea = css`
 `;
 
 const ParticipantListSidebar = () => {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div>

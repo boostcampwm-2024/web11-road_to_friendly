@@ -2,6 +2,7 @@ import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
 import { Header } from '../components/common/';
 import clapImage from '../assets/landing-clap.png';
+import { hoverGrowJumpAnimation } from '../styles';
 
 const backgroundStyle = css`
   background:
@@ -14,16 +15,19 @@ const backgroundStyle = css`
   align-items: center;
 `;
 
-const startButtonStyle = css({
-  font: Variables.typography.font_bold_24,
-  color: Variables.colors.text_white,
-  backgroundColor: Variables.colors.surface_point,
-  padding: '24px 48px',
-  borderRadius: 32,
-  ':hover': {
-    opacity: 0.8
-  }
-});
+const startButtonStyle = css(
+  {
+    font: Variables.typography.font_bold_24,
+    color: Variables.colors.text_white,
+    backgroundColor: Variables.colors.surface_point,
+    padding: '24px 48px',
+    borderRadius: 32,
+    ':hover': {
+      opacity: 0.8
+    }
+  },
+  hoverGrowJumpAnimation
+);
 
 const headingTextStyle = css({ font: Variables.typography.font_bold_72, color: Variables.colors.text_default });
 

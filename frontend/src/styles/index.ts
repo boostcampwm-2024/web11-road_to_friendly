@@ -1,0 +1,1 @@
+export { hoverGrowJumpAnimation } from './hoverGrowJumpAnimation';

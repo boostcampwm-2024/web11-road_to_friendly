@@ -73,13 +73,7 @@ const toastCss = css({
   backgroundColor: Variables.colors.surface_strong
 });
 
-export default function Toast({
-  icon,
-  text,
-  setToast,
-  duration = 1750,
-  position = { bottom: '1.5rem', left: '50%' }
-}: ToastProps) {
+const Toast = ({ icon, text, setToast, duration = 1750, position = { bottom: '1.5rem', left: '50%' } }: ToastProps) => {
   const [timeover, setTimeover] = useTimeout(duration);
   const Icon = icon;
 
@@ -110,4 +104,6 @@ export default function Toast({
       </div>
     </div>
   );
-}
+};
+
+export default Toast;

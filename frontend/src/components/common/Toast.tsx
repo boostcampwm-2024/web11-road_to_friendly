@@ -1,6 +1,7 @@
 import { css, keyframes } from '@emotion/react';
-import closeIcon from '../../assets/icons/close.svg';
+import CloseIcon from '../../assets/icons/close.svg?react';
 import { useTimeout } from '../../hooks';
+import { Variables } from '../../styles/Variables';
 
 type Position = {
   bottom?: string;
@@ -8,8 +9,7 @@ type Position = {
 };
 
 type ToastProps = {
-  //icon: React.FC<React.SVGProps<SVGSVGElement>>;
-  icon: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
   text: string;
   setToast: React.Dispatch<React.SetStateAction<boolean>>;
   duration?: number;
@@ -68,10 +68,9 @@ const toastCss = css({
   gap: '0.75rem',
   alignItems: 'center',
 
-  //font: 'var(--font-medium-16)',
-  fontSize: '16px',
-  color: '#ffffff',
-  backgroundColor: '#000000'
+  font: Variables.typography.font_medium_16,
+  color: Variables.colors.text_white,
+  backgroundColor: Variables.colors.surface_strong
 });
 
 export default function Toast({
@@ -82,6 +81,7 @@ export default function Toast({
   position = { bottom: '1.5rem', left: '50%' }
 }: ToastProps) {
   const [timeover, setTimeover] = useTimeout(duration);
+  const Icon = icon;
 
   function handleAnimationEnd() {
     if (timeover) {
@@ -98,14 +98,14 @@ export default function Toast({
       ]}
       onAnimationEnd={handleAnimationEnd}
     >
-      <img src={icon} />
+      <Icon />
       <div css={{ display: 'flex', justifyContent: 'space-between', flex: '1' }}>
         {text}
         <button
           css={{ width: '1.25rem', cursor: 'pointer', backgroundColor: 'transparent', ':focus': { outline: 'none' } }}
           onClick={() => setTimeover(true)}
         >
-          <img src={closeIcon} />
+          <CloseIcon stroke={Variables.colors.text_white} />
         </button>
       </div>
     </div>

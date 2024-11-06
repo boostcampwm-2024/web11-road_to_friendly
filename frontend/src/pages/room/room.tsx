@@ -8,6 +8,7 @@ import ParticipantView from './participantView';
 import useParticipantsStore from '../../stores/participants';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
+import ParticipantListSidebar from '../../components/ParticipantListSidebar';
 // import { Header } from '../../components/common';
 
 const backgroundStyle = css`
@@ -47,7 +48,7 @@ const Room = () => {
         }
       );
 
-      //기존 참여자에게 오는 이벤트
+      //새로운 참여자 알림 이벤트
       socket.on('participant:join', (newParticipant: { participantId: string; nickname: string }) => {
         setParticipants((prev) => [...prev, { id: newParticipant.participantId, nickname: newParticipant.nickname }]);
       });
@@ -77,6 +78,7 @@ const Room = () => {
         {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
         <button>링크로 복사하기</button>
       </div>
+      <ParticipantListSidebar />
     </>
   );
 };

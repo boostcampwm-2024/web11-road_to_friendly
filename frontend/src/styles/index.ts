@@ -1,1 +1,1 @@
-export { hoverGrowJumpAnimation } from './hoverGrowJumpAnimation';
+export { hoverGrowJumpAnimation } from './animation';

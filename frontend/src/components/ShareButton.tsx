@@ -45,7 +45,10 @@ const ShareButton = () => {
           duration={1250}
         />
       )}
-      <button css={[shareButtonStyle, hoverGrowJumpAnimation]} onClick={() => copyCurrentLink(() => setToast(true))}>
+      <button
+        css={[shareButtonStyle, hoverGrowJumpAnimation({ scale: 1.03, height: '0.6rem' })]}
+        onClick={() => copyCurrentLink(() => setToast(true))}
+      >
         <LinkIcon />
         링크로 초대하기
       </button>

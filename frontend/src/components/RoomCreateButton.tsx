@@ -7,7 +7,6 @@ const RoomCreateButton = () => {
     try {
       const response = await fetch('http://localhost:8080/rooms', {
         method: 'POST',
-        body: JSON.stringify({ test: true }),
         headers: {
           'Content-Type': 'application/json'
         }

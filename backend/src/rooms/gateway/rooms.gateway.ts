@@ -5,13 +5,12 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException,
-  WsResponse
+  WsException
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { RoomsEnterDto } from '../dto/rooms.enter.dto';
+import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
-import { RoomsJoinDto } from '../dto/rooms.join.dto';
+import { RoomsEnterResponseDto } from '../dto/rooms.enter.response.dto';
 
 @WebSocketGateway({
   cors: {
@@ -27,13 +26,13 @@ export class RoomsGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('join')
-  join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterDto): WsResponse<RoomsJoinDto> {
+  join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto): RoomsEnterResponseDto {
     if (!this.roomsService.isExistRoom(roomId)) {
-      throw new WsException('존재하지 않는 방입니다.');
+      return { status: 'error', message: '존재하지 않는 방입니다.' };
     }
 
     if (client.rooms.size !== 1) {
-      throw new WsException('이미 접속한 방이 존재합니다.');
+      return { status: 'error', message: '이미 접속한 방이 존재합니다.' };
     }
 
     const roomsJoinDto = this.roomsService.join(client, roomId);
@@ -43,7 +42,7 @@ export class RoomsGateway implements OnGatewayDisconnect {
       nickname: client.data.nickname
     });
 
-    return { event: 'participant:info:list', data: roomsJoinDto };
+    return { status: 'ok', body: roomsJoinDto };
   }
 
   @SubscribeMessage('client:update')

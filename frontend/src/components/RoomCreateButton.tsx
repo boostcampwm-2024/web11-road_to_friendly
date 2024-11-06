@@ -1,4 +1,17 @@
 import { useNavigate } from 'react-router-dom';
+import { Variables } from '../styles/Variables';
+import { css } from '@emotion/react';
+
+const startButtonStyle = css({
+  font: Variables.typography.font_bold_24,
+  color: Variables.colors.text_white,
+  backgroundColor: Variables.colors.surface_point,
+  padding: '24px 48px',
+  borderRadius: 32,
+  ':hover': {
+    opacity: 0.8
+  }
+});
 
 const RoomCreateButton = () => {
   const navigate = useNavigate();
@@ -25,7 +38,9 @@ const RoomCreateButton = () => {
 
   return (
     <div>
-      <button onClick={createRoom}>방 개설</button>
+      <button onClick={createRoom} css={startButtonStyle}>
+        공감 포인트 나누기 시작하기
+      </button>
     </div>
   );
 };

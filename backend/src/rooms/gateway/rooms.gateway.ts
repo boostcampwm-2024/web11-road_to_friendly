@@ -38,7 +38,7 @@ export class RoomsGateway implements OnGatewayDisconnect {
     const roomsJoinDto = this.roomsService.join(client, roomId);
 
     this.server.to(roomId).emit('participant:join', {
-      participantId: client.data.id,
+      participantId: client.id,
       nickname: client.data.nickname
     });
 
@@ -67,7 +67,7 @@ export class RoomsGateway implements OnGatewayDisconnect {
 
     const { hostChangeFlag } = this.roomsService.exit(client, roomId);
     this.server.to(roomId).emit('participant:exit', {
-      participantId: client.data.id,
+      participantId: client.id,
       nickname: client.data.nickname
     });
 

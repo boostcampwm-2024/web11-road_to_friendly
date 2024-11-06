@@ -7,14 +7,14 @@ interface Participant {
 
 interface ParticipantsStore {
   participants: Participant[];
-  setParticipants: (newParticipants: Participant[]) => void;
+  setParticipants: (newParticipants: Participant[] | ((prev: Participant[]) => Participant[])) => void;
 }
 
 const useParticipantsStore = create<ParticipantsStore>((set) => ({
   participants: [],
   setParticipants: (newParticipants) =>
-    set(() => ({
-      participants: newParticipants
+    set((state) => ({
+      participants: typeof newParticipants === 'function' ? newParticipants(state.participants): newParticipants
     }))
 }));
 

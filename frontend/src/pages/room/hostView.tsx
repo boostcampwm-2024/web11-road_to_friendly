@@ -7,6 +7,7 @@ interface HostViewProps {
 const HostView = ({ participantCount }: HostViewProps) => {
   return (
     <div>
+      <div>방장 화면</div>
       {participantCount > 1 ? (
         <h2>방에 참가자들이 다 모였다면 시작해볼까요?</h2>
       ) : (
@@ -15,7 +16,6 @@ const HostView = ({ participantCount }: HostViewProps) => {
           <h2>방이 텅 비었어요. 하단의 버튼을 눌러 친구들을 초대해보세요!</h2>
         </div>
       )}
-      <div>방장 화면</div>
     </div>
   );
 };

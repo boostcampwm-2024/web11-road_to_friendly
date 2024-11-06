@@ -6,7 +6,7 @@ import HostView from './hostView';
 import ParticipantView from './participantView';
 import useParticipantsStore from '../../stores/participants';
 
-interface participant {
+interface Participant {
   id: string;
   nickname: string;
 }
@@ -22,14 +22,20 @@ const Room = () => {
     if (socket && roomId) {
       socket.emit('join', { roomId });
 
+      //새로운 참여자에게 오는 이벤트
       socket.on(
         'participant:info:list',
-        (response: { success: boolean; participants: participant[]; hostFlag: boolean }) => {
-          setRoomExists(response.success);
+        (response: { success: boolean; participants: Participant[]; hostFlag: boolean }) => {
+          // setRoomExists(response.success);
           setParticipants(response.participants);
           setIsHost(response.hostFlag);
         }
       );
+
+      //기존 참여자에게 오는 이벤트
+      socket.on('participant:join', (newParticipant: { participantId: string; nickname: string }) => {
+        setParticipants((prev) => [...prev, { id: newParticipant.participantId, nickname: newParticipant.nickname }]);
+      });
 
       return () => {
         socket.disconnect();

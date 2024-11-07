@@ -1,5 +1,5 @@
 import QuestionStartButton from '../../components/QuestionStartButton';
-import { flexStyle } from '../../styles/flex';
+import { flexStyle } from '../../styles';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 

@@ -1,6 +1,6 @@
 import { hoverGrowJumpAnimation } from '../styles';
 import { useNavigate } from 'react-router-dom';
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
 import { css } from '@emotion/react';
 import { useState } from 'react';
 import { LoadingSpinner, Toast } from './common';

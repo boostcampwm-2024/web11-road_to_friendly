@@ -1,4 +1,4 @@
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
 import { css } from '@emotion/react';
 
 const profileStyle = css`

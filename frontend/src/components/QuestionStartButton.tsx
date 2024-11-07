@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
+import useSocket from '../hooks/useSocket';
 
 const ButtonStyle = css({
   backgroundColor: Variables.colors.surface_black,
@@ -10,7 +11,19 @@ const ButtonStyle = css({
 });
 
 const QuestionStartButton = () => {
-  return <button css={ButtonStyle}>추억 모으기 시작하기 🚀</button>;
+  const socket = useSocket();
+
+  const onClickStart = () => {
+    if (socket) {
+      socket.emit('participant:host:start');
+    }
+  };
+
+  return (
+    <button css={ButtonStyle} onClick={onClickStart}>
+      추억 모으기 시작하기 🚀
+    </button>
+  );
 };
 
 export default QuestionStartButton;

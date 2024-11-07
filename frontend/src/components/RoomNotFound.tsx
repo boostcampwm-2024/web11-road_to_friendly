@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
 import { css } from '@emotion/react';
 
 const backgroundStyle = css`

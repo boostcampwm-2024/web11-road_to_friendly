@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { LoadingSpinnerWave } from '../components/common';
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
 
 const loadingPageStyle = css({
   width: '100vw',

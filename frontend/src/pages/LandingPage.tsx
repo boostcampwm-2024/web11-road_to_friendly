@@ -1,4 +1,3 @@
-import { hoverGrowJumpAnimation } from '../styles';
 import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
 import { Header, Toast } from '../components/common/';

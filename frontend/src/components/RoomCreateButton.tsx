@@ -1,17 +1,21 @@
+import { hoverGrowJumpAnimation } from '../styles';
 import { useNavigate } from 'react-router-dom';
 import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
 
-const startButtonStyle = css({
-  font: Variables.typography.font_bold_24,
-  color: Variables.colors.text_white,
-  backgroundColor: Variables.colors.surface_point,
-  padding: '24px 48px',
-  borderRadius: 32,
-  ':hover': {
-    opacity: 0.8
-  }
-});
+const startButtonStyle = css(
+  {
+    font: Variables.typography.font_bold_24,
+    color: Variables.colors.text_white,
+    backgroundColor: Variables.colors.surface_point,
+    padding: '24px 48px',
+    borderRadius: 32,
+    ':hover': {
+      opacity: 0.8
+    }
+  },
+  hoverGrowJumpAnimation()
+);
 
 const RoomCreateButton = () => {
   const navigate = useNavigate();

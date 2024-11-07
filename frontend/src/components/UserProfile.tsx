@@ -1,13 +1,14 @@
 import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
 import Crown from '../assets/icons/crown.svg?react';
+import useRadiusStore from '../stores/radius';
 
-const profileStyle = css`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 10px;
+const profileStyle = (x: number, y: number, radius: number) => css`
+  position: absolute;
+  left: ${radius + x}px;
+  bottom: ${radius + y}px;
+  transform: translate(-50%, 50%);
+  transition: 1s ease-in-out;
 `;
 
 const profileImageStyle = (bgColor: string) => css`
@@ -55,7 +56,12 @@ const profileColors = [
   Variables.colors.player_grey,
   Variables.colors.player_red,
   Variables.colors.player_green,
-  Variables.colors.player_orange
+  Variables.colors.player_orange,
+  Variables.colors.player_purple,
+  Variables.colors.player_yellow,
+  Variables.colors.player_pink,
+  Variables.colors.player_cyan,
+  Variables.colors.player_brown
 ];
 
 interface Participant {
@@ -63,16 +69,24 @@ interface Participant {
   nickname: string;
 }
 
+interface Positon {
+  x: number;
+  y: number;
+}
+
 interface UserProfileProps {
   participant: Participant;
   index: number;
   isCurrentUser: boolean;
   isHost: boolean;
+  position: Positon;
 }
 
-const UserProfile = ({ participant, index, isCurrentUser, isHost }: UserProfileProps) => {
+const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: UserProfileProps) => {
+  const { radius } = useRadiusStore();
+
   return (
-    <div key={participant.id} css={profileStyle}>
+    <div key={participant.id} css={profileStyle(position.x, position.y, radius)}>
       <div css={profileImageStyle(profileColors[index % profileColors.length])}>
         {isHost && (
           <div css={hostStyle}>

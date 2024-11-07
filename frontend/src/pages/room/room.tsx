@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSocket } from '../../hooks';
 import RoomNotFoundError from '../../components/RoomNotFound';
 import UserProfile from '../../components/UserProfile';
@@ -9,7 +9,8 @@ import useParticipantsStore from '../../stores/participants';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
-// import { Header } from '../../components/common';
+import { calculatePosition } from '../../utils/arrangement';
+import useRadiusStore from '../../stores/radius';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -19,6 +20,21 @@ const backgroundStyle = css`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+`;
+
+const ParticipantsContainer = (radius: number) => css`
+  position: relative;
+  width: ${radius * 2}px;
+  height: ${radius * 2}px;
+  border-radius: 50%;
+`;
+
+const SubjectContainer = (radius: number) => css`
+  position: absolute;
+  bottom: ${radius}px;
+  left: ${radius}px;
+  transform: translate(-50%, 20%);
+  white-space: nowrap;
 `;
 
 interface Participant {
@@ -33,6 +49,19 @@ const Room = () => {
   const [roomExists, setRoomExists] = useState(true);
   const { participants, setParticipants } = useParticipantsStore();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const { radius, increaseRadius } = useRadiusStore();
+  const positions = useMemo(() => calculatePosition(participants.length, radius), [radius, participants]);
+
+  const calculateRadius = (count: number) => {
+    if (count > 3) {
+      increaseRadius();
+    }
+  };
+
+  // 참여자 수가 변경될 때마다 반지름 계산
+  useEffect(() => {
+    calculateRadius(participants.length);
+  }, [participants]);
 
   useEffect(() => {
     if (socket && roomId) {
@@ -58,24 +87,26 @@ const Room = () => {
     }
   }, [socket, roomId, setParticipants]);
 
-  if (!roomExists) return <RoomNotFoundError></RoomNotFoundError>;
+  if (!roomExists) return <RoomNotFoundError/>;
 
   return (
     <>
-      {/* <Header /> */}
       <div css={backgroundStyle}>
-        <div
-          css={css`
-            display: flex;
-            margin-bottom: ${Variables.spacing.spacing_lg};
-          `}
-        >
+        <div css={ParticipantsContainer(radius)}>
           {participants.map((participant, index) => (
-            <UserProfile participant={participant} index={index} isCurrentUser={participant.id === currentUserId} />
+            <UserProfile
+              participant={participant}
+              index={index}
+              isCurrentUser={participant.id === currentUserId}
+              isHost={true}
+              position={{ x: positions[index][0], y: positions[index][1] }}
+            /> //participant.id === hostId
           ))}
+          <div css={SubjectContainer(radius)}>
+            {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
+          </div>
         </div>
-        {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
-        <button>링크로 복사하기</button>
+        {/* <button>링크로 복사하기</button> */}
       </div>
       <ParticipantListSidebar />
     </>

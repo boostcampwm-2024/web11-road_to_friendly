@@ -1,3 +1,4 @@
+import useRadiusStore from '../../stores/radius';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 
@@ -10,7 +11,7 @@ const InstructionContainerStyle = css`
 `;
 
 const InstructionStyle = css`
-  font: ${Variables.typography.font_bold_24};
+  font: ${Variables.typography.font_bold_20};
   text-align: center;
 `;
 
@@ -28,11 +29,13 @@ interface HostViewProps {
   participantCount: number;
 }
 
-const handleStart = () => {
-  //로직 추가
-};
-
 const HostView = ({ participantCount }: HostViewProps) => {
+  const { increaseRadius } = useRadiusStore();
+
+  const handleStart = () => {
+    increaseRadius(); //시작하기 버튼을 누르면 원 크기 증가
+    //로직 추가
+  };
   return (
     <div>
       {participantCount > 1 ? (

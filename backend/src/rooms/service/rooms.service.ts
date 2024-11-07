@@ -62,8 +62,16 @@ export class RoomsService {
 
   getEmpathyTopics(count = 5, topicSecond = 60, topicTermSecond = 1) {
     count = Math.min(this.topicTitles.length, count);
-    return this.topicTitles.sort(() => Math.random() - 0.5)
-      .slice(0, count)
+
+    const randomTopicTitles = [...this.topicTitles];
+
+    for (let i = randomTopicTitles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+
+      [randomTopicTitles[i], randomTopicTitles[j]] = [randomTopicTitles[j], randomTopicTitles[i]];
+    }
+
+    return randomTopicTitles.slice(0, count)
       .map((title, index) => new Topic(index + 1, title, (index + 1) * (topicSecond + topicTermSecond)));
   }
 }

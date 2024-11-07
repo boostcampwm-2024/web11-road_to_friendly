@@ -13,6 +13,21 @@ export const jump = (baseTransform: string, height: string = '0.7rem') =>
     }
   });
 
+export const growAndShrink = keyframes({
+  '0%': {
+    transform: 'scale(0)'
+  },
+  '2%': {
+    transform: 'scale(0)'
+  },
+  '49%': {
+    transform: 'scale(1)'
+  },
+  '51%': {
+    transform: 'scale(1)'
+  }
+});
+
 export const hoverGrow = (scale: number = 1.035) =>
   css({
     transition: 'transform 0.2s ease-in-out',

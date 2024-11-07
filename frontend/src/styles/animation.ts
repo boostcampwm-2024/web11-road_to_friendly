@@ -1,5 +1,14 @@
 import { css, keyframes } from '@emotion/react';
 
+export const rotate = keyframes({
+  '0%': {
+    transform: 'rotate(0)'
+  },
+  '100%': {
+    transform: 'rotate(360deg)'
+  }
+});
+
 export const jump = (baseTransform: string, height: string = '0.7rem') =>
   keyframes({
     '0%': {
@@ -12,6 +21,21 @@ export const jump = (baseTransform: string, height: string = '0.7rem') =>
       transform: `${baseTransform} translateY(0)`
     }
   });
+
+export const growAndShrink = keyframes({
+  '0%': {
+    transform: 'scale(0)'
+  },
+  '2%': {
+    transform: 'scale(0)'
+  },
+  '49%': {
+    transform: 'scale(1)'
+  },
+  '51%': {
+    transform: 'scale(1)'
+  }
+});
 
 export const hoverGrow = (scale: number = 1.035) =>
   css({

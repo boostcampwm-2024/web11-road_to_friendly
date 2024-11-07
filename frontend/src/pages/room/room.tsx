@@ -9,6 +9,8 @@ import useParticipantsStore from '../../stores/participants';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
+import { ShareButton } from '../../components';
+import LoadingPage from '../LoadingPage';
 // import { Header } from '../../components/common';
 
 const backgroundStyle = css`
@@ -33,6 +35,7 @@ const Room = () => {
   const [roomExists, setRoomExists] = useState(true);
   const { participants, setParticipants } = useParticipantsStore();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (socket && roomId) {
@@ -43,6 +46,7 @@ const Room = () => {
           setRoomExists(response.status === 'ok' ? true : false);
           setParticipants(response.body.participants);
           setIsHost(response.body.hostFlag);
+          setLoading(false);
           if (socket.id) setCurrentUserId(socket.id);
         }
       );
@@ -63,21 +67,27 @@ const Room = () => {
   return (
     <>
       {/* <Header /> */}
-      <div css={backgroundStyle}>
-        <div
-          css={css`
-            display: flex;
-            margin-bottom: ${Variables.spacing.spacing_lg};
-          `}
-        >
-          {participants.map((participant, index) => (
-            <UserProfile participant={participant} index={index} isCurrentUser={participant.id === currentUserId} />
-          ))}
-        </div>
-        {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
-        <button>링크로 복사하기</button>
-      </div>
-      <ParticipantListSidebar />
+      {loading ? (
+        <LoadingPage />
+      ) : (
+        <>
+          <div css={backgroundStyle}>
+            <div
+              css={css`
+                display: flex;
+                margin-bottom: ${Variables.spacing.spacing_lg};
+              `}
+            >
+              {participants.map((participant, index) => (
+                <UserProfile participant={participant} index={index} isCurrentUser={participant.id === currentUserId} />
+              ))}
+            </div>
+            {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
+            <ShareButton />
+          </div>
+          <ParticipantListSidebar />
+        </>
+      )}
     </>
   );
 };

@@ -59,7 +59,7 @@ const toastCss = css({
   position: 'fixed',
   transform: 'translate(-50%, 0%)',
 
-  width: '21rem',
+  minWidth: '21rem',
   padding: '1.5rem 1rem',
   borderRadius: '0.75rem',
   boxSizing: 'content-box',

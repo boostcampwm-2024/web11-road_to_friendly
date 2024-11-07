@@ -2,10 +2,11 @@ export const Variables = {
   colors: {
     primary: '#fe4902',
     surface_default: '#F8F8F8',
-    surface_white: '#F8F8F8',
+    surface_white: '#FFFFFF',
     surface_alt: '#C4C4C4',
     surface_strong: '#434343',
     surface_black: '#000000',
+    surface_transparent_black_50: 'rgba(0, 0, 0, 0.5)', //50% 투명도
     surface_point: '#FF8A8A',
     text_default: '#000000',
     text_alt: '#656565',
@@ -39,5 +40,15 @@ export const Variables = {
   },
   shadow: {
     shadow_floating: '0px 4px 8px #00000040'
+  },
+  spacing: {
+    spacing_xs: '4px',
+    spacing_sm: '8px',
+    spacing_md: '16px',
+    spacing_lg: '24px',
+    spacing_xl: '32px',
+    spacing_xxl: '48px',
+    spacing_3xl: '64px',
+    spacing_4xl: '80px'
   }
 };

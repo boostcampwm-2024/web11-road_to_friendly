@@ -1,10 +1,11 @@
+import { hoverGrowJumpAnimation } from '../styles';
 import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
 import { Header, Toast } from '../components/common/';
 import clapImage from '../assets/landing-clap.png';
 import CheckIcon from '../assets/icons/check.svg?react';
-import { hoverGrowJumpAnimation } from '../styles';
 import { useState } from 'react';
+import RoomCreateButton from '../components/RoomCreateButton';
 
 const backgroundStyle = css`
   background:
@@ -16,20 +17,6 @@ const backgroundStyle = css`
   justify-content: center;
   align-items: center;
 `;
-
-const startButtonStyle = css(
-  {
-    font: Variables.typography.font_bold_24,
-    color: Variables.colors.text_white,
-    backgroundColor: Variables.colors.surface_point,
-    padding: '24px 48px',
-    borderRadius: 32,
-    ':hover': {
-      opacity: 0.8
-    }
-  },
-  hoverGrowJumpAnimation()
-);
 
 const headingTextStyle = css({ font: Variables.typography.font_bold_72, color: Variables.colors.text_default });
 
@@ -55,7 +42,7 @@ const LandingPage = () => {
               <br />
               친해져봐요
             </h1>
-            <button css={startButtonStyle}>공감 포인트 나누기 시작하기</button>
+            <RoomCreateButton />
           </div>
           <img src={clapImage} alt="Vite Logo" width={400} height={400} />
         </section>

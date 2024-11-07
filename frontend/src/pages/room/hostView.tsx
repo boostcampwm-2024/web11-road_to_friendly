@@ -1,4 +1,10 @@
-import UserProfile from '../../components/UserProfile';
+import { Variables } from '../../styles/Variables';
+import { css } from '@emotion/react';
+
+const InstructionStyle = css`
+  font: ${Variables.typography.font_bold_24};
+  text-align: center;
+`;
 
 interface HostViewProps {
   participantCount: number;
@@ -7,13 +13,20 @@ interface HostViewProps {
 const HostView = ({ participantCount }: HostViewProps) => {
   return (
     <div>
-      <div>방장 화면</div>
       {participantCount > 1 ? (
-        <h2>방에 참가자들이 다 모였다면 시작해볼까요?</h2>
+        <p css={InstructionStyle}>
+          방에 참가자들이
+          <br /> 다 모였다면 시작해볼까요?
+        </p>
       ) : (
         <div>
-          <UserProfile />
-          <h2>방이 텅 비었어요. 하단의 버튼을 눌러 친구들을 초대해보세요!</h2>
+          <p css={InstructionStyle}>
+            방이 텅 비었어요.
+            <br />
+            하단의 버튼을 눌러
+            <br />
+            친구들을 초대해보세요!
+          </p>
         </div>
       )}
     </div>

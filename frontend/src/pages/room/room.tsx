@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import useSocket from '../../hooks/useSocket';
+import { useSocket } from '../../hooks';
 import RoomNotFoundError from '../../components/RoomNotFound';
 import UserProfile from '../../components/UserProfile';
 import { useParams } from 'react-router-dom';

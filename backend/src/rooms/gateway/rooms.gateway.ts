@@ -58,6 +58,23 @@ export class RoomsGateway implements OnGatewayDisconnect {
     this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
   }
 
+  @SubscribeMessage('participant:host:start')
+  startToEmpathise(@ConnectedSocket() client: Socket): void {
+    const roomId = client.data.roomId;
+
+    if (roomId === undefined) {
+      throw new WsException('방에 참가하지 않으셨습니다.');
+    }
+
+    if (!this.roomsService.isHost(client)) {
+      throw new WsException('호스트가 아닙니다.');
+    }
+
+    const empathyTopics = this.roomsService.getEmpathyTopics();
+
+    this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
+  }
+
   handleDisconnect(client: Socket): void {
     const roomId = client.data.roomId;
 

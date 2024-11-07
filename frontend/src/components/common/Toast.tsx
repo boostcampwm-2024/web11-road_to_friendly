@@ -2,6 +2,7 @@ import { css, keyframes } from '@emotion/react';
 import CloseIcon from '../../assets/icons/close.svg?react';
 import { useTimeout } from '../../hooks';
 import { Variables } from '../../styles/Variables';
+import { parseNumberAndUnit } from '../../utils';
 
 type Position = {
   bottom?: string;
@@ -16,18 +17,9 @@ type ToastProps = {
   position?: Position;
 };
 
-function parsePosition(position: string | undefined): [number, string] {
-  const regex = /([0-9]+)(.*)/;
-  const matches = position?.match(regex);
-  if (matches) {
-    return [Number(matches[1]), matches[2]];
-  }
-  return [0, ''];
-}
-
 const slideUp = (position: Position) => {
   const { bottom } = position;
-  const [number, unit] = parsePosition(bottom);
+  const [number, unit] = parseNumberAndUnit(bottom);
   return keyframes({
     '0%': {
       opacity: '0',
@@ -42,7 +34,7 @@ const slideUp = (position: Position) => {
 
 const slideDown = (position: Position) => {
   const { bottom } = position;
-  const [number, unit] = parsePosition(bottom);
+  const [number, unit] = parseNumberAndUnit(bottom);
   return keyframes({
     '0%': {
       opacity: '1',

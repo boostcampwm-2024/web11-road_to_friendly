@@ -18,6 +18,11 @@ export const Variables = {
     player_red: '#FF7275',
     player_green: '#71F084',
     player_orange: '#FFAD55',
+    player_purple: '#9B4DFF',
+    player_yellow: '#FFEB3B',
+    player_pink: '#FF61C7',
+    player_cyan: '#00BCD4',
+    player_brown: '#795548',
     surface_word_default: '#D9D9D9',
     surface_word_weak: '#EAFFF3',
     surface_word_medium: '#DAFFEB',
@@ -36,7 +41,8 @@ export const Variables = {
     font_bold_56: '700 56px "Pretendard-Variable", sans-serif',
     font_bold_48: '700 48px "Pretendard-Variable", sans-serif',
     font_bold_36: '700 36px "Pretendard-Variable", sans-serif',
-    font_bold_24: '700 24px "Pretendard-Variable", sans-serif'
+    font_bold_24: '700 24px "Pretendard-Variable", sans-serif',
+    font_bold_20: '700 20px "Pretendard-Variable", sans-serif'
   },
   shadow: {
     shadow_floating: '0px 4px 8px #00000040'

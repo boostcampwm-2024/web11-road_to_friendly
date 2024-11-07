@@ -68,7 +68,7 @@ const LoadingSpinnerWave = ({ delay = DEFAULT_DELAY, roundSize = '2.5rem' }) => 
       <Round
         roundSize={roundSize}
         duration={delay * 10}
-        colorStartIndex={Math.floor((2 * HUE_MAX_INDEX) / 4)}
+        colorStartIndex={Math.floor((2.5 * HUE_MAX_INDEX) / 4)}
         delay={delay * 3}
       />
     </div>

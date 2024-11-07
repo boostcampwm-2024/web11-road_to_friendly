@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
 import { useState } from 'react';
-import { Toast } from './common';
+import { LoadingSpinner, Toast } from './common';
 import CheckIcon from '../assets/icons/check.svg?react';
 
 const startButtonStyle = css(
@@ -13,6 +13,8 @@ const startButtonStyle = css(
     backgroundColor: Variables.colors.surface_point,
     padding: '24px 48px',
     borderRadius: 32,
+    minWidth: '23.6rem',
+    minHeight: '5.1875rem',
     ':hover': {
       opacity: 0.8
     }
@@ -21,11 +23,13 @@ const startButtonStyle = css(
 );
 
 const RoomCreateButton = () => {
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(false);
   const navigate = useNavigate();
 
   const createRoom = async () => {
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:8080/rooms', {
         method: 'POST',
         headers: {
@@ -43,6 +47,8 @@ const RoomCreateButton = () => {
     } catch (error) {
       console.error('Error creating room:', error);
       setToast(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,7 +62,17 @@ const RoomCreateButton = () => {
         />
       )}
       <button onClick={createRoom} css={startButtonStyle}>
-        공감 포인트 나누기 시작하기
+        {loading ? (
+          <div css={{ display: 'flex', justifyContent: 'center' }}>
+            <LoadingSpinner
+              roundSize="1.7rem"
+              emptyColor={`${Variables.colors.surface_white}50`}
+              fillColor={Variables.colors.surface_white}
+            />
+          </div>
+        ) : (
+          '공감 포인트 나누기 시작하기'
+        )}
       </button>
     </div>
   );

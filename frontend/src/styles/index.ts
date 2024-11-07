@@ -1,1 +1,1 @@
-export { growAndShrink, hoverGrowJumpAnimation } from './animation';
+export { rotate, growAndShrink, hoverGrowJumpAnimation } from './animation';

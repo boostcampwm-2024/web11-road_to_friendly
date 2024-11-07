@@ -32,7 +32,7 @@ const participantNicknameStyle = css`
 
 const selfTagStyle = css`
   position: absolute;
-  top: -5px;
+  top: -1px;
   right: 5px;
   width: 25px;
   height: 25px;

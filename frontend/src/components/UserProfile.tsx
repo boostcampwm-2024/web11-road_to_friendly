@@ -1,5 +1,6 @@
 import { Variables } from '../styles/Variables';
 import { css } from '@emotion/react';
+import Crown from '../assets/icons/crown.svg?react';
 
 const profileStyle = css`
   display: flex;
@@ -42,6 +43,13 @@ const selfTagStyle = css`
   font-size: 16px;
 `;
 
+const hostStyle = css`
+  position: absolute;
+  top: -25px;
+  width: 50px;
+  height: 40px;
+`;
+
 const profileColors = [
   Variables.colors.player_blue,
   Variables.colors.player_grey,
@@ -59,12 +67,18 @@ interface UserProfileProps {
   participant: Participant;
   index: number;
   isCurrentUser: boolean;
+  isHost: boolean;
 }
 
-const UserProfile = ({ participant, index, isCurrentUser }: UserProfileProps) => {
+const UserProfile = ({ participant, index, isCurrentUser, isHost }: UserProfileProps) => {
   return (
     <div key={participant.id} css={profileStyle}>
       <div css={profileImageStyle(profileColors[index % profileColors.length])}>
+        {isHost && (
+          <div css={hostStyle}>
+            <Crown />
+          </div>
+        )}
         <div>🐯</div>
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}

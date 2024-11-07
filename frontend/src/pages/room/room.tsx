@@ -9,6 +9,7 @@ import useParticipantsStore from '../../stores/participants';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
+import { ShareButton } from '../../components';
 // import { Header } from '../../components/common';
 
 const backgroundStyle = css`
@@ -75,7 +76,7 @@ const Room = () => {
           ))}
         </div>
         {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
-        <button>링크로 복사하기</button>
+        <ShareButton />
       </div>
       <ParticipantListSidebar />
     </>

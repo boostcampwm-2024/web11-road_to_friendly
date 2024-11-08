@@ -11,6 +11,10 @@ import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
 import { calculatePosition } from '../../utils/arrangement';
 import useRadiusStore from '../../stores/radius';
+import { ShareButton } from '../../components';
+import LoadingPage from '../LoadingPage';
+import QuestionsView from './questionsView';
+// import { Header } from '../../components/common';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -49,8 +53,12 @@ const Room = () => {
   const [roomExists, setRoomExists] = useState(true);
   const { participants, setParticipants } = useParticipantsStore();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const { radius, increaseRadius } = useRadiusStore();
   const positions = useMemo(() => calculatePosition(participants.length, radius), [radius, participants]);
+
+  const hideIntroView = () => setIsIntroViewActive(false);
 
   const calculateRadius = (count: number) => {
     if (count > 3) {
@@ -72,11 +80,12 @@ const Room = () => {
           setRoomExists(response.status === 'ok');
           setParticipants(response.body.participants);
           setIsHost(response.body.hostFlag);
+          setLoading(false);
           if (socket.id) setCurrentUserId(socket.id);
         }
       );
 
-      //새로운 참여자 알림 이벤트
+      // 새로운 참여자 알림 이벤트
       socket.on('participant:join', (newParticipant: { participantId: string; nickname: string }) => {
         setParticipants((prev) => [...prev, { id: newParticipant.participantId, nickname: newParticipant.nickname }]);
       });
@@ -87,28 +96,37 @@ const Room = () => {
     }
   }, [socket, roomId, setParticipants]);
 
-  if (!roomExists) return <RoomNotFoundError/>;
+  if (!roomExists) return <RoomNotFoundError />;
 
   return (
     <>
-      <div css={backgroundStyle}>
-        <div css={ParticipantsContainer(radius)}>
-          {participants.map((participant, index) => (
-            <UserProfile
-              participant={participant}
-              index={index}
-              isCurrentUser={participant.id === currentUserId}
-              isHost={true}
-              position={{ x: positions[index][0], y: positions[index][1] }}
-            /> //participant.id === hostId
-          ))}
-          <div css={SubjectContainer(radius)}>
-            {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
+      {/* <Header /> */}
+      {loading ? (
+        <LoadingPage />
+      ) : (
+        <>
+          <div css={backgroundStyle}>
+            <div css={ParticipantsContainer(radius)}>
+              {participants.map((participant, index) => (
+                <UserProfile
+                  key={participant.id}
+                  participant={participant}
+                  index={index}
+                  isCurrentUser={participant.id === currentUserId}
+                  isHost={true}
+                  position={{ x: positions[index][0], y: positions[index][1] }}
+                />
+              ))}
+              <div css={SubjectContainer(radius)}>
+                {isIntroViewActive && (isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />)}
+              </div>
+            </div>
+            <QuestionsView onQuestionStart={hideIntroView} />
+            <ShareButton />
           </div>
-        </div>
-        {/* <button>링크로 복사하기</button> */}
-      </div>
-      <ParticipantListSidebar />
+          <ParticipantListSidebar />
+        </>
+      )}
     </>
   );
 };

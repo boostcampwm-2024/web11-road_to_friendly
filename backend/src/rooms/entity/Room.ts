@@ -12,9 +12,9 @@ export class Room {
     const nowParticipants: RoomsParticipantDto[] =
       this.participants.map(participant => new RoomsParticipantDto(participant));
 
-    const hostFlag = this.participants[0] === client;
+    const hostId = this.participants[0].id;
 
-    return { participants: nowParticipants, hostFlag };
+    return { participants: nowParticipants, hostId };
   }
 
   exit(client: Socket) {

@@ -1,4 +1,4 @@
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
 import { css } from '@emotion/react';
 import Crown from '../assets/icons/crown.svg?react';
 import useRadiusStore from '../stores/radius';

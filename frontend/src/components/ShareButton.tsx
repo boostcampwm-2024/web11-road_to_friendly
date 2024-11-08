@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { Variables } from '../styles/Variables';
+import { Variables } from '../styles';
 import { useState } from 'react';
 import { Toast } from './common';
 import { hoverGrowJumpAnimation } from '../styles';

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import useSocket from '../../hooks/useSocket';
+import { useSocket } from '../../hooks';
 import useQuestionsStore from '../../stores/questions';
 
 interface QuestionViewProps {

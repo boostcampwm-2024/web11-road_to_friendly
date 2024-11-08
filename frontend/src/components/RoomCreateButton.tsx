@@ -4,6 +4,7 @@ import { Variables } from '../styles';
 import { css } from '@emotion/react';
 import { useState } from 'react';
 import { LoadingSpinner, Toast } from './common';
+import { config } from '../config';
 import CheckIcon from '../assets/icons/check.svg?react';
 
 const startButtonStyle = css(
@@ -30,7 +31,7 @@ const RoomCreateButton = () => {
   const createRoom = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/rooms', {
+      const response = await fetch(`${config.SOCKET_SERVER_URL}/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

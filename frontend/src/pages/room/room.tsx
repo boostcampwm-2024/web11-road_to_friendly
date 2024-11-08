@@ -69,7 +69,7 @@ const Room = () => {
         'join',
         { roomId },
         (response: { status: string; body: { participants: Participant[]; hostFlag: boolean } }) => {
-          setRoomExists(response.status === 'ok' ? true : false);
+          setRoomExists(response.status === 'ok');
           setParticipants(response.body.participants);
           setIsHost(response.body.hostFlag);
           if (socket.id) setCurrentUserId(socket.id);

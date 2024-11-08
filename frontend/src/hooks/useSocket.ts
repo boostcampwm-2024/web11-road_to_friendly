@@ -3,7 +3,7 @@ import { Socket, io } from 'socket.io-client';
 
 const SOCKET_SERVER_URL = 'http://localhost:8080';
 
-const useSocket = () => {
+export const useSocket = () => {
   // socket 유지를 위해 state에 socket 인스턴스를 담아서 사용
   const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -22,5 +22,3 @@ const useSocket = () => {
 
   return socket;
 };
-
-export default useSocket;

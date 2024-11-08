@@ -2,7 +2,7 @@ import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 
 const InstructionStyle = css`
-  font: ${Variables.typography.font_bold_24};
+  font: ${Variables.typography.font_bold_20};
   text-align: center;
 `;
 

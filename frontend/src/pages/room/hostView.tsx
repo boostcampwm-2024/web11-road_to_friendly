@@ -1,3 +1,5 @@
+import QuestionStartButton from '../../components/QuestionStartButton';
+import { flexStyle } from '../../styles';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 
@@ -14,10 +16,13 @@ const HostView = ({ participantCount }: HostViewProps) => {
   return (
     <div>
       {participantCount > 1 ? (
-        <p css={InstructionStyle}>
-          방에 참가자들이
-          <br /> 다 모였다면 시작해볼까요?
-        </p>
+        <div css={flexStyle(48, 'column')}>
+          <p css={InstructionStyle}>
+            방에 참가자들이
+            <br /> 다 모였다면 시작해볼까요?
+          </p>
+          <QuestionStartButton />
+        </div>
       ) : (
         <div>
           <p css={InstructionStyle}>

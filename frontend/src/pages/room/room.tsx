@@ -11,6 +11,7 @@ import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
 import { ShareButton } from '../../components';
 import LoadingPage from '../LoadingPage';
+import QuestionsView from './questionsView';
 // import { Header } from '../../components/common';
 
 const backgroundStyle = css`
@@ -36,6 +37,9 @@ const Room = () => {
   const { participants, setParticipants } = useParticipantsStore();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isIntroViewActive, setIsIntroViewActive] = useState(true);
+
+  const hideIntroView = () => setIsIntroViewActive(false);
 
   useEffect(() => {
     if (socket && roomId) {
@@ -82,7 +86,8 @@ const Room = () => {
                 <UserProfile participant={participant} index={index} isCurrentUser={participant.id === currentUserId} />
               ))}
             </div>
-            {isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />}
+            {isIntroViewActive && (isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />)}
+            <QuestionsView onQuestionStart={hideIntroView} />
             <ShareButton />
           </div>
           <ParticipantListSidebar />

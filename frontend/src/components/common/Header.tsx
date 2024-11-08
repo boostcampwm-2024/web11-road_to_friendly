@@ -11,16 +11,17 @@ const headerWrapperStyle = css({
   padding: 24
 });
 
-const headerStyle = css({
-  backgroundColor: Variables.colors.surface_white,
-  width: '100%',
-  borderRadius: 999,
-  display: 'flex',
-  justifyContent: 'space-between',
-  padding: '24px 32px',
-  alignItems: 'center',
-  boxShadow: '0 0 30px #00000008'
-});
+const headerStyle = (paddingY: number) =>
+  css({
+    backgroundColor: Variables.colors.surface_white,
+    width: '100%',
+    borderRadius: 999,
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: `${paddingY}px 32px`,
+    alignItems: 'center',
+    boxShadow: '0 0 30px #00000008'
+  });
 
 const navStyle = css({
   display: 'flex',
@@ -29,10 +30,14 @@ const navStyle = css({
   font: Variables.typography.font_medium_20
 });
 
-const Header = () => {
+interface HeaderProps {
+  paddingY?: number;
+}
+
+const Header = ({ paddingY = 24 }: HeaderProps) => {
   return (
     <header css={headerWrapperStyle}>
-      <div css={headerStyle}>
+      <div css={headerStyle(paddingY)}>
         <a css={{ font: Variables.typography.font_bold_24 }} href="/">
           친해지길
         </a>

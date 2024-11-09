@@ -8,7 +8,7 @@ import { useParticipantsStore, useRadiusStore, useSocketStore } from '../../stor
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
-import { calculatePosition } from '../../utils/arrangement';
+import { calculatePosition } from '../../utils';
 
 import { ShareButton } from '../../components';
 import LoadingPage from '../LoadingPage';
@@ -134,9 +134,9 @@ const Room = () => {
                   ) : (
                     <ParticipantView />
                   ))}
+                <QuestionsView onQuestionStart={hideIntroView} />
               </div>
             </div>
-            <QuestionsView onQuestionStart={hideIntroView} />
             <ShareButton />
           </div>
           <ParticipantListSidebar />

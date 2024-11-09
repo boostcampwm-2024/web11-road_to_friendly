@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
-import { Variables } from '../styles';
-import { useSocketStore } from '../stores';
+
+import { useSocketStore } from '@/stores';
+import { Variables } from '@/styles';
 
 const ButtonStyle = css({
   backgroundColor: Variables.colors.surface_black,

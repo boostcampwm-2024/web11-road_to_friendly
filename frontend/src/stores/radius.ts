@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { MIN_RADIUS, MAX_RADIUS } from '../constants';
+
+import { MIN_RADIUS, MAX_RADIUS } from '@/constants';
 
 interface RadiusStore {
   radius: number;

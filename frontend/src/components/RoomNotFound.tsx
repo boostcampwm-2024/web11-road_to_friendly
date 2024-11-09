@@ -1,6 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { Variables } from '../styles';
 import { css } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
+
+import { Variables } from '@/styles';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};

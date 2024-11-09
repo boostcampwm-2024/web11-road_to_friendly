@@ -1,7 +1,9 @@
-import { GlobalStyle } from './styles/GlobalStyle';
 import { Routes, Route } from 'react-router-dom';
-import Room from './pages/room/room';
-import LandingPage from './pages/LandingPage';
+
+import LandingPage from '@/pages/LandingPage';
+
+import Room from '@/pages/room/room';
+import { GlobalStyle } from '@/styles/GlobalStyle';
 
 function App() {
   return (

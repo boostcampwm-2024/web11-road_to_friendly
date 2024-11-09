@@ -1,16 +1,18 @@
+import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
-import RoomNotFoundError from '../../components/RoomNotFound';
-import UserProfile from '../../components/UserProfile';
 import { useParams } from 'react-router-dom';
+
+import ParticipantListSidebar from '@/components/ParticipantListSidebar';
+import RoomNotFoundError from '@/components/RoomNotFound';
+import UserProfile from '@/components/UserProfile';
+
+import { ShareButton } from '@/components';
+import { useParticipantsStore, useRadiusStore, useSocketStore } from '@/stores/';
+import { Variables } from '@/styles/Variables';
+import { calculatePosition } from '@/utils';
+
 import HostView from './hostView';
 import ParticipantView from './participantView';
-import { useParticipantsStore, useRadiusStore, useSocketStore } from '../../stores/';
-import { Variables } from '../../styles/Variables';
-import { css } from '@emotion/react';
-import ParticipantListSidebar from '../../components/ParticipantListSidebar';
-import { calculatePosition } from '../../utils';
-
-import { ShareButton } from '../../components';
 import LoadingPage from '../LoadingPage';
 import QuestionsView from './questionsView';
 

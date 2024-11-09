@@ -1,6 +1,7 @@
-import { create } from 'zustand';
 import { Socket, io } from 'socket.io-client';
-import { config } from '../config';
+import { create } from 'zustand';
+
+import { config } from '@/config';
 
 interface SocketStore {
   socket: Socket | null;

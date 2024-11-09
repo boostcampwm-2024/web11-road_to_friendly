@@ -1,5 +1,6 @@
-import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
+
+import { Variables } from '@/styles/Variables';
 
 const InstructionStyle = css`
   font: ${Variables.typography.font_bold_20};

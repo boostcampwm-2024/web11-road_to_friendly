@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Question } from '../../types';
-import { useQuestionsStore, useSocketStore } from '../../stores/';
-import { getRemainingSeconds } from '../../utils';
 import { css } from '@emotion/react';
-import { flexStyle, Variables } from '../../styles';
-import ClockIcon from '../../assets/icons/clock.svg?react';
+import { useEffect, useState } from 'react';
+
+import ClockIcon from '@/assets/icons/clock.svg?react';
+import { useQuestionsStore, useSocketStore } from '@/stores/';
+import { flexStyle, Variables } from '@/styles';
+import { Question } from '@/types';
+import { getRemainingSeconds } from '@/utils';
 
 const questionTitleStyle = css({
   font: Variables.typography.font_bold_36

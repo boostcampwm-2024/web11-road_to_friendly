@@ -22,7 +22,14 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "jsxImportSource": "@emotion/react"
+    "jsxImportSource": "@emotion/react",
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src"]
 }

@@ -6,8 +6,8 @@ import LandingPage from './pages/LandingPage';
 function App() {
   return (
     <>
-     <GlobalStyle />
-       <Routes>
+      <GlobalStyle />
+      <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/rooms/:roomId" element={<Room />} />
       </Routes>

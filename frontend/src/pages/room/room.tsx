@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSocket } from '../../hooks';
 import RoomNotFoundError from '../../components/RoomNotFound';
 import UserProfile from '../../components/UserProfile';
 import { useParams } from 'react-router-dom';
 import HostView from './hostView';
 import ParticipantView from './participantView';
-import useParticipantsStore from '../../stores/participants';
+import { useParticipantsStore, useRadiusStore, useSocketStore } from '../../stores/';
 import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
 import ParticipantListSidebar from '../../components/ParticipantListSidebar';
 import { calculatePosition } from '../../utils/arrangement';
-import useRadiusStore from '../../stores/radius';
+
 import { ShareButton } from '../../components';
 import LoadingPage from '../LoadingPage';
 import QuestionsView from './questionsView';
-// import { Header } from '../../components/common';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -47,15 +45,17 @@ interface Participant {
 }
 
 const Room = () => {
-  const socket = useSocket();
   const { roomId } = useParams<{ roomId: string }>();
-  const [isHost, setIsHost] = useState(false);
+
+  const { socket, connect, disconnect } = useSocketStore();
+  const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
+  const { radius, increaseRadius } = useRadiusStore();
+
   const [roomExists, setRoomExists] = useState(true);
-  const { participants, setParticipants } = useParticipantsStore();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
-  const { radius, increaseRadius } = useRadiusStore();
+
   const positions = useMemo(() => calculatePosition(participants.length, radius), [radius, participants]);
 
   const hideIntroView = () => setIsIntroViewActive(false);
@@ -66,20 +66,25 @@ const Room = () => {
     }
   };
 
-  // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
-    calculateRadius(participants.length);
-  }, [participants]);
+    if (!socket) {
+      connect();
+    }
+
+    return () => {
+      disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (socket && roomId) {
       socket.emit(
         'join',
         { roomId },
-        (response: { status: string; body: { participants: Participant[]; hostFlag: boolean } }) => {
+        (response: { status: string; body: { participants: Participant[]; hostId: string } }) => {
           setRoomExists(response.status === 'ok');
           setParticipants(response.body.participants);
-          setIsHost(response.body.hostFlag);
+          setHostId(response.body.hostId);
           setLoading(false);
           if (socket.id) setCurrentUserId(socket.id);
         }
@@ -95,6 +100,11 @@ const Room = () => {
       };
     }
   }, [socket, roomId, setParticipants]);
+
+  // 참여자 수가 변경될 때마다 반지름 계산
+  useEffect(() => {
+    calculateRadius(participants.length);
+  }, [participants]);
 
   if (!roomExists) return <RoomNotFoundError />;
 
@@ -113,12 +123,17 @@ const Room = () => {
                   participant={participant}
                   index={index}
                   isCurrentUser={participant.id === currentUserId}
-                  isHost={true}
+                  isHost={hostId === participant.id}
                   position={{ x: positions[index][0], y: positions[index][1] }}
                 />
               ))}
               <div css={SubjectContainer(radius)}>
-                {isIntroViewActive && (isHost ? <HostView participantCount={participants.length} /> : <ParticipantView />)}
+                {isIntroViewActive &&
+                  (hostId === currentUserId ? (
+                    <HostView participantCount={participants.length} />
+                  ) : (
+                    <ParticipantView />
+                  ))}
               </div>
             </div>
             <QuestionsView onQuestionStart={hideIntroView} />

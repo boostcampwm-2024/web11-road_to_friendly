@@ -7,15 +7,17 @@ interface Participant {
 
 interface ParticipantsStore {
   participants: Participant[];
+  hostId: string | null;
   setParticipants: (newParticipants: Participant[] | ((prev: Participant[]) => Participant[])) => void;
+  setHostId: (newHostId: string) => void;
 }
 
-const useParticipantsStore = create<ParticipantsStore>((set) => ({
+export const useParticipantsStore = create<ParticipantsStore>((set) => ({
   participants: [],
+  hostId: null,
   setParticipants: (newParticipants) =>
     set((state) => ({
-      participants: typeof newParticipants === 'function' ? newParticipants(state.participants): newParticipants
-    }))
+      participants: typeof newParticipants === 'function' ? newParticipants(state.participants) : newParticipants
+    })),
+  setHostId: (newHostId) => set({ hostId: newHostId })
 }));
-
-export default useParticipantsStore;

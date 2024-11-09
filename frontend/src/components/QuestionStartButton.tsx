@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Variables } from '../styles';
-import { useSocket } from '../hooks';
+import { useSocketStore } from '../stores';
 
 const ButtonStyle = css({
   backgroundColor: Variables.colors.surface_black,
@@ -11,7 +11,7 @@ const ButtonStyle = css({
 });
 
 const QuestionStartButton = () => {
-  const socket = useSocket();
+  const { socket } = useSocketStore();
 
   const onClickStart = () => {
     if (socket) {

@@ -6,9 +6,7 @@ interface RadiusStore {
   increaseRadius: () => void;
 }
 
-const useRadiusStore = create<RadiusStore>((set) => ({
+export const useRadiusStore = create<RadiusStore>((set) => ({
   radius: MIN_RADIUS,
   increaseRadius: () => set({ radius: MAX_RADIUS })
 }));
-
-export default useRadiusStore;

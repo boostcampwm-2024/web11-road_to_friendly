@@ -22,14 +22,14 @@
   <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb11-road_to_friendly&count_bg=%23B681FF&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/></a>
 </div>
 </div>
-<b
-r>
+<br>
 
 ## ✨ 프로젝트 소개
-
-**친해지길**은 서로가 처음인 사람들로 구성된 팀이 친해지기를 바라는 마음에서 기획한 온라인 아이스브레이킹 플랫폼입니다.
-<br>
-팀원들끼리 여러 질문들에 대해 실시간으로 답변 키워드를 입력하며 비슷한 취향이나 관심사를 파악하고, 관련된 다양한 컨텐츠를 공유하며 빠르게 친밀감을 형성할 수 있습니다.
+<p>
+  친해지길은 서로가 처음인 사람들로 구성된 팀이 친해지기를 바라는 마음에서 기획한 온라인 아이스브레이킹 플랫폼입니다.
+  <br>
+  팀원들끼리 여러 질문들에 대해 실시간으로 답변 키워드를 입력하며 비슷한 취향이나 관심사를 파악하고, 관련된 다양한 컨텐츠를 공유하며 빠르게 친밀감을 형성할 수 있습니다.
+</p>
 
 <br>
 

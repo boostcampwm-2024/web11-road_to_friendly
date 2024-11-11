@@ -26,17 +26,17 @@ const backgroundStyle = css`
   flex-direction: column;
 `;
 
-const ParticipantsContainer = (radius: number) => css`
+const ParticipantsContainer = (shortRadius: number, longRadius: number) => css`
   position: relative;
-  width: ${radius * 2}px;
-  height: ${radius * 2}px;
+  width: ${longRadius * 2}px;
+  height: ${shortRadius * 2}px;
   border-radius: 50%;
 `;
 
-const SubjectContainer = (radius: number) => css`
+const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   position: absolute;
-  bottom: ${radius}px;
-  left: ${radius}px;
+  bottom: ${shortRadius}px;
+  left: ${longRadius}px;
   transform: translate(-50%, 20%);
   white-space: nowrap;
 `;
@@ -58,7 +58,7 @@ const Room = () => {
   const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
 
-  const positions = useMemo(() => calculatePosition(participants.length, radius), [radius, participants]);
+  const positions = useMemo(() => calculatePosition(participants.length, radius[0], radius[1]), [radius, participants]);
 
   const hideIntroView = () => setIsIntroViewActive(false);
 
@@ -118,7 +118,7 @@ const Room = () => {
       ) : (
         <>
           <div css={backgroundStyle}>
-            <div css={ParticipantsContainer(radius)}>
+            <div css={ParticipantsContainer(radius[0], radius[1])}>
               {participants.map((participant, index) => (
                 <UserProfile
                   key={participant.id}
@@ -129,7 +129,7 @@ const Room = () => {
                   position={{ x: positions[index][0], y: positions[index][1] }}
                 />
               ))}
-              <div css={SubjectContainer(radius)}>
+              <div css={SubjectContainer(radius[0], radius[1])}>
                 {isIntroViewActive &&
                   (hostId === currentUserId ? (
                     <HostView participantCount={participants.length} />

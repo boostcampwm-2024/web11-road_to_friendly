@@ -21,21 +21,21 @@ const headerStyle = (paddingY: number) =>
     justifyContent: 'space-between',
     padding: `${paddingY}px 32px`,
     alignItems: 'center',
-    boxShadow: '0 0 30px #00000008'
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
   });
 
 const navStyle = css({
   display: 'flex',
   gap: 24,
-  color: Variables.colors.text_weak,
-  font: Variables.typography.font_medium_20
+  color: Variables.colors.text_default,
+  font: Variables.typography.font_medium_16
 });
 
 interface HeaderProps {
   paddingY?: number;
 }
 
-const Header = ({ paddingY = 24 }: HeaderProps) => {
+const Header = ({ paddingY = 17 }: HeaderProps) => {
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>

@@ -17,7 +17,7 @@ const backgroundStyle = css`
   align-items: center;
 `;
 
-const headingTextStyle = css({ font: Variables.typography.font_bold_72, color: Variables.colors.text_default });
+const headingTextStyle = css({ font: Variables.typography.font_bold_56, color: Variables.colors.text_default });
 
 const LandingPage = () => {
   return (
@@ -25,7 +25,7 @@ const LandingPage = () => {
       <Header />
       <div css={backgroundStyle}>
         <section css={{ display: 'flex', alignItems: 'center', margin: 'auto 0', gap: 100 }}>
-          <div css={{ display: 'flex', flexDirection: 'column', gap: 66 }}>
+          <div css={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
             <h1 css={headingTextStyle}>
               간편하게
               <br />

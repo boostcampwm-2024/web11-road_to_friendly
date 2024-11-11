@@ -10,13 +10,12 @@ import { LoadingSpinner, Toast } from './common';
 
 const startButtonStyle = css(
   {
-    font: Variables.typography.font_bold_24,
+    font: Variables.typography.font_bold_20,
     color: Variables.colors.text_white,
     backgroundColor: Variables.colors.surface_point,
-    padding: '24px 48px',
-    borderRadius: 32,
+    borderRadius: 999,
     minWidth: '23.6rem',
-    minHeight: '5.1875rem',
+    minHeight: '3.5rem',
     ':hover': {
       opacity: 0.8
     }

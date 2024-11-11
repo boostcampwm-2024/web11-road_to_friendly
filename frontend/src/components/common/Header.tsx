@@ -27,15 +27,15 @@ const headerStyle = (paddingY: number) =>
 const navStyle = css({
   display: 'flex',
   gap: 24,
-  color: Variables.colors.text_weak,
-  font: Variables.typography.font_medium_20
+  color: Variables.colors.text_default,
+  font: Variables.typography.font_medium_16
 });
 
 interface HeaderProps {
   paddingY?: number;
 }
 
-const Header = ({ paddingY = 24 }: HeaderProps) => {
+const Header = ({ paddingY = 18 }: HeaderProps) => {
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>

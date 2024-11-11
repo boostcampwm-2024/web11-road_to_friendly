@@ -2,7 +2,7 @@ import js from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import globals from 'globals';
+import globals, { node } from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -76,6 +76,9 @@ export default tseslint.config(
         typescript: {
           alwaysTryTypes: true, //import하는 모듈의 @type/**에서 .d.ts파일을 찾아 타입 추론
           project: './tsconfig.json' // tsconfig.json 파일의 위치를 명시. 생략 시, 현재 위치에서 가장 가까운 tsconfig.json이 인식됨
+        },
+        node: {
+          paths: ['src'] //node_modules에서 모듈을 찾을 때 참고할 경로
         }
       }
     }

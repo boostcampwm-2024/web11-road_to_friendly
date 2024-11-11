@@ -2,11 +2,11 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
+import { QuestionInput } from '@/components';
 import { useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
-import { QuestionInput } from '@/components';
 
 const questionTitleStyle = css({
   font: Variables.typography.font_bold_32,

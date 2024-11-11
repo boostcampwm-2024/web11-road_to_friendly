@@ -4,10 +4,10 @@ import Crown from '@/assets/icons/crown.svg?react';
 import { useRadiusStore } from '@/stores';
 import { Variables } from '@/styles';
 
-const profileStyle = (x: number, y: number, radius: number) => css`
+const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number) => css`
   position: absolute;
-  left: ${radius + x}px;
-  bottom: ${radius + y}px;
+  left: ${longRadius + x}px;
+  bottom: ${shortRadius + y}px;
   transform: translate(-50%, 50%);
   transition: 1s ease-in-out;
 `;
@@ -87,7 +87,7 @@ const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: Us
   const { radius } = useRadiusStore();
 
   return (
-    <div key={participant.id} css={profileStyle(position.x, position.y, radius)}>
+    <div key={participant.id} css={profileStyle(position.x, position.y, radius[0], radius[1])}>
       <div css={profileImageStyle(profileColors[index % profileColors.length])}>
         {isHost && (
           <div css={hostStyle}>

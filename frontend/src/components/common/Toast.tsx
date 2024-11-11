@@ -4,19 +4,9 @@ import CloseIcon from '@/assets/icons/close.svg?react';
 import { useTimeout } from '@/hooks';
 import { Variables } from '@/styles';
 import { parseNumberAndUnit } from '@/utils';
-
-type Position = {
-  bottom?: string;
-  left?: string;
-};
-
-type ToastProps = {
-  icon: React.FC<React.SVGProps<SVGSVGElement>>;
-  text: string;
-  setToast: React.Dispatch<React.SetStateAction<boolean>>;
-  duration?: number;
-  position?: Position;
-};
+import { ToastContext } from '@/contexts';
+import { useContext } from 'react';
+import { Position, ToastProps } from '@/types';
 
 const slideUp = (position: Position) => {
   const { bottom } = position;
@@ -66,15 +56,18 @@ const toastCss = css({
   backgroundColor: Variables.colors.surface_strong
 });
 
-const Toast = ({ icon, text, setToast, duration = 1750, position = { bottom: '1.5rem', left: '50%' } }: ToastProps) => {
+const Toast = ({ icon, text, duration = 1750, position = { bottom: '1.5rem', left: '50%' } }: ToastProps) => {
   const [timeover, setTimeover] = useTimeout(duration);
+  const { toast, closeToast } = useContext(ToastContext);
   const Icon = icon;
 
   function handleAnimationEnd() {
     if (timeover) {
-      setToast(false);
+      closeToast();
     }
   }
+
+  if (!toast) return null;
 
   return (
     <div

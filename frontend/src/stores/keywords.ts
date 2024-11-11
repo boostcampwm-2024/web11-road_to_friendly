@@ -47,12 +47,14 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
     }),
   deleteKeyword: (targetKeyword) =>
     set((state) => {
-      const updatedKeywords = state.keywords[targetKeyword.questionId]?.filter((item) => item.keyword !== targetKeyword.keyword);
+      const updatedKeywords = state.keywords[targetKeyword.questionId]?.filter(
+        (item) => item.keyword !== targetKeyword.keyword
+      );
 
       return {
         keywords: {
           ...state.keywords,
-          [targetKeyword.questionId]: updatedKeywords
+          [targetKeyword.questionId]: updatedKeywords || []
         }
       };
     })

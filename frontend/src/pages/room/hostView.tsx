@@ -18,7 +18,7 @@ const HostView = ({ participantCount }: HostViewProps) => {
   return (
     <div>
       {participantCount > 1 ? (
-        <div css={flexStyle(48, 'column')}>
+        <div css={flexStyle(30, 'column')}>
           <p css={InstructionStyle}>
             방에 참가자들이
             <br /> 다 모였다면 시작해볼까요?

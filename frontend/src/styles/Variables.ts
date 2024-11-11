@@ -41,6 +41,7 @@ export const Variables = {
     font_bold_56: '700 56px "Pretendard-Variable", sans-serif',
     font_bold_48: '700 48px "Pretendard-Variable", sans-serif',
     font_bold_36: '700 36px "Pretendard-Variable", sans-serif',
+    font_bold_32: '700 32px "Pretendard-Variable", sans-serif',
     font_bold_24: '700 24px "Pretendard-Variable", sans-serif',
     font_bold_20: '700 20px "Pretendard-Variable", sans-serif'
   },

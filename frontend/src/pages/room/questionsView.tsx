@@ -8,7 +8,8 @@ import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
 
 const questionTitleStyle = css({
-  font: Variables.typography.font_bold_36
+  font: Variables.typography.font_bold_32,
+  marginBottom: Variables.spacing.spacing_sm
 });
 
 const progressWrapperStyle = css([
@@ -20,21 +21,21 @@ const progressWrapperStyle = css([
 
 const progressBarStyle = css`
   width: 100%;
-  height: 15px;
+  height: 12px;
   border-radius: 50px;
   background-color: #eee;
 
   ::-webkit-progress-bar {
     background-color: ${Variables.colors.surface_alt};
     border-radius: 50px;
-    height: 15px;
+    height: 12px;
     overflow: hidden;
   }
 
   ::-webkit-progress-value {
     background-color: ${Variables.colors.surface_strong};
     border-radius: 50px;
-    height: 15px;
+    height: 12px;
   }
 `;
 
@@ -92,7 +93,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
     <div>
       <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
       <div css={progressWrapperStyle}>
-        <ClockIcon width="40px" height="40px" fill="#000" />
+        <ClockIcon width="35px" height="35px" fill="#000" />
         <progress
           id="progress"
           value={initialTimeLeft > 0 ? (timeLeft / initialTimeLeft) * 100 : 100}

@@ -6,9 +6,9 @@ import { Variables } from '@/styles';
 const ButtonStyle = css({
   backgroundColor: Variables.colors.surface_black,
   color: Variables.colors.text_white,
-  font: Variables.typography.font_bold_24,
+  font: Variables.typography.font_bold_20,
   borderRadius: '999px',
-  padding: '16px 144px'
+  padding: '16px 80px'
 });
 
 const QuestionStartButton = () => {
@@ -22,7 +22,7 @@ const QuestionStartButton = () => {
 
   return (
     <button css={ButtonStyle} onClick={onClickStart}>
-      추억 모으기 시작하기 🚀
+      관심사로 소통 시작하기 🚀
     </button>
   );
 };

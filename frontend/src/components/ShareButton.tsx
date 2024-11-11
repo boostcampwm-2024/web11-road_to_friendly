@@ -1,11 +1,9 @@
 import { css } from '@emotion/react';
-import { useState } from 'react';
 
-import CheckIcon from '@/assets/icons/check.svg?react';
 import LinkIcon from '@/assets/icons/link.svg?react';
 import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
-import { Toast } from './common';
+import { useToast } from '@/hooks';
 
 const shareButtonStyle = css({
   display: 'flex',
@@ -35,20 +33,12 @@ function copyCurrentLink(callback: Function) {
 }
 
 const ShareButton = () => {
-  const [toast, setToast] = useState(false);
+  const { openToast } = useToast();
   return (
     <>
-      {toast && (
-        <Toast
-          icon={() => <CheckIcon css={{ fill: Variables.colors.text_word_weak }} />}
-          text="초대 링크가 복사되었습니다!"
-          setToast={setToast}
-          duration={1250}
-        />
-      )}
       <button
         css={[shareButtonStyle, hoverGrowJumpAnimation({ scale: 1.03, height: '0.6rem' })]}
-        onClick={() => copyCurrentLink(() => setToast(true))}
+        onClick={() => copyCurrentLink(() => openToast({ text: '초대 링크가 복사되었습니다!', duration: 1250 }))}
       >
         <LinkIcon />
         링크로 초대하기

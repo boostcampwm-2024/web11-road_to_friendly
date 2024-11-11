@@ -7,7 +7,7 @@ interface KeywordsStore {
     [questionId: number]: Keyword[];
   };
   appendKeyword: (newKeywordData: { questionId: number; keyword: string; count: number }) => void;
-  deleteKeyword: (questionId: number, keyword: string) => void;
+  deleteKeyword: (targetKeyword: { questionId: number; keyword: string }) => void;
 }
 
 export const useKeywordsStore = create<KeywordsStore>((set) => ({
@@ -45,14 +45,14 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
         }
       };
     }),
-  deleteKeyword: (questionId: number, keyword: string) =>
+  deleteKeyword: (targetKeyword) =>
     set((state) => {
-      const updatedKeywords = state.keywords[questionId]?.filter((item) => item.keyword !== keyword);
+      const updatedKeywords = state.keywords[targetKeyword.questionId]?.filter((item) => item.keyword !== targetKeyword.keyword);
 
       return {
         keywords: {
           ...state.keywords,
-          [questionId]: updatedKeywords
+          [targetKeyword.questionId]: updatedKeywords
         }
       };
     })

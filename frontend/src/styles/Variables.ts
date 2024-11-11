@@ -43,7 +43,8 @@ export const Variables = {
     font_bold_36: '700 36px "Pretendard-Variable", sans-serif',
     font_bold_32: '700 32px "Pretendard-Variable", sans-serif',
     font_bold_24: '700 24px "Pretendard-Variable", sans-serif',
-    font_bold_20: '700 20px "Pretendard-Variable", sans-serif'
+    font_bold_20: '700 20px "Pretendard-Variable", sans-serif',
+    font_bold_16: '700 16px "Pretendard-Variable", sans-serif'
   },
   shadow: {
     shadow_floating: '0px 4px 8px #00000040'

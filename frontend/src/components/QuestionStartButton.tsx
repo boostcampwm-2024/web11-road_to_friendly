@@ -6,9 +6,9 @@ import { Variables } from '@/styles';
 const ButtonStyle = css({
   backgroundColor: Variables.colors.surface_black,
   color: Variables.colors.text_white,
-  font: Variables.typography.font_bold_20,
+  font: Variables.typography.font_bold_16,
   borderRadius: '999px',
-  padding: '16px 80px'
+  padding: '12px 50px'
 });
 
 const QuestionStartButton = () => {

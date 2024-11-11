@@ -2,11 +2,11 @@ import { css } from '@emotion/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import CheckIcon from '@/assets/icons/check.svg?react';
 import { config } from '@/config';
 import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
-import { LoadingSpinner, Toast } from './common';
+import { LoadingSpinner } from './common';
+import { useToast } from '@/hooks';
 
 const startButtonStyle = css(
   {
@@ -25,12 +25,13 @@ const startButtonStyle = css(
 
 const RoomCreateButton = () => {
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState(false);
   const navigate = useNavigate();
+  const { openToast } = useToast();
 
   const createRoom = async () => {
     try {
       setLoading(true);
+      console.log(config.SOCKET_SERVER_URL);
       const response = await fetch(`${config.SOCKET_SERVER_URL}/rooms`, {
         method: 'POST',
         headers: {
@@ -43,11 +44,11 @@ const RoomCreateButton = () => {
         if (roomUrl) navigate(roomUrl.pathname);
       } else {
         console.error('Failed to create room');
-        setToast(true);
+        openToast({ text: '서버와 통신 중 에러가 발생했습니다!', type: 'error' });
       }
     } catch (error) {
       console.error('Error creating room:', error);
-      setToast(true);
+      openToast({ text: '서버와 통신 중 에러가 발생했습니다!', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -55,13 +56,6 @@ const RoomCreateButton = () => {
 
   return (
     <div>
-      {toast && (
-        <Toast
-          icon={() => <CheckIcon css={{ fill: Variables.colors.text_word_weak }} />}
-          text="서버와 통신 중 에러가 발생했습니다!"
-          setToast={setToast}
-        />
-      )}
       <button onClick={createRoom} css={startButtonStyle}>
         {loading ? (
           <div css={{ display: 'flex', justifyContent: 'center' }}>

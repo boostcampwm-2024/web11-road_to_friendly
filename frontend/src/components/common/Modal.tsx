@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { Variables } from '../../styles/Variables';
+
+import { Variables } from '@/styles';
 
 const ModalOverlayStyle = css`
   position: relative;

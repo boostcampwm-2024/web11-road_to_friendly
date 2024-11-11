@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
-import { growAndShrink } from '../../styles';
-import { useIndex } from '../../hooks';
+
+import { useIndex } from '@/hooks';
+import { growAndShrink } from '@/styles';
 
 const DEFAULT_DELAY = 0.165;
 const COLOR_DIFF = 40;

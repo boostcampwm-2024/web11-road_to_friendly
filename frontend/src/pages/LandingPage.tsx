@@ -1,8 +1,10 @@
-import { Variables } from '../styles';
 import { css } from '@emotion/react';
-import { Header } from '../components/common/';
-import clapImage from '../assets/landing-clap.png';
-import RoomCreateButton from '../components/RoomCreateButton';
+
+import { Header } from '@/components/common/';
+import RoomCreateButton from '@/components/RoomCreateButton';
+
+import clapImage from '@/assets/landing-clap.png';
+import { Variables } from '@/styles';
 
 const backgroundStyle = css`
   background:

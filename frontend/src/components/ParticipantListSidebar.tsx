@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
-import { Variables } from '../styles';
+
+import { Variables } from '@/styles';
+
 import Modal from './common/Modal';
 
 const ListContainerStyle = css`

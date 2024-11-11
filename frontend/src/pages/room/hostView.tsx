@@ -1,7 +1,9 @@
-import QuestionStartButton from '../../components/QuestionStartButton';
-import { flexStyle } from '../../styles';
-import { Variables } from '../../styles/Variables';
 import { css } from '@emotion/react';
+
+import QuestionStartButton from '@/components/QuestionStartButton';
+
+import { flexStyle } from '@/styles';
+import { Variables } from '@/styles/Variables';
 
 const InstructionStyle = css`
   font: ${Variables.typography.font_bold_24};

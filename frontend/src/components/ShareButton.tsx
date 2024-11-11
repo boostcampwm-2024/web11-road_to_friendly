@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { Variables } from '../styles';
 import { useState } from 'react';
+
+import CheckIcon from '@/assets/icons/check.svg?react';
+import LinkIcon from '@/assets/icons/link.svg?react';
+import { hoverGrowJumpAnimation, Variables } from '@/styles';
+
 import { Toast } from './common';
-import { hoverGrowJumpAnimation } from '../styles';
-import LinkIcon from '../assets/icons/link.svg?react';
-import CheckIcon from '../assets/icons/check.svg?react';
 
 const shareButtonStyle = css({
   display: 'flex',

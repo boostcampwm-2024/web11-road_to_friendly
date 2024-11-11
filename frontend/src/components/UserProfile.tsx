@@ -1,7 +1,8 @@
-import { Variables } from '../styles';
 import { css } from '@emotion/react';
-import Crown from '../assets/icons/crown.svg?react';
-import useRadiusStore from '../stores/radius';
+
+import Crown from '@/assets/icons/crown.svg?react';
+import { useRadiusStore } from '@/stores';
+import { Variables } from '@/styles';
 
 const profileStyle = (x: number, y: number, radius: number) => css`
   position: absolute;

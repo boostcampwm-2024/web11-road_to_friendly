@@ -1,11 +1,12 @@
-import { hoverGrowJumpAnimation } from '../styles';
-import { useNavigate } from 'react-router-dom';
-import { Variables } from '../styles';
 import { css } from '@emotion/react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import CheckIcon from '@/assets/icons/check.svg?react';
+import { config } from '@/config';
+import { hoverGrowJumpAnimation, Variables } from '@/styles';
+
 import { LoadingSpinner, Toast } from './common';
-import { config } from '../config';
-import CheckIcon from '../assets/icons/check.svg?react';
 
 const startButtonStyle = css(
   {

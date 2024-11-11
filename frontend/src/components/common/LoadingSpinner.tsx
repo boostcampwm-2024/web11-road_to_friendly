@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
-import { Variables } from '../../styles/Variables';
-import { parseNumberAndUnit } from '../../utils';
-import { rotate } from '../../styles';
+
+import { rotate, Variables } from '@/styles';
+import { parseNumberAndUnit } from '@/utils';
 
 const spinnerStyle = (roundSize: string, width: string, emptyColor: string, fillColor: string, speed: string) =>
   css({

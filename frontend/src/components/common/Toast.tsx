@@ -1,8 +1,9 @@
 import { css, keyframes } from '@emotion/react';
-import CloseIcon from '../../assets/icons/close.svg?react';
-import { useTimeout } from '../../hooks';
-import { Variables } from '../../styles/Variables';
-import { parseNumberAndUnit } from '../../utils';
+
+import CloseIcon from '@/assets/icons/close.svg?react';
+import { useTimeout } from '@/hooks';
+import { Variables } from '@/styles';
+import { parseNumberAndUnit } from '@/utils';
 
 type Position = {
   bottom?: string;

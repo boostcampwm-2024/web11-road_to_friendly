@@ -21,7 +21,7 @@ const headerStyle = (paddingY: number) =>
     justifyContent: 'space-between',
     padding: `${paddingY}px 32px`,
     alignItems: 'center',
-    boxShadow: '0 0 30px #00000008'
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
   });
 
 const navStyle = css({
@@ -35,7 +35,7 @@ interface HeaderProps {
   paddingY?: number;
 }
 
-const Header = ({ paddingY = 18 }: HeaderProps) => {
+const Header = ({ paddingY = 17 }: HeaderProps) => {
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>

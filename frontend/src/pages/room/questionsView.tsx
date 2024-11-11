@@ -6,6 +6,7 @@ import { useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+import { QuestionInput } from '@/components';
 
 const questionTitleStyle = css({
   font: Variables.typography.font_bold_36
@@ -91,6 +92,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   return questions.length > 0 && currentQuestionIndex < questions.length ? (
     <div>
       <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
+      <QuestionInput currentQuestionIndex={currentQuestionIndex} />
       <div css={progressWrapperStyle}>
         <ClockIcon width="40px" height="40px" fill="#000" />
         <progress

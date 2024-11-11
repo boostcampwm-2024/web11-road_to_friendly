@@ -6,6 +6,9 @@ import { useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+import KeywordsView from './KeywordsView';
+
+const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
 const questionTitleStyle = css({
   font: Variables.typography.font_bold_32,
@@ -14,7 +17,7 @@ const questionTitleStyle = css({
 
 const progressWrapperStyle = css([
   {
-    width: '100%'
+    width: '70%'
   },
   flexStyle(8, 'row')
 ]);
@@ -37,6 +40,19 @@ const progressBarStyle = css`
     border-radius: 50px;
     height: 12px;
   }
+`;
+
+const inputStyle = css`
+  width: 70%;
+  height: 30px;
+  font: ${Variables.typography.font_medium_18};
+  color: ${Variables.colors.text_alt};
+  text-align: center;
+  line-height: 30px;
+  border: none;
+  border-bottom: 1px solid black;
+  outline: none;
+  background-color: transparent;
 `;
 
 interface QuestionViewProps {
@@ -90,8 +106,9 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   }, [currentQuestionIndex, questions]);
 
   return questions.length > 0 && currentQuestionIndex < questions.length ? (
-    <div>
+    <div css={MainContainer}>
       <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
+      <input css={inputStyle}></input>
       <div css={progressWrapperStyle}>
         <ClockIcon width="35px" height="35px" fill="#000" />
         <progress
@@ -101,6 +118,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           css={progressBarStyle}
         />
       </div>
+      <KeywordsView questionId={questions[currentQuestionIndex].id} />
     </div>
   ) : null;
 };

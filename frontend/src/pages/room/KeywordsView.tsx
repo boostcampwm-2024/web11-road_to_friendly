@@ -1,14 +1,15 @@
+import { css } from '@emotion/react';
+import { useEffect } from 'react';
+
 import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
-import { useEffect } from 'react';
-import { css } from '@emotion/react';
 import { Variables } from '@/styles';
 
 const KeywordsContainer = css`
   width: 100%;
   margin-top: 10px;
   display: flex;
-  justify-content:center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
 `;
@@ -22,8 +23,8 @@ const KeywordStyle = css`
 `;
 
 interface KeywordsViewProps {
-    questionId: number;
-  }
+  questionId: number;
+}
 
 const KeywordsView = ({ questionId }: KeywordsViewProps) => {
   const { socket } = useSocketStore();

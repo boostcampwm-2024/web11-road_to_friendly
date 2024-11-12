@@ -34,6 +34,7 @@ const ParticipantsContainer = (shortRadius: number, longRadius: number) => css`
 `;
 
 const SubjectContainer = (shortRadius: number, longRadius: number) => css`
+  width: 80%;
   position: absolute;
   bottom: ${shortRadius}px;
   left: ${longRadius}px;

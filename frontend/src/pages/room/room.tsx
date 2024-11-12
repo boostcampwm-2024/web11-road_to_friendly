@@ -11,11 +11,11 @@ import { useParticipantsStore, useRadiusStore, useSocketStore } from '@/stores/'
 import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
 
-import HostView from './hostView';
-import ParticipantView from './participantView';
 import LoadingPage from '../LoadingPage';
-import QuestionsView from './questionsView';
-import { Participant } from '@/types';
+import { convertArrayToObject } from '@/utils';
+import { ParticipantItem } from '@/types';
+import ResultInstruction from './resultInstruction';
+import RoomIntroView from './roomIntroView';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -43,17 +43,6 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   white-space: nowrap;
 `;
 
-const ResultInstructionStyle = css`
-  width: 100%;
-  font: ${Variables.typography.font_bold_24};
-  text-align: center;
-`;
-
-interface ParticipantItem {
-  id: string;
-  nickname: string;
-}
-
 const Room = () => {
   const { roomId } = useParams<{ roomId: string }>();
 
@@ -80,17 +69,6 @@ const Room = () => {
     }
   };
 
-  // 참가자 배열을 객체로 변환하는 함수
-  const convertArrayToObject = (participantsArray: ParticipantItem[]) => {
-    return participantsArray.reduce(
-      (acc, participant) => {
-        acc[participant.id] = participant;
-        return acc;
-      },
-      {} as { [id: string]: Participant }
-    );
-  };
-
   useEffect(() => {
     if (!socket) {
       connect();
@@ -102,31 +80,35 @@ const Room = () => {
   }, []);
 
   useEffect(() => {
-    if (socket && roomId) {
-      socket.emit(
-        'join',
-        { roomId },
-        (response: { status: string; body: { participants: ParticipantItem[]; hostId: string } }) => {
-          setRoomExists(response.status === 'ok');
-          if (roomExists) {
-            setParticipants(convertArrayToObject(response.body.participants));
-            setHostId(response.body.hostId);
-            setLoading(false);
-          }
-          if (socket.id) setCurrentUserId(socket.id);
+    const handleParticipantJoin = (newParticipant: { participantId: string; nickname: string }) => {
+      setParticipants((prev) => ({
+        ...prev,
+        [newParticipant.participantId]: {
+          id: newParticipant.participantId,
+          nickname: newParticipant.nickname
         }
-      );
+      }));
+    };
+
+    const handleJoinResponse = (response: {
+      status: string;
+      body: { participants: ParticipantItem[]; hostId: string };
+    }) => {
+      setRoomExists(response.status === 'ok');
+      if (roomExists) {
+        setParticipants(convertArrayToObject(response.body.participants));
+        setHostId(response.body.hostId);
+        setLoading(false);
+      }
+      if (socket?.id) setCurrentUserId(socket.id);
+    };
+
+    if (socket && roomId) {
+      socket.emit('join', { roomId }, handleJoinResponse);
 
       // 새로운 참여자 알림 이벤트
-      socket.on('participant:join', (newParticipant: { participantId: string; nickname: string }) => {
-        setParticipants((prev) => ({
-          ...prev,
-          [newParticipant.participantId]: {
-            id: newParticipant.participantId,
-            nickname: newParticipant.nickname
-          }
-        }));
-      });
+      socket.on('participant:join', handleParticipantJoin);
+
       return () => {
         socket.disconnect();
       };
@@ -170,17 +152,15 @@ const Room = () => {
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
-                  <div css={ResultInstructionStyle}>우리가 함께 지닌 공감 포인트들</div>
+                  <ResultInstruction />
                 ) : (
-                  <>
-                    {isIntroViewActive &&
-                      (hostId === currentUserId ? (
-                        <HostView participantCount={Object.keys(participants).length} />
-                      ) : (
-                        <ParticipantView />
-                      ))}
-                    <QuestionsView onQuestionStart={hideIntroView} />
-                  </>
+                  <RoomIntroView
+                    isIntroViewActive={isIntroViewActive}
+                    currentUserId={currentUserId}
+                    hostId={hostId}
+                    participantCount={Object.keys(participants).length}
+                    hideIntroView={hideIntroView}
+                  />
                 )}
               </div>
             </div>

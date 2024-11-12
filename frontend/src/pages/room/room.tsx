@@ -43,6 +43,12 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   white-space: nowrap;
 `;
 
+const ResultInstructionStyle = css`
+  width: 100%;
+  font: ${Variables.typography.font_bold_24};
+  text-align: center;
+`;
+
 interface ParticipantItem {
   id: string;
   nickname: string;
@@ -53,14 +59,18 @@ const Room = () => {
 
   const { socket, connect, disconnect } = useSocketStore();
   const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
-  const { radius, increaseRadius } = useRadiusStore();
+  const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
 
   const [roomExists, setRoomExists] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
+  const [isResultView, setIsResultView] = useState(true); //결과 페이지인지 여부
 
-  const positions = useMemo(() => calculatePosition(Object.keys(participants).length, radius[0], radius[1]), [radius, participants]);
+  const positions = useMemo(
+    () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
+    [radius, participants]
+  );
 
   const hideIntroView = () => setIsIntroViewActive(false);
 
@@ -126,6 +136,13 @@ const Room = () => {
     calculateRadius(Object.keys(participants).length);
   }, [participants]);
 
+  useEffect(() => {
+    //isResultview가 true가 되면
+    if (isResultView) {
+      increaseLongRadius();
+    }
+  }, [isResultView]);
+
   if (!roomExists) return <RoomNotFoundError />;
 
   return (
@@ -145,16 +162,23 @@ const Room = () => {
                   isCurrentUser={participantId === currentUserId}
                   isHost={hostId === participantId}
                   position={{ x: positions[index][0], y: positions[index][1] }}
+                  isResultView={isResultView}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
-                {isIntroViewActive &&
-                  (hostId === currentUserId ? (
-                    <HostView participantCount={Object.keys(participants).length} />
-                  ) : (
-                    <ParticipantView />
-                  ))}
-                <QuestionsView onQuestionStart={hideIntroView} />
+                {isResultView ? (
+                  <div css={ResultInstructionStyle}>우리가 함께 지닌 공감 포인트들</div>
+                ) : (
+                  <>
+                    {isIntroViewActive &&
+                      (hostId === currentUserId ? (
+                        <HostView participantCount={Object.keys(participants).length} />
+                      ) : (
+                        <ParticipantView />
+                      ))}
+                    <QuestionsView onQuestionStart={hideIntroView} />
+                  </>
+                )}
               </div>
             </div>
             <ShareButton />

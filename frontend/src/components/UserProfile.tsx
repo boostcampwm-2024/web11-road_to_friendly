@@ -1,9 +1,10 @@
 import { css } from '@emotion/react';
-
 import Crown from '@/assets/icons/crown.svg?react';
 import { useRadiusStore } from '@/stores';
 import { Variables } from '@/styles';
 import { Participant } from '@/types';
+import ResultView from '@/pages/room/resultView';
+import { flexStyle } from '@/styles';
 
 const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number) => css`
   position: absolute;
@@ -11,6 +12,7 @@ const profileStyle = (x: number, y: number, shortRadius: number, longRadius: num
   bottom: ${shortRadius + y}px;
   transform: translate(-50%, 50%);
   transition: 1s ease-in-out;
+  ${flexStyle(10, 'column', 'center', 'center')}
 `;
 
 const profileImageStyle = (bgColor: string) => css`
@@ -77,9 +79,17 @@ interface UserProfileProps {
   isCurrentUser: boolean;
   isHost: boolean;
   position: Positon;
+  isResultView: boolean;
 }
 
-const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: UserProfileProps) => {
+const UserProfile = ({
+  participant,
+  index,
+  isCurrentUser,
+  isHost,
+  position,
+  isResultView = false
+}: UserProfileProps) => {
   const { radius } = useRadiusStore();
 
   return (
@@ -94,6 +104,7 @@ const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: Us
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>
+      {isResultView && <ResultView participant={participant} />}
     </div>
   );
 };

@@ -2,11 +2,13 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
-import { QuestionInput } from '@/components';
 import { useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+import KeywordsView from './KeywordsView';
+
+const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
 const viewContainerStyle = (isFadeIn: boolean) => css`
   animation: ${isFadeIn ? fadeIn : fadeOut} 0.5s ease;
@@ -20,7 +22,7 @@ const questionTitleStyle = css({
 
 const progressWrapperStyle = css([
   {
-    width: '100%'
+    width: '70%'
   },
   flexStyle(8, 'row')
 ]);
@@ -43,6 +45,19 @@ const progressBarStyle = css`
     border-radius: 50px;
     height: 12px;
   }
+`;
+
+const inputStyle = css`
+  width: 70%;
+  height: 30px;
+  font: ${Variables.typography.font_medium_18};
+  color: ${Variables.colors.text_alt};
+  text-align: center;
+  line-height: 30px;
+  border: none;
+  border-bottom: 1px solid black;
+  outline: none;
+  background-color: transparent;
 `;
 
 interface QuestionViewProps {
@@ -108,17 +123,20 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   }, [isFadeIn]);
 
   return questions.length > 0 && currentQuestionIndex < questions.length ? (
-    <div key={currentQuestionIndex} css={viewContainerStyle(isFadeIn)}>
-      <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
-      <QuestionInput currentQuestionIndex={currentQuestionIndex} />
-      <div css={progressWrapperStyle}>
-        <ClockIcon width="35px" height="35px" fill="#000" />
-        <progress
-          id="progress"
-          value={initialTimeLeft > 0 ? (timeLeft / initialTimeLeft) * 100 : 100}
-          max={100}
-          css={progressBarStyle}
-        />
+    <div css={MainContainer}>
+      <div key={currentQuestionIndex} css={viewContainerStyle(isFadeIn)}>
+        <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
+        <input css={inputStyle}></input>
+        <div css={progressWrapperStyle}>
+          <ClockIcon width="35px" height="35px" fill="#000" />
+          <progress
+            id="progress"
+            value={initialTimeLeft > 0 ? (timeLeft / initialTimeLeft) * 100 : 100}
+            max={100}
+            css={progressBarStyle}
+          />
+        </div>
+        <KeywordsView questionId={questions[currentQuestionIndex].id} />
       </div>
     </div>
   ) : null;

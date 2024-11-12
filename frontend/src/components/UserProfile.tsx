@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import Crown from '@/assets/icons/crown.svg?react';
 import { useRadiusStore } from '@/stores';
 import { Variables } from '@/styles';
+import { Participant } from '@/types';
 
 const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number) => css`
   position: absolute;
@@ -65,11 +66,6 @@ const profileColors = [
   Variables.colors.player_brown
 ];
 
-interface Participant {
-  id: string;
-  nickname: string;
-}
-
 interface Positon {
   x: number;
   y: number;
@@ -87,7 +83,7 @@ const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: Us
   const { radius } = useRadiusStore();
 
   return (
-    <div key={participant.id} css={profileStyle(position.x, position.y, radius[0], radius[1])}>
+    <div css={profileStyle(position.x, position.y, radius[0], radius[1])}>
       <div css={profileImageStyle(profileColors[index % profileColors.length])}>
         {isHost && (
           <div css={hostStyle}>

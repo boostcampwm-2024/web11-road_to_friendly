@@ -15,6 +15,7 @@ import HostView from './hostView';
 import ParticipantView from './participantView';
 import LoadingPage from '../LoadingPage';
 import QuestionsView from './questionsView';
+import { Participant } from '@/types';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -42,7 +43,7 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   white-space: nowrap;
 `;
 
-interface Participant {
+interface ParticipantItem {
   id: string;
   nickname: string;
 }
@@ -59,7 +60,7 @@ const Room = () => {
   const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
 
-  const positions = useMemo(() => calculatePosition(participants.length, radius[0], radius[1]), [radius, participants]);
+  const positions = useMemo(() => calculatePosition(Object.keys(participants).length, radius[0], radius[1]), [radius, participants]);
 
   const hideIntroView = () => setIsIntroViewActive(false);
 
@@ -67,6 +68,17 @@ const Room = () => {
     if (count > 3) {
       increaseRadius();
     }
+  };
+
+  // 참가자 배열을 객체로 변환하는 함수
+  const convertArrayToObject = (participantsArray: ParticipantItem[]) => {
+    return participantsArray.reduce(
+      (acc, participant) => {
+        acc[participant.id] = participant;
+        return acc;
+      },
+      {} as { [id: string]: Participant }
+    );
   };
 
   useEffect(() => {
@@ -84,9 +96,9 @@ const Room = () => {
       socket.emit(
         'join',
         { roomId },
-        (response: { status: string; body: { participants: Participant[]; hostId: string } }) => {
+        (response: { status: string; body: { participants: ParticipantItem[]; hostId: string } }) => {
           setRoomExists(response.status === 'ok');
-          setParticipants(response.body.participants);
+          setParticipants(convertArrayToObject(response.body.participants));
           setHostId(response.body.hostId);
           setLoading(false);
           if (socket.id) setCurrentUserId(socket.id);
@@ -95,9 +107,14 @@ const Room = () => {
 
       // 새로운 참여자 알림 이벤트
       socket.on('participant:join', (newParticipant: { participantId: string; nickname: string }) => {
-        setParticipants((prev) => [...prev, { id: newParticipant.participantId, nickname: newParticipant.nickname }]);
+        setParticipants((prev) => ({
+          ...prev,
+          [newParticipant.participantId]: {
+            id: newParticipant.participantId,
+            nickname: newParticipant.nickname
+          }
+        }));
       });
-
       return () => {
         socket.disconnect();
       };
@@ -106,7 +123,7 @@ const Room = () => {
 
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
-    calculateRadius(participants.length);
+    calculateRadius(Object.keys(participants).length);
   }, [participants]);
 
   if (!roomExists) return <RoomNotFoundError />;
@@ -120,20 +137,20 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {participants.map((participant, index) => (
+              {Object.keys(participants).map((participantId, index) => (
                 <UserProfile
-                  key={participant.id}
-                  participant={participant}
+                  key={participantId}
+                  participant={participants[participantId]}
                   index={index}
-                  isCurrentUser={participant.id === currentUserId}
-                  isHost={hostId === participant.id}
+                  isCurrentUser={participantId === currentUserId}
+                  isHost={hostId === participantId}
                   position={{ x: positions[index][0], y: positions[index][1] }}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isIntroViewActive &&
                   (hostId === currentUserId ? (
-                    <HostView participantCount={participants.length} />
+                    <HostView participantCount={Object.keys(participants).length} />
                   ) : (
                     <ParticipantView />
                   ))}

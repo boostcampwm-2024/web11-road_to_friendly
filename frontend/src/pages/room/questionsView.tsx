@@ -4,9 +4,14 @@ import { useEffect, useState } from 'react';
 import ClockIcon from '@/assets/icons/clock.svg?react';
 import { QuestionInput } from '@/components';
 import { useQuestionsStore, useSocketStore } from '@/stores/';
-import { flexStyle, Variables } from '@/styles';
+import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+
+const viewContainerStyle = (isFadeIn: boolean) => css`
+  animation: ${isFadeIn ? fadeIn : fadeOut} 0.5s ease;
+  opacity: ${isFadeIn ? 1 : 0};
+`;
 
 const questionTitleStyle = css({
   font: Variables.typography.font_bold_32,
@@ -51,6 +56,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [initialTimeLeft, setInitialTimeLeft] = useState(0); // 각 질문의 초기 시간
+  const [isFadeIn, setIsFadeIn] = useState(true);
 
   useEffect(() => {
     if (socket) {
@@ -72,16 +78,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
     const intervalId = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime < 1) {
-          setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-          if (questions[currentQuestionIndex + 1]) {
-            const nextTimeLeft = getRemainingSeconds(
-              new Date(questions[currentQuestionIndex + 1].expirationTime),
-              new Date()
-            );
-            setInitialTimeLeft(nextTimeLeft); // 새 질문의 초기 시간 설정
-            return nextTimeLeft;
-          }
-          return 0;
+          setIsFadeIn(false);
+          return prevTime;
         }
         return prevTime - 1;
       });
@@ -90,8 +88,27 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
     return () => clearInterval(intervalId);
   }, [currentQuestionIndex, questions]);
 
+  useEffect(() => {
+    if (!isFadeIn) {
+      const fadeTimeout = setTimeout(() => {
+        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+        if (questions[currentQuestionIndex + 1]) {
+          const nextTimeLeft = getRemainingSeconds(
+            new Date(questions[currentQuestionIndex + 1].expirationTime),
+            new Date()
+          );
+          setInitialTimeLeft(nextTimeLeft);
+          setTimeLeft(nextTimeLeft);
+        }
+        setIsFadeIn(true); // 다음 질문을 위해 페이드인 상태로 전환
+      }, 500); // 페이드아웃 효과 시간과 일치
+
+      return () => clearTimeout(fadeTimeout);
+    }
+  }, [isFadeIn]);
+
   return questions.length > 0 && currentQuestionIndex < questions.length ? (
-    <div>
+    <div key={currentQuestionIndex} css={viewContainerStyle(isFadeIn)}>
       <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
       <QuestionInput currentQuestionIndex={currentQuestionIndex} />
       <div css={progressWrapperStyle}>

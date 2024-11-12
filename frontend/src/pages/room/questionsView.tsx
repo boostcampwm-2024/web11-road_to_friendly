@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
@@ -7,22 +7,36 @@ import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
 import KeywordsView from './KeywordsView';
+import { MAX_LONG_RADIUS } from '@/constants';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
 const viewContainerStyle = (isFadeIn: boolean) => css`
+  width: ${MAX_LONG_RADIUS * 1.5}px;
   animation: ${isFadeIn ? fadeIn : fadeOut} 0.5s ease;
   opacity: ${isFadeIn ? 1 : 0};
+  ${flexStyle(8, 'column')}
 `;
 
-const questionTitleStyle = css({
-  font: Variables.typography.font_bold_32,
-  marginBottom: Variables.spacing.spacing_sm
-});
+const moveUp = keyframes`
+  to {
+    transform: translate(-50%, -40px)
+  }
+`;
+
+const questionTitleStyle = (isQuestionMovedUp: boolean) =>
+  css({
+    position: 'absolute',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    font: Variables.typography.font_bold_32,
+    marginBottom: Variables.spacing.spacing_sm,
+    animation: `${isQuestionMovedUp ? moveUp : 'none'} 1s ease forwards`
+  });
 
 const progressWrapperStyle = css([
   {
-    width: '70%'
+    width: '100%'
   },
   flexStyle(8, 'row')
 ]);
@@ -48,8 +62,9 @@ const progressBarStyle = css`
 `;
 
 const inputStyle = css`
-  width: 70%;
+  width: 100%;
   height: 30px;
+  margin-top: 12px;
   font: ${Variables.typography.font_medium_18};
   color: ${Variables.colors.text_alt};
   text-align: center;
@@ -58,10 +73,11 @@ const inputStyle = css`
   border-bottom: 1px solid black;
   outline: none;
   background-color: transparent;
+  opacity: 1;
 `;
 
 interface QuestionViewProps {
-  onQuestionStart: () => void; // 질문이 표시될 때 인트로를 숨김
+  onQuestionStart: () => void;
 }
 
 const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
@@ -70,8 +86,10 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [initialTimeLeft, setInitialTimeLeft] = useState(0); // 각 질문의 초기 시간
+  const [initialTimeLeft, setInitialTimeLeft] = useState(0);
   const [isFadeIn, setIsFadeIn] = useState(true);
+  const [isQuestionMovedUp, setIsQuestionMovedUp] = useState(false);
+  const [showInput, setShowInput] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -80,8 +98,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
         onQuestionStart();
         if (response.questions.length > 0) {
           const firstQuestionTimeLeft = getRemainingSeconds(new Date(response.questions[0].expirationTime), new Date());
-          setTimeLeft(firstQuestionTimeLeft);
-          setInitialTimeLeft(firstQuestionTimeLeft);
+          setTimeLeft(5);
+          setInitialTimeLeft(5);
         }
       });
     }
@@ -94,6 +112,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
       setTimeLeft((prevTime) => {
         if (prevTime < 1) {
           setIsFadeIn(false);
+          setIsQuestionMovedUp(false);
+          setShowInput(false);
           return prevTime;
         }
         return prevTime - 1;
@@ -101,6 +121,15 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
     }, 1000);
 
     return () => clearInterval(intervalId);
+  }, [currentQuestionIndex, questions]);
+
+  useEffect(() => {
+    const questionTimer = setTimeout(() => {
+      setIsQuestionMovedUp(true); // 질문이 위로 이동
+      setShowInput(true); // 입력 창 표시
+    }, 1000);
+
+    return () => clearTimeout(questionTimer);
   }, [currentQuestionIndex, questions]);
 
   useEffect(() => {
@@ -115,8 +144,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           setInitialTimeLeft(nextTimeLeft);
           setTimeLeft(nextTimeLeft);
         }
-        setIsFadeIn(true); // 다음 질문을 위해 페이드인 상태로 전환
-      }, 500); // 페이드아웃 효과 시간과 일치
+        setIsFadeIn(true);
+      }, 500);
 
       return () => clearTimeout(fadeTimeout);
     }
@@ -125,16 +154,25 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   return questions.length > 0 && currentQuestionIndex < questions.length ? (
     <div css={MainContainer}>
       <div key={currentQuestionIndex} css={viewContainerStyle(isFadeIn)}>
-        <h1 css={questionTitleStyle}>{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
-        <input css={inputStyle}></input>
-        <div css={progressWrapperStyle}>
-          <ClockIcon width="35px" height="35px" fill="#000" />
-          <progress
-            id="progress"
-            value={initialTimeLeft > 0 ? (timeLeft / initialTimeLeft) * 100 : 100}
-            max={100}
-            css={progressBarStyle}
-          />
+        <div css={{ position: 'relative', width: '100%' }}>
+          <h1
+            css={questionTitleStyle(isQuestionMovedUp)}
+          >{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
+          {showInput && (
+            <div css={{ width: '100%', animation: `${fadeIn} 2s ease forwards` }}>
+              <input placeholder="답변을 입력해주세요" css={inputStyle} />
+              <div css={progressWrapperStyle}>
+                <ClockIcon width="35px" height="35px" fill="#000" />
+                <progress
+                  id="progress"
+                  value={initialTimeLeft > 0 ? (timeLeft / initialTimeLeft) * 100 : 100}
+                  max={100}
+                  css={progressBarStyle}
+                />
+              </div>
+            </div>
+          )}
+          <div></div>
         </div>
         <KeywordsView questionId={questions[currentQuestionIndex].id} />
       </div>

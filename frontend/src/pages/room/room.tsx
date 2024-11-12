@@ -38,7 +38,7 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   position: absolute;
   bottom: ${shortRadius}px;
   left: ${longRadius}px;
-  transform: translate(-50%, 20%);
+  transform: translate(-50%, 50%);
   white-space: nowrap;
 `;
 

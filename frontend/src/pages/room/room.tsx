@@ -65,7 +65,7 @@ const Room = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
-  const [isResultView, setIsResultView] = useState(true); //결과 페이지인지 여부
+  const [isResultView, setIsResultView] = useState(false); //결과 페이지인지 여부
 
   const positions = useMemo(
     () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),

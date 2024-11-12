@@ -40,7 +40,7 @@ export class EmpathyGateway {
   }: EmpathyKeywordRequestDto): Promise<EmpathyKeywordResponseDto> {
     const roomId = client.data.roomId;
     const clientId = client.id;
-    const empathyKeywordInfoDto = await this.empathyService.addKeyword(roomId, questionId, keyword, clientId);
+    const empathyKeywordInfoDto = await this.empathyService.removeKeyword(roomId, questionId, keyword, clientId);
 
     this.server.to(roomId).emit('empathy:keyword:count', EmpathyKeywordAlertDto.ofEmpathyKeywordInfo(empathyKeywordInfoDto));
 

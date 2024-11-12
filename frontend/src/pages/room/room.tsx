@@ -108,9 +108,11 @@ const Room = () => {
         { roomId },
         (response: { status: string; body: { participants: ParticipantItem[]; hostId: string } }) => {
           setRoomExists(response.status === 'ok');
-          setParticipants(convertArrayToObject(response.body.participants));
-          setHostId(response.body.hostId);
-          setLoading(false);
+          if (roomExists) {
+            setParticipants(convertArrayToObject(response.body.participants));
+            setHostId(response.body.hostId);
+            setLoading(false);
+          }
           if (socket.id) setCurrentUserId(socket.id);
         }
       );

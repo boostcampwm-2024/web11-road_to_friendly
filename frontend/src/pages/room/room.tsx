@@ -165,6 +165,7 @@ const Room = () => {
                   isHost={hostId === participantId}
                   position={{ x: positions[index][0], y: positions[index][1] }}
                   isResultView={isResultView}
+                  setIsResultView={setIsResultView}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>

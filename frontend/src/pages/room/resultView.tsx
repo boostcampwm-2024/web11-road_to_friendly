@@ -3,6 +3,7 @@ import { Variables } from '@/styles';
 import { useParticipantsStore, useSocketStore } from '@/stores';
 import { useEffect } from 'react';
 import { Keyword, Participant } from '@/types';
+import { useToast } from '@/hooks';
 
 const KeywordsContainer = css`
   width: 100%;
@@ -12,6 +13,7 @@ const KeywordsContainer = css`
   flex-wrap: nowrap;
   gap: 8px;
 `;
+
 const KeywordStyle = css`
   border: 1px solid black;
   padding: 3px 10px;
@@ -23,30 +25,40 @@ const KeywordStyle = css`
 `;
 
 interface CommonResult {
-  [userId: string]: Keyword[];
+  status: string;
+  body: {
+    [userId: string]: Keyword[];
+  };
 }
 
 interface ResultViewProps {
   participant: Participant;
+  setIsResultView: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ResultView = ({ participant }: ResultViewProps) => {
-  //   const { socket } = useSocketStore();
-  //   const { setParticipants } = useParticipantsStore();
+const ResultView = ({ participant, setIsResultView }: ResultViewProps) => {
+  // const { socket } = useSocketStore();
+  // const { setParticipants } = useParticipantsStore();
+  // const { openToast } = useToast();
 
-  //   useEffect(() => {
-  //     if (socket) {
-  //       socket.on('empathy:keyword:result', (response: CommonResult) => {
-  //         Object.entries(response).forEach(([userId, array]) => {
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('empathy:keyword:result', (response: CommonResult) => {
+  //       setIsResultView(response.status === 'ok');
+  //       if (response.status === 'ok') {
+  //         Object.entries(response.body).forEach(([userId, array]) => {
   //           setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
   //         });
-  //       });
-  //     }
+  //       } else {
+  //         openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
+  //       }
+  //     });
+  //   }
 
-  //     return () => {
-  //       socket?.disconnect();
-  //     };
-  //   }, [socket]);
+  //   return () => {
+  //     socket?.disconnect();
+  //   };
+  // }, [socket]);
 
   return (
     <ul css={KeywordsContainer}>

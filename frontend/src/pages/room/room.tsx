@@ -7,15 +7,14 @@ import RoomNotFoundError from '@/components/RoomNotFound';
 import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
-import { useParticipantsStore, useRadiusStore, useSocketStore } from '@/stores/';
+import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
 
 import LoadingPage from '../LoadingPage';
-import { convertArrayToObject } from '@/utils';
-import { ParticipantItem } from '@/types';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
+import useParticipants from '@/hooks/useParticipants';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -44,15 +43,10 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
 `;
 
 const Room = () => {
-  const { roomId } = useParams<{ roomId: string }>();
-
-  const { socket, connect, disconnect } = useSocketStore();
-  const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
+  const roomId = useParams<{ roomId: string }>().roomId || null;
+  const { participants, hostId, currentUserId, roomExists, loading } = useParticipants(roomId);
   const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
 
-  const [roomExists, setRoomExists] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지인지 여부
 
@@ -68,52 +62,6 @@ const Room = () => {
       increaseRadius();
     }
   };
-
-  useEffect(() => {
-    if (!socket) {
-      connect();
-    }
-
-    return () => {
-      disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleParticipantJoin = (newParticipant: { participantId: string; nickname: string }) => {
-      setParticipants((prev) => ({
-        ...prev,
-        [newParticipant.participantId]: {
-          id: newParticipant.participantId,
-          nickname: newParticipant.nickname
-        }
-      }));
-    };
-
-    const handleJoinResponse = (response: {
-      status: string;
-      body: { participants: ParticipantItem[]; hostId: string };
-    }) => {
-      setRoomExists(response.status === 'ok');
-      if (roomExists) {
-        setParticipants(convertArrayToObject(response.body.participants));
-        setHostId(response.body.hostId);
-        setLoading(false);
-      }
-      if (socket?.id) setCurrentUserId(socket.id);
-    };
-
-    if (socket && roomId) {
-      socket.emit('join', { roomId }, handleJoinResponse);
-
-      // 새로운 참여자 알림 이벤트
-      socket.on('participant:join', handleParticipantJoin);
-
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [socket, roomId, setParticipants]);
 
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {

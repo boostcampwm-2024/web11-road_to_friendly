@@ -17,11 +17,10 @@ const RoomIntroView = ({
   participantCount,
   hideIntroView
 }: RoomIntroViewProps) => {
-  if (!isIntroViewActive) return null;
-
   return (
     <>
-      {hostId === currentUserId ? <HostView participantCount={participantCount} /> : <ParticipantView />}
+      {isIntroViewActive &&
+        (hostId === currentUserId ? <HostView participantCount={participantCount} /> : <ParticipantView />)}
       <QuestionsView onQuestionStart={hideIntroView} />
     </>
   );

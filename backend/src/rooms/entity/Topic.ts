@@ -1,10 +1,10 @@
 export class Topic {
-  private readonly id: number;
+  private readonly questionId: number;
   private readonly title: string;
   private readonly expirationTime: string;
 
-  constructor(id: number, title: string, addSecond: number) {
-    this.id = id;
+  constructor(questionId: number, title: string, addSecond: number) {
+    this.questionId = questionId;
     this.title = title;
     const date = new Date();
     date.setSeconds(date.getSeconds() + addSecond);

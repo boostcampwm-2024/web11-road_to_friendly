@@ -7,7 +7,7 @@ export class WsExceptionFilter extends BaseWsExceptionFilter {
     const client = host.switchToWs().getClient();
     const args = host.getArgs();
     const callback = args[2];
-    console.log(exception.message);
+
     if (typeof callback === 'function') {
       callback({ status: 'error', message: exception.message });
     } else {

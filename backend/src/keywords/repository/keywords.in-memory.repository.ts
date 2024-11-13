@@ -29,7 +29,7 @@ export class KeywordsInMemoryRepository {
   }
 
   async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
-    return await this.lock.acquire(`${ roomId }`, async () => {
+    return await this.lock.acquire(`${ roomId }:keyword`, async () => {
       const keywordsTotal = this.getOrCreateValue(
         this.roomKeywordsTotal,
         roomId,
@@ -57,7 +57,13 @@ export class KeywordsInMemoryRepository {
     });
   }
 
-  calculateStatistics(roomId: string): Map<string, KeywordsAlertDto[]> {
+  async getStatistics(roomId: string) {
+    return await this.lock.acquire(`${ roomId }:statistics`, async () => {
+      return this.roomKeywordsStatistics.get(roomId) ?? this.calculateStatistics(roomId);
+    });
+  }
+
+  private calculateStatistics(roomId: string): Map<string, KeywordsAlertDto[]> {
     const keywordsTotal = this.roomKeywordsTotal.get(roomId);
 
     if (keywordsTotal === undefined) {

@@ -17,6 +17,6 @@ export class KeywordsService {
   }
 
   getStatistics(roomId: string) {
-    return this.keywordsInMemoryRepository.calculateStatistics(roomId);
+    return this.keywordsInMemoryRepository.getStatistics(roomId);
   }
 }

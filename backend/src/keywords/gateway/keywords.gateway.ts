@@ -47,10 +47,9 @@ export class KeywordsGateway {
   }
 
   @SubscribeMessage('keyword:result')
-  broadcastKeywordStatistics(@ConnectedSocket() client: Socket) {
+  async broadcastKeywordStatistics(@ConnectedSocket() client: Socket) {
     const roomId = client.data.roomId;
-    const statistics = this.keywordsService.getStatistics(roomId);
-
-    this.server.to(roomId).emit('empathy:keyword:result', statistics);
+    const statics = await this.keywordsService.getStatistics(roomId);
+    return Array.from(statics.entries());
   }
 }

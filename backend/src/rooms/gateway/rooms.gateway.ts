@@ -5,7 +5,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
@@ -22,11 +22,13 @@ export class RoomsGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly roomsService: RoomsService) {
-  }
+  constructor(private readonly roomsService: RoomsService) {}
 
   @SubscribeMessage('join')
-  join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto): RoomsEnterResponseDto {
+  async join(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { roomId }: RoomsEnterRequestDto,
+  ): Promise<RoomsEnterResponseDto> {
     if (!this.roomsService.isExistRoom(roomId)) {
       return { status: 'error', message: '존재하지 않는 방입니다.' };
     }
@@ -35,12 +37,25 @@ export class RoomsGateway implements OnGatewayDisconnect {
       return { status: 'error', message: '이미 접속한 방이 존재합니다.' };
     }
 
-    const roomsJoinDto = this.roomsService.join(client, roomId);
+    client.join(roomId);
+    const hostId = await this.roomsService.join(roomId, client.id);
 
+    client.data.roomId = roomId;
+    client.data.nickname = this.roomsService.randomNickname();
     this.server.to(roomId).emit('participant:join', {
       participantId: client.id,
-      nickname: client.data.nickname
+      nickname: client.data.nickname,
     });
+
+    const participants = Array.from(this.server.sockets.adapter.rooms.get(roomId) || []).map((socketId) => {
+      const socket = this.server.sockets.sockets.get(socketId);
+      return {
+        id: socketId,
+        nickname: socket?.data?.nickname || '',
+      };
+    });
+
+    const roomsJoinDto = { participants, hostId };
 
     return { status: 'ok', body: roomsJoinDto };
   }
@@ -61,15 +76,12 @@ export class RoomsGateway implements OnGatewayDisconnect {
   @SubscribeMessage('participant:host:start')
   startToEmpathise(@ConnectedSocket() client: Socket): void {
     const roomId = client.data.roomId;
-
     if (roomId === undefined) {
       throw new WsException('방에 참가하지 않으셨습니다.');
     }
-
-    if (!this.roomsService.isHost(client)) {
+    if (!this.roomsService.isHost(roomId, client.id)) {
       throw new WsException('호스트가 아닙니다.');
     }
-
     const empathyTopics = this.roomsService.getEmpathyTopics();
 
     this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
@@ -77,22 +89,31 @@ export class RoomsGateway implements OnGatewayDisconnect {
 
   handleDisconnect(client: Socket): void {
     const roomId = client.data.roomId;
-
     if (!roomId) {
       return;
     }
 
-    const { hostChangeFlag } = this.roomsService.exit(client, roomId);
+    const hostId = this.roomsService.getHostInfo(roomId);
+    const hostChangeFlag = hostId === client.id;
+
     this.server.to(roomId).emit('participant:exit', {
       participantId: client.id,
-      nickname: client.data.nickname
+      nickname: client.data.nickname,
     });
 
     if (!hostChangeFlag) {
       return;
     }
+    const hostInfo = Array.from(this.server.sockets.adapter.rooms.get(roomId))
+      .filter((socketId) => socketId !== client.id)
+      .map((socketId) => {
+        const socket = this.server.sockets.sockets.get(socketId);
+        return {
+          participantId: socket.id,
+          nickname: socket.data?.nickname || '',
+        };
+      })[0];
 
-    const hostInfo = this.roomsService.getHostInfo(roomId);
     this.server.to(roomId).emit('participant:host:change', hostInfo);
   }
 }

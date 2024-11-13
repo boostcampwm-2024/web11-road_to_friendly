@@ -4,52 +4,41 @@ import { v4 as uuid } from 'uuid';
 import { Socket } from 'socket.io';
 import { RoomsJoinDto } from '../dto/rooms.join.dto';
 import { Topic } from '../entity/Topic';
+import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
 
 @Injectable()
 export class RoomsService {
-  private readonly rooms = new Map<string, Room>;
+  private readonly rooms = new Map<string, Room>();
 
-  create() {
-    const roomId = uuid();
-    this.rooms.set(roomId, new Room());
-    return roomId;
+  constructor(private readonly roomsInMemoryRepository: RoomsInMemoryRepository) {}
+
+  async create(): Promise<string> {
+    return await this.roomsInMemoryRepository.create();
   }
 
-  isExistRoom(roomId: string) {
-    return this.rooms.has(roomId);
+  async isExistRoom(roomId: string): Promise<boolean> {
+    return await this.roomsInMemoryRepository.isExistRoom(roomId);
   }
 
-  isHost(client: Socket) {
-    const roomId = client.data.roomId;
-    const room = this.rooms.get(roomId);
-    const { participantId: hostId } = room.getHostInfo();
-    return hostId === client.id;
+  isHost(roomId: string, clientId: string) {
+    const hostId = this.roomsInMemoryRepository.isHost(roomId);
+    return hostId === clientId;
   }
 
-  join(client: Socket, roomId: string): RoomsJoinDto {
-    client.join(roomId);
-    const room = this.rooms.get(roomId);
-
-    client.data.roomId = roomId;
-    client.data.nickname = this.randomNickname();
-    return room.join(client);
+  async join(roomId: string, clientId: string): Promise<string> {
+    return await this.roomsInMemoryRepository.join(roomId, clientId);
   }
 
-  private randomNickname() {
+  // 참여자 service로 옮겨야함
+  randomNickname() {
     const cho = Math.floor(Math.random() * 19);
     const jung = Math.floor(Math.random() * 21);
     const jong = Math.floor(Math.random() * 28);
-    return String.fromCharCode(0xAC00 + 21 * 28 * cho + 28 * jung + jong);
-  }
-
-  exit(client: Socket, roomId: string) {
-    const room = this.rooms.get(roomId);
-    return room.exit(client);
+    return String.fromCharCode(0xac00 + 21 * 28 * cho + 28 * jung + jong);
   }
 
   getHostInfo(roomId: string) {
-    const room = this.rooms.get(roomId);
-    return room.getHostInfo();
+    return this.roomsInMemoryRepository.isHost(roomId);
   }
 
   private readonly topicTitles: string[] = [
@@ -71,7 +60,8 @@ export class RoomsService {
       [randomTopicTitles[i], randomTopicTitles[j]] = [randomTopicTitles[j], randomTopicTitles[i]];
     }
 
-    return randomTopicTitles.slice(0, count)
+    return randomTopicTitles
+      .slice(0, count)
       .map((title, index) => new Topic(index + 1, title, (index + 1) * (topicSecond + topicTermSecond)));
   }
 }

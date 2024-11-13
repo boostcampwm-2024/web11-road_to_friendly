@@ -64,4 +64,8 @@ export class RoomsService {
       .slice(0, count)
       .map((title, index) => new Topic(index + 1, title, (index + 1) * (topicSecond + topicTermSecond)));
   }
+
+  deleteRoom(roomId: string) {
+    this.roomsInMemoryRepository.deleteRoom(roomId);
+  }
 }

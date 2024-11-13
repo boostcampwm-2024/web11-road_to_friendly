@@ -52,4 +52,10 @@ export class RoomsInMemoryRepository {
 
     room.phase = newPhase;
   }
+
+  deleteRoom(roomId: string) {
+    if (!this.rooms.has(roomId)) return;
+
+    this.rooms.delete(roomId);
+  }
 }

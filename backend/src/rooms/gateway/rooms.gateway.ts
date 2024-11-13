@@ -93,6 +93,13 @@ export class RoomsGateway implements OnGatewayDisconnect {
       return;
     }
 
+    const clients = Array.from(this.server.sockets.adapter.rooms.get(roomId) || []);
+
+    if (clients.length === 0) {
+      this.roomsService.deleteRoom(roomId);
+      return;
+    }
+
     const hostId = this.roomsService.getHostInfo(roomId);
     const hostChangeFlag = hostId === client.id;
 
@@ -104,7 +111,8 @@ export class RoomsGateway implements OnGatewayDisconnect {
     if (!hostChangeFlag) {
       return;
     }
-    const hostInfo = Array.from(this.server.sockets.adapter.rooms.get(roomId))
+
+    const hostInfo = clients
       .filter((socketId) => socketId !== client.id)
       .map((socketId) => {
         const socket = this.server.sockets.sockets.get(socketId);

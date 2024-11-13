@@ -12,6 +12,12 @@ import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
 import { RoomsEnterResponseDto } from '../dto/rooms.enter.response.dto';
 import { ClientsService } from 'src/clients/service/clients.service';
+import { UseFilters, UseGuards } from '@nestjs/common';
+import { HostGuard } from '../guard/rooms.host.guard';
+import { ExistGuard } from '../guard/rooms.exist.guard';
+import { ConnectionGuard } from '../guard/rooms.connection.guard';
+import { JoinGuard } from '../guard/rooms.join.guard';
+import { WsExceptionFilter } from '../filter/rooms.filter';
 
 @WebSocketGateway({
   cors: {
@@ -19,6 +25,7 @@ import { ClientsService } from 'src/clients/service/clients.service';
     methods: ['GET', 'POST'],
   },
 })
+@UseFilters(WsExceptionFilter)
 export class RoomsGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -28,17 +35,14 @@ export class RoomsGateway implements OnGatewayDisconnect {
     private readonly clientsService: ClientsService,
   ) {}
 
+  @UseGuards(ConnectionGuard)
   @SubscribeMessage('join')
   async join(
     @ConnectedSocket() client: Socket,
     @MessageBody() { roomId }: RoomsEnterRequestDto,
   ): Promise<RoomsEnterResponseDto> {
-    if (!this.roomsService.isExistRoom(roomId)) {
-      return { status: 'error', message: '존재하지 않는 방입니다.' };
-    }
-
-    if (client.rooms.size !== 1) {
-      return { status: 'error', message: '이미 접속한 방이 존재합니다.' };
+    if (!(await this.roomsService.isExistRoom(roomId))) {
+      throw new WsException('존재하지 않는 방입니다.');
     }
 
     client.join(roomId);
@@ -64,25 +68,19 @@ export class RoomsGateway implements OnGatewayDisconnect {
     return { status: 'ok', body: roomsJoinDto };
   }
 
+  @UseGuards(JoinGuard, HostGuard)
   @SubscribeMessage('participant:host:start')
   startToEmpathise(@ConnectedSocket() client: Socket): void {
     const roomId = client.data.roomId;
-    if (roomId === undefined) {
-      throw new WsException('방에 참가하지 않으셨습니다.');
-    }
-    if (!this.roomsService.isHost(roomId, client.id)) {
-      throw new WsException('호스트가 아닙니다.');
-    }
+
     const empathyTopics = this.roomsService.getEmpathyTopics();
 
     this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
   }
 
+  @UseGuards(JoinGuard)
   handleDisconnect(client: Socket): void {
     const roomId = client.data.roomId;
-    if (!roomId) {
-      return;
-    }
 
     const clients = Array.from(this.server.sockets.adapter.rooms.get(roomId) || []);
 

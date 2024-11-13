@@ -44,4 +44,12 @@ export class RoomsInMemoryRepository {
     const room = this.rooms.get(roomId);
     return room.hostId;
   }
+
+  async changeRoomPhase(roomId: string, newPhase: RoomPhase): Promise<void> {
+    const room = this.rooms.get(roomId);
+
+    if (!room) return;
+
+    room.phase = newPhase;
+  }
 }

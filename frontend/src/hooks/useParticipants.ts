@@ -6,7 +6,7 @@ import { useParticipantsStore } from '@/stores';
 
 const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
   const { socket, connect, disconnect } = useSocketStore();
-  const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
+  const { hostId, setHostId, participants, setParticipants } = useParticipantsStore();
   const [roomExists, setRoomExists] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
@@ -42,6 +42,10 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
     });
   };
 
+  const handleHostChange = (Host: { participantId: string; nickname: string }) => {
+    setHostId(Host.participantId);
+  };
+
   useEffect(() => {
     if (!socket) {
       connect();
@@ -55,9 +59,13 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
 
       // 참여자 퇴장 이벤트
       socket.on('participant:exit', handleParticipantExit);
+
+      //호스트 변경 알림 이벤트
+      socket.on('participant:host:change', handleHostChange);
       return () => {
-        socket?.off('participant:join', handleParticipantJoin);
-        socket?.off('participant:exit', handleParticipantExit);
+        socket.off('participant:join', handleParticipantJoin);
+        socket.off('participant:exit', handleParticipantExit);
+        socket.off('participant:host:change', handleHostChange);
         disconnect();
       };
     }

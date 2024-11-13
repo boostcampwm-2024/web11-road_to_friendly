@@ -134,20 +134,19 @@ describe('KeywordsInMemoryRepository', () => {
     expect(Array.from(statistics.keys()).length).toBe(0);
   });
 
-  test('통계 산출과 동시에 기존 데이터는 삭제된다', async () => {
+  test('방 키워드 정보 삭제 요청', async () => {
     // given
     const testRoomId = 'testRoomId';
     const testClient = 'testClient';
+    await repository.addKeyword(testRoomId, 1, 'testKeyword', testClient);
+    repository.calculateStatistics(testRoomId);
 
     // when
-    await repository.addKeyword(testRoomId, 1, 'testKeyword', testClient);
+    repository.deleteRoomKeywordsInfo(testRoomId);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
-    const clientStats = statistics.get(testClient);
-    expect(clientStats.length).toBe(1);
 
-    const repeatStatistics = repository.calculateStatistics(testRoomId);
-    expect(Array.from(repeatStatistics.keys()).length).toBe(0);
+    const statistics = repository.calculateStatistics(testRoomId);
+    expect(Array.from(statistics.keys()).length).toBe(0);
   });
 });

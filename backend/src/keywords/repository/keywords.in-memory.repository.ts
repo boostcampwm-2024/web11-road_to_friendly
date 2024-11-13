@@ -9,9 +9,12 @@ type SerializedKeywordInfo = {
   participants: Set<string>
 };
 
+const QUESTION_ID_KEYWORD_SEPARATOR = ':';
+
 @Injectable()
 export class KeywordsInMemoryRepository {
-  private readonly roomQuestionKeywordParticipants = new Map<string, Map<number, Map<string, Set<string>>>>();
+  private readonly roomKeywordsTotal = new Map<string, Map<string, Set<string>>>(); // 키워드 집합
+  private readonly roomKeywordsStatistics = new Map<string, Map<string, KeywordsAlertDto[]>>(); // 키워드 통계
   private readonly lock = new AsyncLock();
 
   private getOrCreateValue<K, V>(map: Map<K, V>, key: K, defaultValueCalculator: () => V): V {
@@ -27,58 +30,58 @@ export class KeywordsInMemoryRepository {
 
   async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
     return await this.lock.acquire(`${ roomId }`, async () => {
-      const questionKeywordParticipants = this.getOrCreateValue(
-        this.roomQuestionKeywordParticipants,
+      const keywordsTotal = this.getOrCreateValue(
+        this.roomKeywordsTotal,
         roomId,
-        () => new Map<number, Map<string, Set<string>>>()
-      );
-
-      const keywordParticipants = this.getOrCreateValue(
-        questionKeywordParticipants,
-        questionId,
         () => new Map<string, Set<string>>()
       );
 
-      const participants = this.getOrCreateValue(keywordParticipants, keyword, () => new Set<string>());
-      participants.add(participantId);
+      const selectors = this.getOrCreateValue(
+        keywordsTotal,
+        `${ questionId }${ QUESTION_ID_KEYWORD_SEPARATOR }${ keyword }`,
+        () => new Set<string>()
+      );
 
-      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.PICK, participants.size);
+      selectors.add(participantId);
+
+      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.PICK, selectors.size);
     });
   }
 
   async removeKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
     return await this.lock.acquire(`${ roomId }`, async () => {
-      const participants = this.roomQuestionKeywordParticipants.get(roomId)?.get(questionId)?.get(keyword);
-      participants?.delete(participantId);
+      const selectors = this.roomKeywordsTotal.get(roomId)?.get(`${ questionId }${ QUESTION_ID_KEYWORD_SEPARATOR }${ keyword }`);
+      selectors?.delete(participantId);
 
-      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.RELEASE, participants?.size ?? 0);
+      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.RELEASE, selectors?.size ?? 0);
     });
   }
 
   calculateStatistics(roomId: string): Map<string, KeywordsAlertDto[]> {
-    const questionKeywordParticipants = this.roomQuestionKeywordParticipants.get(roomId);
+    const keywordsTotal = this.roomKeywordsTotal.get(roomId);
 
-    if (questionKeywordParticipants === undefined) {
+    if (keywordsTotal === undefined) {
       return new Map();
     }
 
-    const serializedKeywordInfos = this.serializeKeywordsInfo(questionKeywordParticipants)
+    const serializedKeywordsInfo = this.serializeKeywordsTotal(keywordsTotal)
       .sort(this.compareByParticipantsSize);
 
-    this.roomQuestionKeywordParticipants.delete(roomId);
+    const keywordsStatistics = this.createStatistics(serializedKeywordsInfo);
+    this.roomKeywordsStatistics.set(roomId, keywordsStatistics);
 
-    return this.createStatistics(serializedKeywordInfos);
+    return keywordsStatistics;
   }
 
-  private serializeKeywordsInfo(questionKeywordParticipants: Map<number, Map<string, Set<string>>>) {
-    return Array.from(questionKeywordParticipants.entries())
-      .reduce((result, [questionId, keywordParticipants]) => {
-        const serializedKeywordsInfo = Array.from(keywordParticipants.entries())
-          .map(([keyword, participants]) => {
-            return { questionId, keyword, participants } as SerializedKeywordInfo;
-          });
+  private serializeKeywordsTotal(keywordsTotal: Map<string, Set<string>>) {
+    return Array.from(keywordsTotal.entries())
+      .reduce((result, [questionIdAndKeyword, participants]) => {
+        const [questionId, keyword] = questionIdAndKeyword.split(QUESTION_ID_KEYWORD_SEPARATOR);
 
-        result.push(...serializedKeywordsInfo);
+        const serializedKeywordInfo =
+          { questionId: parseInt(questionId), keyword, participants } as SerializedKeywordInfo;
+
+        result.push(serializedKeywordInfo);
 
         return result;
       }, [] as SerializedKeywordInfo[]);
@@ -110,5 +113,10 @@ export class KeywordsInMemoryRepository {
     }
 
     return statistics;
+  }
+
+  deleteRoomKeywordsInfo(roomId: string) {
+    this.roomKeywordsTotal.delete(roomId);
+    this.roomKeywordsStatistics.delete(roomId);
   }
 }

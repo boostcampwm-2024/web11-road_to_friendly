@@ -34,6 +34,14 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
     }));
   };
 
+  const handleParticipantExit = (Participant: { participantId: string; nickname: string }) => {
+    setParticipants((prev) => {
+      const newParticipants = { ...prev };
+      delete newParticipants[Participant.participantId];
+      return newParticipants;
+    });
+  };
+
   useEffect(() => {
     if (!socket) {
       connect();
@@ -45,8 +53,11 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
       // 새로운 참여자 알림 이벤트
       socket.on('participant:join', handleParticipantJoin);
 
+      // 참여자 퇴장 이벤트
+      socket.on('participant:exit', handleParticipantExit);
       return () => {
         socket?.off('participant:join', handleParticipantJoin);
+        socket?.off('participant:exit', handleParticipantExit);
         disconnect();
       };
     }

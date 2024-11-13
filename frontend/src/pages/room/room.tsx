@@ -7,14 +7,14 @@ import RoomNotFoundError from '@/components/RoomNotFound';
 import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
-import { useParticipantsStore, useRadiusStore, useSocketStore } from '@/stores/';
+import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
 
-import HostView from './hostView';
-import ParticipantView from './participantView';
 import LoadingPage from '../LoadingPage';
-import QuestionsView from './questionsView';
+import ResultInstruction from './resultInstruction';
+import RoomIntroView from './roomIntroView';
+import useParticipants from '@/hooks/useParticipants';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -42,24 +42,18 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   white-space: nowrap;
 `;
 
-interface Participant {
-  id: string;
-  nickname: string;
-}
-
 const Room = () => {
-  const { roomId } = useParams<{ roomId: string }>();
+  const roomId = useParams<{ roomId: string }>().roomId || null;
+  const { participants, hostId, currentUserId, roomExists, loading } = useParticipants(roomId);
+  const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
 
-  const { socket, connect, disconnect } = useSocketStore();
-  const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
-  const { radius, increaseRadius } = useRadiusStore();
-
-  const [roomExists, setRoomExists] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
+  const [isResultView, setIsResultView] = useState(false); //결과 페이지인지 여부
 
-  const positions = useMemo(() => calculatePosition(participants.length, radius[0], radius[1]), [radius, participants]);
+  const positions = useMemo(
+    () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
+    [radius, participants]
+  );
 
   const hideIntroView = () => setIsIntroViewActive(false);
 
@@ -69,45 +63,17 @@ const Room = () => {
     }
   };
 
-  useEffect(() => {
-    if (!socket) {
-      connect();
-    }
-
-    return () => {
-      disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (socket && roomId) {
-      socket.emit(
-        'join',
-        { roomId },
-        (response: { status: string; body: { participants: Participant[]; hostId: string } }) => {
-          setRoomExists(response.status === 'ok');
-          setParticipants(response.body.participants);
-          setHostId(response.body.hostId);
-          setLoading(false);
-          if (socket.id) setCurrentUserId(socket.id);
-        }
-      );
-
-      // 새로운 참여자 알림 이벤트
-      socket.on('participant:join', (newParticipant: { participantId: string; nickname: string }) => {
-        setParticipants((prev) => [...prev, { id: newParticipant.participantId, nickname: newParticipant.nickname }]);
-      });
-
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [socket, roomId, setParticipants]);
-
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
-    calculateRadius(participants.length);
+    calculateRadius(Object.keys(participants).length);
   }, [participants]);
+
+  useEffect(() => {
+    //isResultview가 true가 되면
+    if (isResultView) {
+      increaseLongRadius();
+    }
+  }, [isResultView]);
 
   if (!roomExists) return <RoomNotFoundError />;
 
@@ -120,24 +86,30 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {participants.map((participant, index) => (
+              {Object.keys(participants).map((participantId, index) => (
                 <UserProfile
-                  key={participant.id}
-                  participant={participant}
+                  key={participantId}
+                  participant={participants[participantId]}
                   index={index}
-                  isCurrentUser={participant.id === currentUserId}
-                  isHost={hostId === participant.id}
+                  isCurrentUser={participantId === currentUserId}
+                  isHost={hostId === participantId}
                   position={{ x: positions[index][0], y: positions[index][1] }}
+                  isResultView={isResultView}
+                  setIsResultView={setIsResultView}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
-                {isIntroViewActive &&
-                  (hostId === currentUserId ? (
-                    <HostView participantCount={participants.length} />
-                  ) : (
-                    <ParticipantView />
-                  ))}
-                <QuestionsView onQuestionStart={hideIntroView} />
+                {isResultView ? (
+                  <ResultInstruction />
+                ) : (
+                  <RoomIntroView
+                    isIntroViewActive={isIntroViewActive}
+                    currentUserId={currentUserId}
+                    hostId={hostId}
+                    participantCount={Object.keys(participants).length}
+                    hideIntroView={hideIntroView}
+                  />
+                )}
               </div>
             </div>
             <ShareButton />

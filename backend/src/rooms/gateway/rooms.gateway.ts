@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
 import { RoomsEnterResponseDto } from '../dto/rooms.enter.response.dto';
+import { ClientsService } from 'src/clients/service/clients.service';
 
 @WebSocketGateway({
   cors: {
@@ -22,7 +23,10 @@ export class RoomsGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly roomsService: RoomsService) {}
+  constructor(
+    private readonly roomsService: RoomsService,
+    private readonly clientsService: ClientsService,
+  ) {}
 
   @SubscribeMessage('join')
   async join(
@@ -41,7 +45,7 @@ export class RoomsGateway implements OnGatewayDisconnect {
     const hostId = await this.roomsService.join(roomId, client.id);
 
     client.data.roomId = roomId;
-    client.data.nickname = this.roomsService.randomNickname();
+    client.data.nickname = this.clientsService.randomNickname();
     this.server.to(roomId).emit('participant:join', {
       participantId: client.id,
       nickname: client.data.nickname,
@@ -58,19 +62,6 @@ export class RoomsGateway implements OnGatewayDisconnect {
     const roomsJoinDto = { participants, hostId };
 
     return { status: 'ok', body: roomsJoinDto };
-  }
-
-  @SubscribeMessage('client:update')
-  updateClientInfo(@ConnectedSocket() client: Socket, @MessageBody() { nickname }): void {
-    const roomId = client.data.roomId;
-
-    if (roomId === undefined) {
-      throw new WsException('방에 참가하지 않으셨습니다.');
-    }
-
-    client.data.nickname = nickname;
-
-    this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
   }
 
   @SubscribeMessage('participant:host:start')

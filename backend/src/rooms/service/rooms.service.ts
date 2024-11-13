@@ -29,14 +29,6 @@ export class RoomsService {
     return await this.roomsInMemoryRepository.join(roomId, clientId);
   }
 
-  // 참여자 service로 옮겨야함
-  randomNickname() {
-    const cho = Math.floor(Math.random() * 19);
-    const jung = Math.floor(Math.random() * 21);
-    const jong = Math.floor(Math.random() * 28);
-    return String.fromCharCode(0xac00 + 21 * 28 * cho + 28 * jung + jong);
-  }
-
   getHostInfo(roomId: string) {
     return this.roomsInMemoryRepository.isHost(roomId);
   }

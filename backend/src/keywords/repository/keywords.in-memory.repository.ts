@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { EmpathyKeywordInfoDto, RESPONSE_STATUS } from '../dto/empathy.keyword.info.dto';
+import { KeywordsInfoDto, RESPONSE_STATUS } from '../dto/keywords.info.dto';
 import * as AsyncLock from 'async-lock';
-import { EmpathyKeywordAlertDto } from '../dto/empathy.keyword.alert.dto';
+import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 
-type SerializedEmpathyInfo = {
+type SerializedKeywordInfo = {
   questionId: number,
   keyword: string,
   participants: Set<string>
 };
 
 @Injectable()
-export class EmpathyInMemoryRepository {
+export class KeywordsInMemoryRepository {
   private readonly roomQuestionKeywordParticipants = new Map<string, Map<number, Map<string, Set<string>>>>();
   private readonly lock = new AsyncLock();
 
@@ -25,7 +25,7 @@ export class EmpathyInMemoryRepository {
     return value;
   }
 
-  async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<EmpathyKeywordInfoDto> {
+  async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
     return await this.lock.acquire(`${ roomId }`, async () => {
       const questionKeywordParticipants = this.getOrCreateValue(
         this.roomQuestionKeywordParticipants,
@@ -42,67 +42,67 @@ export class EmpathyInMemoryRepository {
       const participants = this.getOrCreateValue(keywordParticipants, keyword, () => new Set<string>());
       participants.add(participantId);
 
-      return new EmpathyKeywordInfoDto(questionId, keyword, RESPONSE_STATUS.PICK, participants.size);
+      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.PICK, participants.size);
     });
   }
 
-  async removeKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<EmpathyKeywordInfoDto> {
+  async removeKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
     return await this.lock.acquire(`${ roomId }`, async () => {
       const participants = this.roomQuestionKeywordParticipants.get(roomId)?.get(questionId)?.get(keyword);
       participants?.delete(participantId);
 
-      return new EmpathyKeywordInfoDto(questionId, keyword, RESPONSE_STATUS.RELEASE, participants?.size ?? 0);
+      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.RELEASE, participants?.size ?? 0);
     });
   }
 
-  calculateStatistics(roomId: string): Map<string, EmpathyKeywordAlertDto[]> {
+  calculateStatistics(roomId: string): Map<string, KeywordsAlertDto[]> {
     const questionKeywordParticipants = this.roomQuestionKeywordParticipants.get(roomId);
 
     if (questionKeywordParticipants === undefined) {
       return new Map();
     }
 
-    const sortedSerializedEmpathyInfos = this.serializeEmpathyInfos(questionKeywordParticipants)
+    const serializedKeywordInfos = this.serializeKeywordsInfo(questionKeywordParticipants)
       .sort(this.compareByParticipantsSize);
 
     this.roomQuestionKeywordParticipants.delete(roomId);
 
-    return this.createStatistics(sortedSerializedEmpathyInfos);
+    return this.createStatistics(serializedKeywordInfos);
   }
 
-  private serializeEmpathyInfos(questionKeywordParticipants: Map<number, Map<string, Set<string>>>) {
+  private serializeKeywordsInfo(questionKeywordParticipants: Map<number, Map<string, Set<string>>>) {
     return Array.from(questionKeywordParticipants.entries())
       .reduce((result, [questionId, keywordParticipants]) => {
-        const serializeEmpathyInfos = Array.from(keywordParticipants.entries())
+        const serializedKeywordsInfo = Array.from(keywordParticipants.entries())
           .map(([keyword, participants]) => {
-            return { questionId, keyword, participants } as SerializedEmpathyInfo;
+            return { questionId, keyword, participants } as SerializedKeywordInfo;
           });
 
-        result.push(...serializeEmpathyInfos);
+        result.push(...serializedKeywordsInfo);
 
         return result;
-      }, [] as SerializedEmpathyInfo[]);
+      }, [] as SerializedKeywordInfo[]);
   }
 
-  private compareByParticipantsSize(a: SerializedEmpathyInfo, b: SerializedEmpathyInfo): number {
+  private compareByParticipantsSize(a: SerializedKeywordInfo, b: SerializedKeywordInfo): number {
     return b.participants.size - a.participants.size;
   }
 
-  private createStatistics(sortedEmpathyInfos: SerializedEmpathyInfo[]) {
-    const statistics = new Map<string, EmpathyKeywordAlertDto[]>();
+  private createStatistics(serializedKeywordsInfo: SerializedKeywordInfo[]) {
+    const statistics = new Map<string, KeywordsAlertDto[]>();
 
-    for (const empathyInfo of sortedEmpathyInfos) {
-      const alertDto = new EmpathyKeywordAlertDto(
-        empathyInfo.questionId,
-        empathyInfo.keyword,
-        empathyInfo.participants.size
+    for (const keywordInfo of serializedKeywordsInfo) {
+      const alertDto = new KeywordsAlertDto(
+        keywordInfo.questionId,
+        keywordInfo.keyword,
+        keywordInfo.participants.size
       );
 
-      for (const participantId of empathyInfo.participants) {
+      for (const participantId of keywordInfo.participants) {
         const participantStats = this.getOrCreateValue(
           statistics,
           participantId,
-          () => new Array<EmpathyKeywordAlertDto>()
+          () => new Array<KeywordsAlertDto>()
         );
 
         participantStats.push(alertDto);

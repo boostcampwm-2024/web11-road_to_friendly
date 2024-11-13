@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmpathyInMemoryRepository } from './empathy.in-memory.repository';
+import { KeywordsInMemoryRepository } from './keywords.in-memory.repository';
 
-describe('EmpathyInMemoryRepository', () => {
-  let repository: EmpathyInMemoryRepository;
+describe('KeywordsInMemoryRepository', () => {
+  let repository: KeywordsInMemoryRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmpathyInMemoryRepository],
+      providers: [KeywordsInMemoryRepository],
     }).compile();
 
-    repository = module.get<EmpathyInMemoryRepository>(EmpathyInMemoryRepository);
+    repository = module.get<KeywordsInMemoryRepository>(KeywordsInMemoryRepository);
   });
 
   it('should be defined', () => {

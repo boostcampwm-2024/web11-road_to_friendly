@@ -44,7 +44,9 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
 
 const Room = () => {
   const roomId = useParams<{ roomId: string }>().roomId || null;
-  const { participants, hostId, currentUserId, roomExists, loading } = useParticipants(roomId);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setLoading);
   const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
@@ -81,7 +83,7 @@ const Room = () => {
     <>
       {/* <Header /> */}
       {loading ? (
-        <LoadingPage />
+        <LoadingPage loadingMessage="관심사를 나누러 가는 중..." />
       ) : (
         <>
           <div css={backgroundStyle}>

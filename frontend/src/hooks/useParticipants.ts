@@ -4,12 +4,11 @@ import { convertArrayToObject } from '@/utils';
 import { ParticipantItem } from '@/types';
 import { useParticipantsStore } from '@/stores';
 
-const useParticipants = (roomId: string | null) => {
+const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
   const { socket, connect, disconnect } = useSocketStore();
   const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
   const [roomExists, setRoomExists] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   // 참가자 목록 응답 처리
   const handleJoinResponse = (response: {
@@ -53,7 +52,7 @@ const useParticipants = (roomId: string | null) => {
     }
   }, [socket, roomId, setParticipants]);
 
-  return { participants, hostId, currentUserId, roomExists, loading };
+  return { participants, hostId, currentUserId, roomExists };
 };
 
 export default useParticipants;

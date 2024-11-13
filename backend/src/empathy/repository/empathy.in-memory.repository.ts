@@ -51,7 +51,7 @@ export class EmpathyInMemoryRepository {
       const participants = this.roomQuestionKeywordParticipants.get(roomId)?.get(questionId)?.get(keyword);
       participants?.delete(participantId);
 
-      return new EmpathyKeywordInfoDto(questionId, keyword, RESPONSE_STATUS.PICK, participants?.size ?? 0);
+      return new EmpathyKeywordInfoDto(questionId, keyword, RESPONSE_STATUS.RELEASE, participants?.size ?? 0);
     });
   }
 

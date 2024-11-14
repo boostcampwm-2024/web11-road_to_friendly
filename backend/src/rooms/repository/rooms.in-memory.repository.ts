@@ -1,19 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-
-export const ROOM_PHASE = {
-  WAITING: 'WAITING',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-} as const;
-
-type ROOM_PHASE = typeof ROOM_PHASE[keyof typeof ROOM_PHASE];
-
-type Room = {
-  roomId: string;
-  phase: ROOM_PHASE;
-  hostId: string;
-}
+import { ROOM_PHASE } from '../../common/definition/phase';
+import { Room } from '../../common/definition/room';
 
 @Injectable()
 export class RoomsInMemoryRepository {

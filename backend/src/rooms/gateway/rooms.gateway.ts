@@ -10,11 +10,11 @@ import { Server, Socket } from 'socket.io';
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
 import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
-import { HostGuard } from '../guard/rooms.host.guard';
-import { ConnectionGuard } from '../guard/rooms.connection.guard';
-import { JoinGuard } from '../guard/rooms.join.guard';
-import { WsExceptionFilter } from '../filter/rooms.filter';
-import { ExistGuard } from '../guard/rooms.exist.guard';
+import { HostGuard } from '../../common/guard/host.guard';
+import { ConnectGuard } from '../../common/guard/connect.guard';
+import { JoinGuard } from '../../common/guard/join.guard';
+import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
+import { ExistGuard } from '../../common/guard/exist.guard';
 import { ClientsService } from '../../clients/service/clients.service';
 
 @WebSocketGateway({
@@ -42,7 +42,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
     });
   }
 
-  @UseGuards(ConnectionGuard, ExistGuard)
+  @UseGuards(ConnectGuard, ExistGuard)
   @SubscribeMessage('join')
   join(
     @ConnectedSocket() client: Socket,

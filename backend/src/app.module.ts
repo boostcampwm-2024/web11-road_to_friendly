@@ -10,10 +10,10 @@ import { KeywordsInMemoryRepository } from './keywords/repository/keywords.in-me
 import { ClientsGateway } from './clients/gateway/clients.gateway';
 import { ClientsService } from './clients/service/clients.service';
 import { RoomsInMemoryRepository } from './rooms/repository/rooms.in-memory.repository';
-import { HostGuard } from './rooms/guard/rooms.host.guard';
-import { JoinGuard } from './rooms/guard/rooms.join.guard';
-import { ExistGuard } from './rooms/guard/rooms.exist.guard';
-import { ConnectionGuard } from './rooms/guard/rooms.connection.guard';
+import { HostGuard } from './common/guard/host.guard';
+import { JoinGuard } from './common/guard/join.guard';
+import { ExistGuard } from './common/guard/exist.guard';
+import { ConnectGuard } from './common/guard/connect.guard';
 
 @Module({
   imports: [],
@@ -26,7 +26,7 @@ import { ConnectionGuard } from './rooms/guard/rooms.connection.guard';
     HostGuard,
     JoinGuard,
     ExistGuard,
-    ConnectionGuard,
+    ConnectGuard,
     KeywordsGateway,
     KeywordsService,
     KeywordsInMemoryRepository,

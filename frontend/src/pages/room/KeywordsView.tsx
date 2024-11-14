@@ -28,12 +28,12 @@ interface KeywordsViewProps {
 
 const KeywordsView = ({ questionId }: KeywordsViewProps) => {
   const { socket } = useSocketStore();
-  const { keywords, appendKeyword } = useKeywordsStore();
+  const { keywords, upsertKeyword } = useKeywordsStore();
 
   useEffect(() => {
     if (socket) {
       socket.on('empathy:keyword:count', (response: { questionId: number; keyword: string; count: number }) => {
-        appendKeyword(response);
+        upsertKeyword(response);
       });
     }
   }, [socket]);

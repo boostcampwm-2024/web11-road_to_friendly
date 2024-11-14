@@ -4,12 +4,11 @@ import { convertArrayToObject } from '@/utils';
 import { ParticipantItem } from '@/types';
 import { useParticipantsStore } from '@/stores';
 
-const useParticipants = (roomId: string | null) => {
+const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
   const { socket, connect, disconnect } = useSocketStore();
-  const { hostId, participants, setParticipants, setHostId } = useParticipantsStore();
+  const { hostId, setHostId, participants, setParticipants } = useParticipantsStore();
   const [roomExists, setRoomExists] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   // 참가자 목록 응답 처리
   const handleJoinResponse = (response: {
@@ -35,6 +34,18 @@ const useParticipants = (roomId: string | null) => {
     }));
   };
 
+  const handleParticipantExit = (Participant: { participantId: string; nickname: string }) => {
+    setParticipants((prev) => {
+      const newParticipants = { ...prev };
+      delete newParticipants[Participant.participantId];
+      return newParticipants;
+    });
+  };
+
+  const handleHostChange = (Host: { participantId: string; nickname: string }) => {
+    setHostId(Host.participantId);
+  };
+
   useEffect(() => {
     if (!socket) {
       connect();
@@ -46,14 +57,21 @@ const useParticipants = (roomId: string | null) => {
       // 새로운 참여자 알림 이벤트
       socket.on('participant:join', handleParticipantJoin);
 
+      // 참여자 퇴장 이벤트
+      socket.on('participant:exit', handleParticipantExit);
+
+      //호스트 변경 알림 이벤트
+      socket.on('participant:host:change', handleHostChange);
       return () => {
-        socket?.off('participant:join', handleParticipantJoin);
+        socket.off('participant:join', handleParticipantJoin);
+        socket.off('participant:exit', handleParticipantExit);
+        socket.off('participant:host:change', handleHostChange);
         disconnect();
       };
     }
   }, [socket, roomId, setParticipants]);
 
-  return { participants, hostId, currentUserId, roomExists, loading };
+  return { participants, hostId, currentUserId, roomExists };
 };
 
 export default useParticipants;

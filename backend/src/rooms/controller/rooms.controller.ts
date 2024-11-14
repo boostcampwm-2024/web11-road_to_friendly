@@ -4,7 +4,6 @@ import { Response } from 'express';
 
 @Controller('rooms')
 export class RoomsController {
-
   constructor(private readonly roomsService: RoomsService) {
   }
 

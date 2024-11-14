@@ -1,36 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { Room } from '../entity/Room';
-import { v4 as uuid } from 'uuid';
-import { Socket } from 'socket.io';
-import { RoomsJoinDto } from '../dto/rooms.join.dto';
 import { Topic } from '../entity/Topic';
 import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
 
 @Injectable()
 export class RoomsService {
-  private readonly rooms = new Map<string, Room>();
-
-  constructor(private readonly roomsInMemoryRepository: RoomsInMemoryRepository) {}
-
-  async create(): Promise<string> {
-    return await this.roomsInMemoryRepository.create();
+  constructor(private readonly roomsInMemoryRepository: RoomsInMemoryRepository) {
   }
 
-  async isExistRoom(roomId: string): Promise<boolean> {
-    return await this.roomsInMemoryRepository.isExistRoom(roomId);
+  create() {
+    return this.roomsInMemoryRepository.create();
+  }
+
+  isExistRoom(roomId: string) {
+    return this.roomsInMemoryRepository.isExistRoom(roomId);
   }
 
   isHost(roomId: string, clientId: string) {
-    const hostId = this.roomsInMemoryRepository.isHost(roomId);
+    const hostId = this.roomsInMemoryRepository.getHostId(roomId);
     return hostId === clientId;
   }
 
-  async join(roomId: string, clientId: string): Promise<string> {
-    return await this.roomsInMemoryRepository.join(roomId, clientId);
+  setHostIfHostUndefined(roomId: string, clientId: string) {
+    return this.roomsInMemoryRepository.setHostIfHostUndefined(roomId, clientId);
   }
 
-  getHostInfo(roomId: string) {
-    return this.roomsInMemoryRepository.isHost(roomId);
+  getHostId(roomId: string) {
+    return this.roomsInMemoryRepository.getHostId(roomId);
   }
 
   private readonly topicTitles: string[] = [
@@ -59,5 +54,9 @@ export class RoomsService {
 
   deleteRoom(roomId: string) {
     this.roomsInMemoryRepository.deleteRoom(roomId);
+  }
+
+  setHost(roomId: string, nextHostId: string) {
+    this.roomsInMemoryRepository.updateHost(roomId, nextHostId);
   }
 }

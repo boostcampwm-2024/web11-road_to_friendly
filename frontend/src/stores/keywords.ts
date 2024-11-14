@@ -1,52 +1,56 @@
 import { create } from 'zustand';
 
-import { Keyword, KeywordInfo } from '@/types';
-
-interface Keywords {
-  [questionId: number]: Keyword[];
-}
-
-interface Count {
-  [count: number]: number;
-}
-
-interface CountMap {
-  [questionId: number]: Count;
-}
+import { Keyword, KeywordInfo, Keywords, PrefixSumMap } from '@/types';
 
 interface KeywordsStore {
   keywords: Keywords;
-  countMap: CountMap;
+  prefixSumMap: PrefixSumMap;
 
   upsertKeyword: (targetKeyword: KeywordInfo) => void;
   deleteKeyword: (targetKeyword: { questionId: number; keyword: string }) => void;
 }
 
-function syncCountMap(countMap: Count, count: number): Count {
-  if (!Object.keys(countMap).includes(count.toString())) {
-    return { ...countMap, [count]: 1 };
-  }
-  return countMap;
+function getPrefixSumMap(keywords: Keyword[]) {
+  const countMap: { [count: number]: number } = {};
+  keywords.forEach((value) => (countMap[value.count] = (countMap[value.count] || 0) + 1));
+
+  const sortedCountKeyArray = Object.keys(countMap).sort((a, b) => Number(b) - Number(a));
+  return sortedCountKeyArray.reduce(
+    (acc: { prefixSum: number; map: { [key: number]: number } }, cur) => {
+      const blockSize = countMap[Number(cur)];
+      acc.prefixSum += blockSize;
+      acc.map[Number(cur)] = acc.prefixSum;
+      return acc;
+    },
+    { prefixSum: 0, map: {} }
+  ).map;
 }
 
 function appendKeyword(
   keywords: Keywords,
-  countMap: CountMap,
+  prefixSumMap: PrefixSumMap,
   newKeywordData: { questionId: number; keyword: string; count: number }
 ) {
   const { questionId, keyword } = newKeywordData;
+
+  const appendedKeywords = [...(keywords[questionId] || []), { keyword, count: 1 }];
+  const curPrefixSumMap = getPrefixSumMap(appendedKeywords);
+
   return {
     keywords: {
       ...keywords,
       [questionId]: [...(keywords[questionId] || []), { keyword, count: 1 }]
     },
-    countMap: { ...countMap, [questionId]: syncCountMap(countMap[questionId] || {}, 1) }
+    prefixSumMap: {
+      ...prefixSumMap,
+      [questionId]: curPrefixSumMap
+    }
   };
 }
 
 function modifyKeywordCount(
   keywords: Keywords,
-  countMap: CountMap,
+  prefixSumMap: PrefixSumMap,
   targetKeyword: { questionId: number; keyword: string; count: number }
 ) {
   const { questionId, keyword, count } = targetKeyword;
@@ -55,13 +59,17 @@ function modifyKeywordCount(
     element.keyword === keyword ? { ...element, count: count } : element
   );
   const sortedKeywords = modifiedKeywords.sort((a, b) => b.count - a.count);
+  const curPrefixSumMap = getPrefixSumMap(sortedKeywords);
 
   return {
     keywords: {
       ...keywords,
       [questionId]: sortedKeywords
     },
-    countMap: { ...countMap, [questionId]: syncCountMap(countMap[questionId] || {}, count) }
+    prefixSumMap: {
+      ...prefixSumMap,
+      [questionId]: curPrefixSumMap
+    }
   };
 }
 
@@ -73,14 +81,14 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
     4: [],
     5: []
   },
-  countMap: {},
+  prefixSumMap: {},
 
   upsertKeyword: (targetKeyword) => {
     set((state) => {
       const { questionId, keyword } = targetKeyword;
       if (state.keywords[questionId].some((element) => element.keyword === keyword))
-        return modifyKeywordCount(state.keywords, state.countMap, targetKeyword);
-      return appendKeyword(state.keywords, state.countMap, targetKeyword);
+        return modifyKeywordCount(state.keywords, state.prefixSumMap, targetKeyword);
+      return appendKeyword(state.keywords, state.prefixSumMap, targetKeyword);
     });
   },
 

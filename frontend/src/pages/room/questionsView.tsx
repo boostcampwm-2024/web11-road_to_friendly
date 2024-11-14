@@ -8,6 +8,7 @@ import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
 import KeywordsView from './KeywordsView';
 import { MAX_LONG_RADIUS } from '@/constants';
+import { QuestionInput } from '@/components';
 import LoadingPage from '../LoadingPage';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
@@ -62,21 +63,6 @@ const progressBarStyle = css`
   }
 `;
 
-const inputStyle = css`
-  width: 100%;
-  height: 30px;
-  margin-top: 12px;
-  font: ${Variables.typography.font_medium_18};
-  color: ${Variables.colors.text_alt};
-  text-align: center;
-  line-height: 30px;
-  border: none;
-  border-bottom: 1px solid black;
-  outline: none;
-  background-color: transparent;
-  opacity: 1;
-`;
-
 interface QuestionViewProps {
   onQuestionStart: () => void;
 }
@@ -100,8 +86,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
         onQuestionStart();
         if (response.questions.length > 0) {
           const firstQuestionTimeLeft = getRemainingSeconds(new Date(response.questions[0].expirationTime), new Date());
-          setTimeLeft(5);
-          setInitialTimeLeft(5);
+          setTimeLeft(300);
+          setInitialTimeLeft(300);
         }
       });
     }
@@ -175,7 +161,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           >{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
           {showInput && (
             <div css={{ width: '100%', animation: `${fadeIn} 2s ease forwards` }}>
-              <input placeholder="답변을 입력해주세요" css={inputStyle} />
+              <QuestionInput currentQuestionIndex={currentQuestionIndex} />
               <div css={progressWrapperStyle}>
                 <ClockIcon width="35px" height="35px" fill="#000" />
                 <progress
@@ -189,7 +175,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           )}
           <div></div>
         </div>
-        <KeywordsView questionId={questions[currentQuestionIndex].id} />
+        <KeywordsView questionId={questions[currentQuestionIndex].questionId} />
       </div>
     </div>
   ) : null;

@@ -1,8 +1,10 @@
 import { css } from '@emotion/react';
-
 import Crown from '@/assets/icons/crown.svg?react';
 import { useRadiusStore } from '@/stores';
 import { Variables } from '@/styles';
+import { Participant } from '@/types';
+import ResultView from '@/pages/room/resultView';
+import { flexStyle } from '@/styles';
 
 const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number) => css`
   position: absolute;
@@ -10,6 +12,7 @@ const profileStyle = (x: number, y: number, shortRadius: number, longRadius: num
   bottom: ${shortRadius + y}px;
   transform: translate(-50%, 50%);
   transition: 1s ease-in-out;
+  ${flexStyle(10, 'column', 'center', 'center')}
 `;
 
 const profileImageStyle = (bgColor: string) => css`
@@ -65,11 +68,6 @@ const profileColors = [
   Variables.colors.player_brown
 ];
 
-interface Participant {
-  id: string;
-  nickname: string;
-}
-
 interface Positon {
   x: number;
   y: number;
@@ -81,13 +79,23 @@ interface UserProfileProps {
   isCurrentUser: boolean;
   isHost: boolean;
   position: Positon;
+  isResultView: boolean;
+  setIsResultView: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: UserProfileProps) => {
+const UserProfile = ({
+  participant,
+  index,
+  isCurrentUser,
+  isHost,
+  position,
+  isResultView = false,
+  setIsResultView
+}: UserProfileProps) => {
   const { radius } = useRadiusStore();
 
   return (
-    <div key={participant.id} css={profileStyle(position.x, position.y, radius[0], radius[1])}>
+    <div css={profileStyle(position.x, position.y, radius[0], radius[1])}>
       <div css={profileImageStyle(profileColors[index % profileColors.length])}>
         {isHost && (
           <div css={hostStyle}>
@@ -98,6 +106,7 @@ const UserProfile = ({ participant, index, isCurrentUser, isHost, position }: Us
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>
+      {isResultView && <ResultView participant={participant} setIsResultView={setIsResultView} />}
     </div>
   );
 };

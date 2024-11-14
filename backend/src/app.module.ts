@@ -4,9 +4,9 @@ import { AppService } from './app.service';
 import { RoomsGateway } from './rooms/gateway/rooms.gateway';
 import { RoomsService } from './rooms/service/rooms.service';
 import { RoomsController } from './rooms/controller/rooms.controller';
-import { EmpathyGateway } from './empathy/gateway/empathy.gateway';
-import { EmpathyService } from './empathy/service/empathy.service';
-import { EmpathyInMemoryRepository } from './empathy/repository/empathy.in-memory.repository';
+import { KeywordsGateway } from './keywords/gateway/keywords.gateway';
+import { KeywordsService } from './keywords/service/keywords.service';
+import { KeywordsInMemoryRepository } from './keywords/repository/keywords.in-memory.repository';
 import { ClientsGateway } from './clients/gateway/clients.gateway';
 import { ClientsService } from './clients/service/clients.service';
 import { RoomsInMemoryRepository } from './rooms/repository/rooms.in-memory.repository';
@@ -27,11 +27,12 @@ import { ConnectionGuard } from './rooms/guard/rooms.connection.guard';
     JoinGuard,
     ExistGuard,
     ConnectionGuard,
-    EmpathyGateway,
-    EmpathyService,
-    EmpathyInMemoryRepository,
+    KeywordsGateway,
+    KeywordsService,
+    KeywordsInMemoryRepository,
     ClientsGateway,
     ClientsService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+}

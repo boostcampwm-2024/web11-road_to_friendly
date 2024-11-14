@@ -40,8 +40,10 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
 
   return (
     <div css={KeywordsContainer}>
-      {keywords[questionId].map((keywordObject) => (
-        <div css={KeywordStyle}>{keywordObject.keyword}</div>
+      {keywords[questionId]?.map((keywordObject) => (
+        <div key={`${questionId}-${keywordObject.keyword}`} css={KeywordStyle}>
+          {keywordObject.keyword}
+        </div>
       ))}
     </div>
   );

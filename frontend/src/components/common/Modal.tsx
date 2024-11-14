@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 
 import { Variables } from '@/styles';
+import CloseX from '@/assets/icons/closeX.svg?react';
 
 const ModalOverlayStyle = css`
   position: relative;
@@ -17,7 +18,7 @@ const ModalContentStyle = css`
   left: ${Variables.spacing.spacing_md};
   background-color: ${Variables.colors.surface_white};
   max-width: 300px;
-  height: 600px;
+  max-height: 600px;
   padding: ${Variables.spacing.spacing_sm};
   text-align: center;
   border-radius: 8px;
@@ -25,8 +26,24 @@ const ModalContentStyle = css`
   z-index: 101; /* overlay보다 위에 위치 */
 `;
 
+const closeButtonStyle = css`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+`;
+
 // 모달 컴포넌트
-const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => void; children: React.ReactNode }) => {
+const Modal = ({
+  closeButton = false,
+  isOpen,
+  onClose,
+  children
+}: {
+  closeButton?: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -34,9 +51,11 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => 
       <div css={ModalOverlayStyle} onClick={onClose}></div>
       <div css={ModalContentStyle}>
         {children}
-        <button css={css``} onClick={onClose}>
-          닫기
-        </button>
+        {closeButton && (
+          <button css={closeButtonStyle} onClick={onClose}>
+            <CloseX width={'15px'} height={'15px'} />
+          </button>
+        )}
       </div>
     </>
   );

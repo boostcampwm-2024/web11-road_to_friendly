@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmpathyInMemoryRepository } from './empathy.in-memory.repository';
+import { KeywordsInMemoryRepository } from './keywords.in-memory.repository';
 
-describe('EmpathyInMemoryRepository', () => {
-  let repository: EmpathyInMemoryRepository;
+describe('KeywordsInMemoryRepository', () => {
+  let repository: KeywordsInMemoryRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmpathyInMemoryRepository],
+      providers: [KeywordsInMemoryRepository],
     }).compile();
 
-    repository = module.get<EmpathyInMemoryRepository>(EmpathyInMemoryRepository);
+    repository = module.get<KeywordsInMemoryRepository>(KeywordsInMemoryRepository);
   });
 
   it('should be defined', () => {
@@ -134,20 +134,19 @@ describe('EmpathyInMemoryRepository', () => {
     expect(Array.from(statistics.keys()).length).toBe(0);
   });
 
-  test('통계 산출과 동시에 기존 데이터는 삭제된다', async () => {
+  test('방 키워드 정보 삭제 요청', async () => {
     // given
     const testRoomId = 'testRoomId';
     const testClient = 'testClient';
+    await repository.addKeyword(testRoomId, 1, 'testKeyword', testClient);
+    repository.calculateStatistics(testRoomId);
 
     // when
-    await repository.addKeyword(testRoomId, 1, 'testKeyword', testClient);
+    repository.deleteRoomKeywordsInfo(testRoomId);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
-    const clientStats = statistics.get(testClient);
-    expect(clientStats.length).toBe(1);
 
-    const repeatStatistics = repository.calculateStatistics(testRoomId);
-    expect(Array.from(repeatStatistics.keys()).length).toBe(0);
+    const statistics = repository.calculateStatistics(testRoomId);
+    expect(Array.from(statistics.keys()).length).toBe(0);
   });
 });

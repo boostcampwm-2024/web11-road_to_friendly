@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 
 import { Variables } from '@/styles';
+import ProfileEditButton from '@components/ProfileEditButton';
 
 const headerWrapperStyle = css({
   position: 'fixed',
@@ -45,6 +46,7 @@ const Header = ({ paddingY = 17 }: HeaderProps) => {
         <nav css={navStyle}>
           <button>튜토리얼</button>
           <button>라이트/다크</button>
+          <ProfileEditButton />
         </nav>
       </div>
     </header>

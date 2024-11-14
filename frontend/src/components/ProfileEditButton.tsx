@@ -112,6 +112,7 @@ const ProfileEditButton = () => {
         <Profile width={'100%'} height={'100%'} />
       </button>
       <Modal
+        position="topRight"
         closeButton={true}
         isOpen={isModalOpen}
         onClose={() => {

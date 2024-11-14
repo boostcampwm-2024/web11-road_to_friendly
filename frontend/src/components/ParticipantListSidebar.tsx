@@ -49,7 +49,7 @@ const ParticipantListSidebar = () => {
         onMouseEnter={() => setIsModalOpen(true)}
         onMouseLeave={() => setIsModalOpen(false)}
       />
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal position={'topLeft'} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div css={ListContainerStyle}>
           <div>참여자 리스트</div>
           {Object.keys(participants).map((participantId) => (

@@ -15,6 +15,7 @@ import LoadingPage from '../LoadingPage';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
 import useParticipants from '@/hooks/useParticipants';
+import { Header } from '@components/common';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -24,6 +25,7 @@ const backgroundStyle = css`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding-top: 100px; /* 헤더 높이를 고려한 여백 추가 */
 `;
 
 const ParticipantsContainer = (shortRadius: number, longRadius: number) => css`
@@ -81,7 +83,7 @@ const Room = () => {
 
   return (
     <>
-      {/* <Header /> */}
+      <Header />
       {loading ? (
         <LoadingPage loadingMessage="관심사를 나누러 가는 중..." />
       ) : (

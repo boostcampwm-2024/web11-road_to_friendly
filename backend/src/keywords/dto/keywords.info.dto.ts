@@ -5,7 +5,7 @@ export const RESPONSE_STATUS = {
 
 export type ResponseStatus = typeof RESPONSE_STATUS[keyof typeof RESPONSE_STATUS];
 
-export class EmpathyKeywordInfoDto {
+export class KeywordsInfoDto {
   readonly questionId: number;
   readonly keyword: string;
   readonly status: ResponseStatus;

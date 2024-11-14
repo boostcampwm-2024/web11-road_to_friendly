@@ -55,9 +55,9 @@ const Modal = ({
   const getPosition = () => {
     switch (position) {
       case 'topLeft':
-        return { top: '80px', left: '24px', right: 'unset', bottom: 'unset', isCenter: false };
+        return { top: '85px', left: '24px', right: 'unset', bottom: 'unset', isCenter: false };
       case 'topRight':
-        return { top: '80px', left: 'unset', right: '24px', bottom: 'unset', isCenter: false };
+        return { top: '85px', left: 'unset', right: '24px', bottom: 'unset', isCenter: false };
       case 'bottomRight':
         return { top: 'unset', left: 'unset', right: '24px', bottom: '24px', isCenter: false };
       default:

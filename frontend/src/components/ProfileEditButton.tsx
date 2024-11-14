@@ -107,7 +107,7 @@ const ProfileEditButton = () => {
   }, [socket, setParticipants]);
 
   return (
-    <>
+    <div>
       <button css={profileImageStyle} onClick={() => setIsModalOpen(true)}>
         <Profile width={'100%'} height={'100%'} />
       </button>
@@ -152,7 +152,7 @@ const ProfileEditButton = () => {
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 

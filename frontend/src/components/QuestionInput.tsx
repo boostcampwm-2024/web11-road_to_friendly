@@ -39,7 +39,6 @@ const QuestionInput = ({ currentQuestionIndex }: QuestionInputProps) => {
 
     if (socket && socket.connected) {
       socket.emit('keyword:pick', { questionId: currentQuestionIndex + 1, keyword }, (response: KeywordResponse) => {
-        console.log(response);
         if (response.status !== 'pick') {
           /*
             TODO: 추후 서버 로직에서 status가 ok로 바뀐다면 수정 필요

@@ -76,11 +76,26 @@ describe('RoomsGateway', () => {
   });
 
   describe('deleteRoom', () => {
-    it('should delete a room if it exists', async () => {
+    it('방이 존재하지 않으면 삭제되어야한다.', async () => {
       const roomId = repository.create();
 
       repository.deleteRoom(roomId);
       expect(repository.isExistRoom(roomId)).toBe(false);
+    });
+  });
+
+  describe('updateHost', () => {
+    it('호스트가 나가면 다른 참여자가 호스트가 되어야한다.', async () => {
+      const roomId = repository.create();
+      const firstClientId = 'client1';
+      const secondClientId = 'client2';
+
+      const hostId = repository.setHostIfHostUndefined(roomId, firstClientId);
+      expect(hostId).toBe(firstClientId);
+
+      repository.updateHost(roomId, secondClientId);
+
+      expect(repository.getHostId(roomId)).toBe(secondClientId);
     });
   });
 });

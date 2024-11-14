@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 
-export enum RoomPhase {
-  WAITING = 1,
-  IN_PROGRESS = 2,
-  COMPLETED = 3,
-}
+export const ROOM_PHASE = {
+  WAITING: 'WAITING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+} as const;
 
-interface Room {
+type ROOM_PHASE = typeof ROOM_PHASE[keyof typeof ROOM_PHASE];
+
+type Room = {
   roomId: string;
-  phase: RoomPhase;
+  phase: ROOM_PHASE;
   hostId: string;
 }
 
@@ -17,45 +19,53 @@ interface Room {
 export class RoomsInMemoryRepository {
   private readonly rooms = new Map<string, Room>();
 
-  async create(): Promise<string> {
+  create() {
     const roomId = uuid();
     const newRoom: Room = {
       roomId: roomId,
-      phase: RoomPhase.WAITING,
+      phase: ROOM_PHASE.WAITING,
       hostId: '',
     };
+
     this.rooms.set(roomId, newRoom);
+
     return roomId;
   }
 
-  async isExistRoom(roomId: string): Promise<boolean> {
+  isExistRoom(roomId: string) {
     return this.rooms.has(roomId);
   }
 
-  async join(roomId: string, clientId: string): Promise<string> {
+  setHostIfHostUndefined(roomId: string, clientId: string) {
     const room = this.rooms.get(roomId);
 
-    if (!room.hostId) room.hostId = clientId;
+    if (!room.hostId) {
+      room.hostId = clientId;
+    }
 
     return room.hostId;
   }
 
-  isHost(roomId: string) {
+  getHostId(roomId: string) {
     const room = this.rooms.get(roomId);
     return room.hostId;
   }
 
-  async changeRoomPhase(roomId: string, newPhase: RoomPhase): Promise<void> {
+  changeRoomPhase(roomId: string, newPhase: ROOM_PHASE) {
     const room = this.rooms.get(roomId);
 
-    if (!room) return;
+    if (!room) {
+      return;
+    }
 
     room.phase = newPhase;
   }
 
   deleteRoom(roomId: string) {
-    if (!this.rooms.has(roomId)) return;
-
     this.rooms.delete(roomId);
+  }
+
+  updateHost(roomId: string, nextHostId: string) {
+    this.rooms.get(roomId).hostId = nextHostId;
   }
 }

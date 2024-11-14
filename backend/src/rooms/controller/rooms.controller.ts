@@ -4,11 +4,12 @@ import { Response } from 'express';
 
 @Controller('rooms')
 export class RoomsController {
-  constructor(private readonly roomsService: RoomsService) {}
+  constructor(private readonly roomsService: RoomsService) {
+  }
 
   @Post()
-  async createRoom(@Res() response: Response) {
-    const roomId = await this.roomsService.create();
-    response.redirect(`http://localhost:5173/rooms/${roomId}`);
+  createRoom(@Res() response: Response) {
+    const roomId = this.roomsService.create();
+    response.redirect(`http://localhost:5173/rooms/${ roomId }`);
   }
 }

@@ -10,7 +10,6 @@ import { Server, Socket } from 'socket.io';
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
 import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
-import { HostGuard } from '../../common/guard/host.guard';
 import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
@@ -72,16 +71,6 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
     const roomsJoinDto = { participants, hostId };
 
     return { status: 'ok', body: roomsJoinDto };
-  }
-
-  @UseGuards(JoinGuard, HostGuard)
-  @SubscribeMessage('participant:host:start')
-  startToEmpathise(@ConnectedSocket() client: Socket): void {
-    const roomId = client.data.roomId;
-
-    const empathyTopics = this.roomsService.getEmpathyTopics();
-
-    this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
   }
 
   @UseGuards(JoinGuard)

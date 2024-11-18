@@ -2,6 +2,9 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { ConnectGuard } from '../../common/guard/connect.guard';
+import { JoinGuard } from '../../common/guard/join.guard';
+import { HostGuard } from '../../common/guard/host.guard';
+import { RoomsService } from '../../rooms/service/rooms.service';
 
 @WebSocketGateway({
   cors: {
@@ -10,6 +13,10 @@ import { ConnectGuard } from '../../common/guard/connect.guard';
   },
 })
 export class ClientsGateway {
+
+  constructor(private readonly roomsService: RoomsService) {
+  }
+
   @WebSocketServer()
   server: Server;
 
@@ -20,5 +27,15 @@ export class ClientsGateway {
     client.data.nickname = nickname.trim();
 
     this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
+  }
+
+  @UseGuards(JoinGuard, HostGuard)
+  @SubscribeMessage('client:host:start')
+  startToEmpathise(@ConnectedSocket() client: Socket): void {
+    const roomId = client.data.roomId;
+
+    const empathyTopics = this.roomsService.getEmpathyTopics();
+
+    this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Topic } from '../entity/Topic';
 import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
+import { Phase } from '../../common/definition/phase';
 
 @Injectable()
 export class RoomsService {
@@ -58,5 +59,9 @@ export class RoomsService {
 
   setHost(roomId: string, nextHostId: string) {
     this.roomsInMemoryRepository.updateHost(roomId, nextHostId);
+  }
+
+  isPhase(roomId: string, phase: Phase) {
+    return this.roomsInMemoryRepository.getPhase(roomId) === phase;
   }
 }

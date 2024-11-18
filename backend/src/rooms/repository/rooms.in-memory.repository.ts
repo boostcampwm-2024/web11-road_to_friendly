@@ -49,6 +49,10 @@ export class RoomsInMemoryRepository {
     room.phase = newPhase;
   }
 
+  getPhase(roomId: string) {
+    return this.rooms.get(roomId)?.phase;
+  }
+
   deleteRoom(roomId: string) {
     this.rooms.delete(roomId);
   }

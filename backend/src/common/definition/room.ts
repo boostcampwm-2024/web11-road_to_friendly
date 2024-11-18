@@ -1,7 +1,7 @@
-import { ROOM_PHASE } from './phase';
+import { Phase } from './phase';
 
 export type Room = {
   roomId: string;
-  phase: ROOM_PHASE;
+  phase: Phase;
   hostId: string;
 }

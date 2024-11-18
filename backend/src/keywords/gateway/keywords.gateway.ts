@@ -4,8 +4,9 @@ import { KeywordsRequestDto } from '../dto/keywords.request.dto';
 import { KeywordsResponseDto } from '../dto/keywords.response.dto';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
-import { UseGuards } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
+import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
 
 @WebSocketGateway({
   cors: {
@@ -14,6 +15,7 @@ import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
   },
 })
 @UseGuards(PhaseKeywordGuard)
+@UseFilters(WsExceptionFilter)
 export class KeywordsGateway {
   @WebSocketServer()
   server: Server;

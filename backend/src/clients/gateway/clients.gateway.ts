@@ -1,12 +1,13 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UseGuards } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { HostGuard } from '../../common/guard/host.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
 import { PHASE } from '../../common/definition/phase';
+import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
 
 @WebSocketGateway({
   cors: {
@@ -14,6 +15,7 @@ import { PHASE } from '../../common/definition/phase';
     methods: ['GET', 'POST'],
   },
 })
+@UseFilters(WsExceptionFilter)
 export class ClientsGateway {
 
   constructor(private readonly roomsService: RoomsService) {

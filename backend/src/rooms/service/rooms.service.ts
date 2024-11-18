@@ -60,6 +60,7 @@ export class RoomsService {
 
   deleteRoom(roomId: string) {
     this.roomsInMemoryRepository.deleteRoom(roomId);
+    this.keywordsInMemoryRepository.deleteRoomKeywordsInfo(roomId);
   }
 
   setHost(roomId: string, nextHostId: string) {

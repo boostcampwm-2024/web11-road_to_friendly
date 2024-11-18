@@ -1,13 +1,14 @@
-import { KeywordsInfoDto, ResponseStatus } from './keywords.info.dto';
+import { Action, KeywordsInfoDto } from './keywords.info.dto';
 
 export class KeywordsResponseDto {
+  readonly status: 'ok';
   readonly questionId: number;
   readonly keyword: string;
-  readonly status: ResponseStatus;
+  readonly action: Action;
 
-  constructor({ questionId, keyword, status }: KeywordsInfoDto) {
+  constructor({ questionId, keyword, action }: KeywordsInfoDto) {
     this.questionId = questionId;
     this.keyword = keyword;
-    this.status = status;
+    this.action = action;
   }
 }

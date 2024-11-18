@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { KeywordsInfoDto, RESPONSE_STATUS } from '../dto/keywords.info.dto';
+import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import * as AsyncLock from 'async-lock';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 
@@ -44,7 +44,7 @@ export class KeywordsInMemoryRepository {
 
       selectors.add(participantId);
 
-      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.PICK, selectors.size);
+      return new KeywordsInfoDto(questionId, keyword, ACTION.PICK, selectors.size);
     });
   }
 
@@ -53,7 +53,7 @@ export class KeywordsInMemoryRepository {
       const selectors = this.roomKeywordsTotal.get(roomId)?.get(`${ questionId }${ QUESTION_ID_KEYWORD_SEPARATOR }${ keyword }`);
       selectors?.delete(participantId);
 
-      return new KeywordsInfoDto(questionId, keyword, RESPONSE_STATUS.RELEASE, selectors?.size ?? 0);
+      return new KeywordsInfoDto(questionId, keyword, ACTION.RELEASE, selectors?.size ?? 0);
     });
   }
 

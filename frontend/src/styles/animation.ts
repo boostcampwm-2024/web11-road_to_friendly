@@ -64,3 +64,12 @@ export const fadeOut = keyframes({
   from: { opacity: 1 },
   to: { opacity: 0 }
 });
+
+export const scaleIn = keyframes({
+  from: {
+    transform: 'scale(0)' // 애니메이션 시작 시 크기 0
+  },
+  to: {
+    transform: 'scale(1)' // 애니메이션 끝날 때 크기 1
+  }
+});

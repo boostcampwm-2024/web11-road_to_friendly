@@ -9,6 +9,10 @@ export interface Keywords {
   [questionId: number]: Keyword[];
 }
 
+export interface KeywordsCoordinates {
+  [keyword: string]: { x: number; y: number; count: number };
+}
+
 export interface PrefixSum {
   [count: number]: number;
 }

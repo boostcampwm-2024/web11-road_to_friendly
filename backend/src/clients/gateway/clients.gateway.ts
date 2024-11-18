@@ -5,6 +5,8 @@ import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { HostGuard } from '../../common/guard/host.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
+import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
+import { PHASE } from '../../common/definition/phase';
 
 @WebSocketGateway({
   cors: {
@@ -33,9 +35,17 @@ export class ClientsGateway {
   @SubscribeMessage('client:host:start')
   startToEmpathise(@ConnectedSocket() client: Socket): void {
     const roomId = client.data.roomId;
+    this.roomsService.setPhase(roomId, PHASE.KEYWORD);
 
     const empathyTopics = this.roomsService.getEmpathyTopics();
 
     this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
+
+    const finishTime = empathyTopics[empathyTopics.length - 1].expirationTime;
+    this.roomsService.generateBroadcastStatisticsEvent(roomId, finishTime, this.endToEmpathise.bind(this));
   }
+
+  private endToEmpathise(roomId: string, statistics: Map<string, KeywordsAlertDto[]>) {
+    this.server.to(roomId).emit('empathy:result', Array.from(statistics.entries()));
+  };
 }

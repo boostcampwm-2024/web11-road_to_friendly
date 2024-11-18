@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ROOM_PHASE, RoomsInMemoryRepository } from './rooms.in-memory.repository';
+import { RoomsInMemoryRepository } from './rooms.in-memory.repository';
+import { PHASE } from '../../common/definition/phase';
 
 jest.mock('uuid', () => ({
   v4: jest.fn().mockReturnValue('mocked-uuid'),
@@ -67,11 +68,11 @@ describe('RoomsGateway', () => {
     it('방에 페이즈를 변경한다', async () => {
       const roomId = repository.create();
 
-      repository.changeRoomPhase(roomId, ROOM_PHASE.IN_PROGRESS);
+      repository.changeRoomPhase(roomId, PHASE.KEYWORD);
 
       const room = repository.isExistRoom(roomId);
       expect(room).toBe(true);
-      expect(repository['rooms'].get(roomId).phase).toBe(ROOM_PHASE.IN_PROGRESS);
+      expect(repository['rooms'].get(roomId).phase).toBe(PHASE.KEYWORD);
     });
   });
 

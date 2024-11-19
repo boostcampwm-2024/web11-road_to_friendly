@@ -1,4 +1,4 @@
-import { Phase } from './phase';
+import { Phase } from '../../common/definition/phase';
 
 export type Room = {
   roomId: string;

@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
 
 import { Variables } from '@/styles';
+import ProfileEditButton from '@components/ProfileEditButton';
+import { useLocation } from 'react-router-dom';
 
 const headerWrapperStyle = css({
   position: 'fixed',
@@ -9,7 +11,8 @@ const headerWrapperStyle = css({
   right: 0,
   display: 'flex',
   width: '100%',
-  padding: 24
+  padding: '10px 24px',
+  minHeight: '80px'
 });
 
 const headerStyle = (paddingY: number) =>
@@ -35,7 +38,8 @@ interface HeaderProps {
   paddingY?: number;
 }
 
-const Header = ({ paddingY = 17 }: HeaderProps) => {
+const Header = ({ paddingY = 12 }: HeaderProps) => {
+  const location = useLocation();
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>
@@ -45,6 +49,7 @@ const Header = ({ paddingY = 17 }: HeaderProps) => {
         <nav css={navStyle}>
           <button>튜토리얼</button>
           <button>라이트/다크</button>
+          {location.pathname !== '/' && <ProfileEditButton />}
         </nav>
       </div>
     </header>

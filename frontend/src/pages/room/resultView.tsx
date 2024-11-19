@@ -42,8 +42,8 @@ const ResultView = ({ participant, setIsResultView }: ResultViewProps) => {
   // const { openToast } = useToast();
 
   // useEffect(() => {
-  //   if (socket) {
-  //     socket.on('empathy:keyword:result', (response: CommonResult) => {
+  //   if (socket) {y:keyword:resul
+  //     socket.on('empatht', (response: CommonResult) => {
   //       setIsResultView(response.status === 'ok');
   //       if (response.status === 'ok') {
   //         Object.entries(response.body).forEach(([userId, array]) => {

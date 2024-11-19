@@ -9,8 +9,8 @@ import Edit from '@/assets/icons/edit.svg?react';
 import { flexStyle, Variables } from '@/styles';
 
 const profileImageStyle = css`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
 `;
@@ -112,6 +112,7 @@ const ProfileEditButton = () => {
         <Profile width={'100%'} height={'100%'} />
       </button>
       <Modal
+        position="topRight"
         closeButton={true}
         isOpen={isModalOpen}
         onClose={() => {

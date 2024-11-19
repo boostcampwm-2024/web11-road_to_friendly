@@ -12,10 +12,13 @@ const ModalOverlayStyle = css`
   z-index: 100;
 `;
 
-const ModalContentStyle = css`
+const ModalContentStyle = (top?: string, left?: string, right?: string, bottom?: string, isCenter?: boolean) => css`
   position: absolute;
-  top: ${Variables.spacing.spacing_lg};
-  left: ${Variables.spacing.spacing_md};
+  top: ${top ? top : 'unset'};
+  left: ${left ? left : 'unset'};
+  right: ${right ? right : 'unset'};
+  bottom: ${bottom ? bottom : 'unset'};
+  ${isCenter && 'transform: translate(-50%, -50%);'}
   background-color: ${Variables.colors.surface_white};
   max-width: 300px;
   max-height: 600px;
@@ -23,7 +26,7 @@ const ModalContentStyle = css`
   text-align: center;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 101; /* overlay보다 위에 위치 */
+  z-index: 999; /* overlay보다 위에 위치 */
 `;
 
 const closeButtonStyle = css`
@@ -37,19 +40,45 @@ const Modal = ({
   closeButton = false,
   isOpen,
   onClose,
-  children
+  children,
+  position = 'center'
 }: {
   closeButton?: boolean;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  position: 'topLeft' | 'topRight' | 'bottomRight' | 'center';
 }) => {
   if (!isOpen) return null;
+
+  // 위치에 따라 top, left, right, bottom 값을 결정
+  const getPosition = () => {
+    switch (position) {
+      case 'topLeft':
+        return { top: '85px', left: '24px', right: 'unset', bottom: 'unset', isCenter: false };
+      case 'topRight':
+        return { top: '85px', left: 'unset', right: '24px', bottom: 'unset', isCenter: false };
+      case 'bottomRight':
+        return { top: 'unset', left: 'unset', right: '24px', bottom: '24px', isCenter: false };
+      default:
+        return { top: '50%', left: '50%', right: 'unset', bottom: 'unset', isCenter: true };
+    }
+  };
+
+  const positionStyle = getPosition();
 
   return (
     <>
       <div css={ModalOverlayStyle} onClick={onClose}></div>
-      <div css={ModalContentStyle}>
+      <div
+        css={ModalContentStyle(
+          positionStyle.top,
+          positionStyle.left,
+          positionStyle.right,
+          positionStyle.bottom,
+          positionStyle.isCenter
+        )}
+      >
         {children}
         {closeButton && (
           <button css={closeButtonStyle} onClick={onClose}>

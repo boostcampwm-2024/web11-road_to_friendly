@@ -1,10 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { RoomsService } from '../service/rooms.service';
 import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class JoinGuard implements CanActivate {
-  constructor(private readonly roomsService: RoomsService) {}
 
   canActivate(context: ExecutionContext): boolean {
     const client = context.switchToWs().getClient();

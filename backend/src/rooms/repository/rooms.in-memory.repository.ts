@@ -1,19 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-
-export const ROOM_PHASE = {
-  WAITING: 'WAITING',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-} as const;
-
-type ROOM_PHASE = typeof ROOM_PHASE[keyof typeof ROOM_PHASE];
-
-type Room = {
-  roomId: string;
-  phase: ROOM_PHASE;
-  hostId: string;
-}
+import { PHASE, Phase } from '../../common/definition/phase';
+import { Room } from '../../common/definition/room';
 
 @Injectable()
 export class RoomsInMemoryRepository {
@@ -23,7 +11,7 @@ export class RoomsInMemoryRepository {
     const roomId = uuid();
     const newRoom: Room = {
       roomId: roomId,
-      phase: ROOM_PHASE.WAITING,
+      phase: PHASE.READY,
       hostId: '',
     };
 
@@ -51,7 +39,7 @@ export class RoomsInMemoryRepository {
     return room.hostId;
   }
 
-  changeRoomPhase(roomId: string, newPhase: ROOM_PHASE) {
+  changeRoomPhase(roomId: string, newPhase: Phase) {
     const room = this.rooms.get(roomId);
 
     if (!room) {
@@ -59,6 +47,14 @@ export class RoomsInMemoryRepository {
     }
 
     room.phase = newPhase;
+  }
+
+  getPhase(roomId: string) {
+    return this.rooms.get(roomId)?.phase;
+  }
+
+  setPhase(roomId: string, phase: Phase) {
+    this.rooms.get(roomId).phase = phase;
   }
 
   deleteRoom(roomId: string) {

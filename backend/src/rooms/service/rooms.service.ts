@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Topic } from '../entity/Topic';
 import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
+import { PHASE, Phase } from '../../common/definition/phase';
+import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
+import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.in-memory.repository';
 
 @Injectable()
 export class RoomsService {
-  constructor(private readonly roomsInMemoryRepository: RoomsInMemoryRepository) {
+  constructor(
+    private readonly roomsInMemoryRepository: RoomsInMemoryRepository,
+    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository
+  ) {
   }
 
   create() {
@@ -54,9 +60,29 @@ export class RoomsService {
 
   deleteRoom(roomId: string) {
     this.roomsInMemoryRepository.deleteRoom(roomId);
+    this.keywordsInMemoryRepository.deleteRoomKeywordsInfo(roomId);
   }
 
   setHost(roomId: string, nextHostId: string) {
     this.roomsInMemoryRepository.updateHost(roomId, nextHostId);
+  }
+
+  isPhase(roomId: string, phase: Phase) {
+    return this.roomsInMemoryRepository.getPhase(roomId) === phase;
+  }
+
+  setPhase(roomId: string, phase: Phase) {
+    this.roomsInMemoryRepository.setPhase(roomId, phase);
+  }
+
+  generateBroadcastStatisticsEvent(roomId: string, finishTime: string, broadcastStatistics: (roomId: string, statistics: Map<string, KeywordsAlertDto[]>) => void) {
+    const finishTimestamp = new Date(finishTime).getTime();
+    const delay = finishTimestamp - Date.now();
+
+    setTimeout(async () => {
+      this.setPhase(roomId, PHASE.STATISTICS);
+      const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+      broadcastStatistics(roomId, statistics);
+    }, delay);
   }
 }

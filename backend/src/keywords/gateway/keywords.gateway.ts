@@ -4,6 +4,9 @@ import { KeywordsRequestDto } from '../dto/keywords.request.dto';
 import { KeywordsResponseDto } from '../dto/keywords.response.dto';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
+import { UseFilters, UseGuards } from '@nestjs/common';
+import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
+import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
 
 @WebSocketGateway({
   cors: {
@@ -11,6 +14,8 @@ import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
     methods: ['GET', 'POST'],
   },
 })
+@UseGuards(PhaseKeywordGuard)
+@UseFilters(WsExceptionFilter)
 export class KeywordsGateway {
   @WebSocketServer()
   server: Server;
@@ -44,12 +49,5 @@ export class KeywordsGateway {
     this.server.to(roomId).emit('empathy:keyword:count', KeywordsAlertDto.of(keywordsInfoDto));
 
     return new KeywordsResponseDto(keywordsInfoDto);
-  }
-
-  @SubscribeMessage('keyword:result')
-  async broadcastKeywordStatistics(@ConnectedSocket() client: Socket) {
-    const roomId = client.data.roomId;
-    const statics = await this.keywordsService.getStatistics(roomId);
-    return Array.from(statics.entries());
   }
 }

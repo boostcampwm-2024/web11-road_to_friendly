@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { RoomsService } from '../service/rooms.service';
+import { RoomsService } from '../../rooms/service/rooms.service';
 import { WsException } from '@nestjs/websockets';
 
 @Injectable()

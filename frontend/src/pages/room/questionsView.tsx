@@ -79,6 +79,19 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   const [isQuestionMovedUp, setIsQuestionMovedUp] = useState(false);
   const [showInput, setShowInput] = useState(false);
 
+  const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
+  const updateSelectedKeywords = (keyword: string, type: 'add' | 'delete') => {
+    if (type === 'add') {
+      setSelectedKeywords((prev) => new Set(prev.add(keyword)));
+    } else {
+      setSelectedKeywords((prev) => {
+        prev.delete(keyword);
+        return new Set(prev);
+      });
+    }
+  };
+  const resetSelectedKeywords = () => setSelectedKeywords(new Set());
+
   useEffect(() => {
     if (socket) {
       socket.on('empathy:start', (response: { questions: Question[] }) => {
@@ -95,6 +108,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
 
   useEffect(() => {
     if (currentQuestionIndex >= questions.length) return;
+
+    resetSelectedKeywords(); // 새 질문으로 전환되면 선택된 키워드 초기화
 
     const intervalId = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -161,7 +176,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           >{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
           {showInput && (
             <div css={{ width: '100%', animation: `${fadeIn} 2s ease forwards` }}>
-              <QuestionInput currentQuestionIndex={currentQuestionIndex} />
+              <QuestionInput currentQuestionIndex={currentQuestionIndex} onSubmit={updateSelectedKeywords} />
               <div css={progressWrapperStyle}>
                 <ClockIcon width="35px" height="35px" fill="#000" />
                 <progress
@@ -175,7 +190,11 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           )}
           <div></div>
         </div>
-        <KeywordsView questionId={questions[currentQuestionIndex].questionId} />
+        <KeywordsView
+          questionId={questions[currentQuestionIndex].questionId}
+          selectedKeywords={selectedKeywords}
+          updateSelectedKeywords={updateSelectedKeywords}
+        />
       </div>
     </div>
   ) : null;

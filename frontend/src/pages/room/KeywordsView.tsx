@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
 import { keywordStyleMap, scaleIn, Variables } from '@/styles';
-import { Group, Keyword, KeywordsCoordinates, PrefixSum } from '@/types';
+import { Group, Keyword, KeywordsCoordinates, PrefixSum, KeywordResponse } from '@/types';
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+import { useToast } from '@/hooks';
+import { sendPickKeywordMessage, sendReleaseKeywordMessage } from '@/services';
 
 const KeywordsViewContainer = css`
   width: 100%;
@@ -49,10 +51,13 @@ const KeywordStyle = css`
   transition: all 0.3s ease;
   transform: scale(0); // 초기 스케일 값 0
   animation: ${scaleIn} 0.3s forwards; // keyframes 애니메이션 호출
+  cursor: pointer;
 `;
 
 interface KeywordsViewProps {
   questionId: number;
+  selectedKeywords: Set<string>;
+  updateSelectedKeywords: (keyword: string, type: 'add' | 'delete') => void;
 }
 
 function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: PrefixSum): Group {
@@ -70,8 +75,9 @@ function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: P
   return 'Tiny';
 }
 
-const KeywordsView = ({ questionId }: KeywordsViewProps) => {
+const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: KeywordsViewProps) => {
   const { socket } = useSocketStore();
+  const { openToast } = useToast();
   const { keywords, prefixSumMap, upsertKeyword } = useKeywordsStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [keywordsCoordinates, setKeywordsCoordinates] = useState<KeywordsCoordinates>({});
@@ -212,6 +218,28 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
     });
   }, [keywords[questionId]]);
 
+  const pickKeyword = (keyword: string) => {
+    if (!socket) return;
+    try {
+      sendPickKeywordMessage(socket, questionId, keyword);
+      updateSelectedKeywords(keyword, 'add');
+      openToast({ text: '키워드에 공감을 표시했어요!', type: 'check' });
+    } catch (error) {
+      if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+    }
+  };
+
+  const unpickKeyword = (keyword: string) => {
+    if (!socket) return;
+    try {
+      sendReleaseKeywordMessage(socket, questionId, keyword);
+      updateSelectedKeywords(keyword, 'delete');
+      openToast({ text: '키워드 공감을 취소했어요', type: 'check' });
+    } catch (error) {
+      if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+    }
+  };
+
   return (
     <div css={KeywordsViewContainer}>
       <div css={HiddenKeywordsContainer} ref={containerRef}></div>
@@ -220,10 +248,10 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
           const keywordObject: Keyword = { keyword, count: keywordsCoordinates[keyword].count };
           return (
             <div
-              key={`${questionId}-${keywordObject.keyword}`}
+              key={`${questionId}-${keyword}`}
               css={[
                 KeywordStyle,
-                keywordStyleMap(false)[
+                keywordStyleMap(selectedKeywords.has(keyword))[
                   getKeywordGroup(keywordObject, Object.keys(keywordsCoordinates).length, prefixSumMap[questionId])
                 ],
                 {
@@ -231,6 +259,9 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
                   top: keywordsCoordinates[keyword].y
                 }
               ]}
+              onClick={() => {
+                selectedKeywords.has(keyword) ? unpickKeyword(keyword) : pickKeyword(keyword);
+              }}
             >
               {keywordObject.keyword}
             </div>

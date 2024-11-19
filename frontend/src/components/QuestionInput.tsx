@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 interface QuestionInputProps {
   currentQuestionIndex: number;
+  onSubmit: (keyword: string, type: 'add') => void;
 }
 
 const inputStyle = css`
@@ -24,7 +25,7 @@ const inputStyle = css`
   opacity: 1;
 `;
 
-const QuestionInput = ({ currentQuestionIndex }: QuestionInputProps) => {
+const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) => {
   const [keyword, setKeyword] = useState('');
   const { openToast } = useToast();
   const { socket } = useSocketStore();
@@ -39,13 +40,14 @@ const QuestionInput = ({ currentQuestionIndex }: QuestionInputProps) => {
 
     if (socket && socket.connected) {
       socket.emit('keyword:pick', { questionId: currentQuestionIndex + 1, keyword }, (response: KeywordResponse) => {
-        if (response.status !== 'pick') {
+        if (response.action !== 'pick') {
           /*
             TODO: 추후 서버 로직에서 status가 ok로 바뀐다면 수정 필요
             */
           openToast({ text: '서버에서 문제가 생긴 것 같아요. Enter를 눌러 다시 전송해주세요.', type: 'error' });
         } else {
           setKeyword('');
+          onSubmit(keyword, 'add'); // 내가 선택한 키워드에 추가
         }
       });
     } else {

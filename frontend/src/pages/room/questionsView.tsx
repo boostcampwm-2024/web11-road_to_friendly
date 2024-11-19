@@ -86,8 +86,8 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
         onQuestionStart();
         if (response.questions.length > 0) {
           const firstQuestionTimeLeft = getRemainingSeconds(new Date(response.questions[0].expirationTime), new Date());
-          setTimeLeft(300);
-          setInitialTimeLeft(300);
+          setTimeLeft(3000);
+          setInitialTimeLeft(3000);
         }
       });
     }

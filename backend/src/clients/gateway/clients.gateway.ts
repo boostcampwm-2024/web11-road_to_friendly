@@ -7,7 +7,7 @@ import { HostGuard } from '../../common/guard/host.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
 import { PHASE } from '../../common/definition/phase';
-import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +15,7 @@ import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
     methods: ['GET', 'POST'],
   },
 })
-@UseFilters(WsExceptionFilter)
+@UseFilters(SocketCustomExceptionFilter)
 export class ClientsGateway {
 
   constructor(private readonly roomsService: RoomsService) {

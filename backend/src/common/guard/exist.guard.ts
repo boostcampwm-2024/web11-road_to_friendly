@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { RoomsService } from '../../rooms/service/rooms.service';
-import { WsException } from '@nestjs/websockets';
+import { CustomException } from '../exception/custom-exception';
 
 @Injectable()
 export class ExistGuard implements CanActivate {
@@ -11,7 +11,7 @@ export class ExistGuard implements CanActivate {
     const { roomId } = context.switchToWs().getData();
 
     if (!this.roomsService.isExistRoom(roomId)) {
-      throw new WsException('존재하지 않는 방입니다.');
+      throw new CustomException('존재하지 않는 방입니다.');
     }
 
     return true;

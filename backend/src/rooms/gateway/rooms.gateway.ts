@@ -12,7 +12,7 @@ import { RoomsService } from '../service/rooms.service';
 import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
-import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 import { ExistGuard } from '../../common/guard/exist.guard';
 import { ClientsService } from '../../clients/service/clients.service';
 
@@ -22,7 +22,7 @@ import { ClientsService } from '../../clients/service/clients.service';
     methods: ['GET', 'POST'],
   },
 })
-@UseFilters(WsExceptionFilter)
+@UseFilters(SocketCustomExceptionFilter)
 export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;

@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { RoomsService } from '../../rooms/service/rooms.service';
-import { WsException } from '@nestjs/websockets';
+import { CustomException } from '../exception/custom-exception';
 
 @Injectable()
 export class HostGuard implements CanActivate {
@@ -12,7 +12,7 @@ export class HostGuard implements CanActivate {
     const roomId = client.data.roomId;
 
     if (!this.roomsService.isHost(roomId, client.id)) {
-      throw new WsException('호스트가 아닙니다.');
+      throw new CustomException('호스트가 아닙니다.');
     }
 
     return true;

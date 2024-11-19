@@ -6,7 +6,7 @@ import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
-import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +15,7 @@ import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
   },
 })
 @UseGuards(PhaseKeywordGuard)
-@UseFilters(WsExceptionFilter)
+@UseFilters(SocketCustomExceptionFilter)
 export class KeywordsGateway implements OnModuleInit {
   constructor(private readonly keywordsService: KeywordsService) {
   }

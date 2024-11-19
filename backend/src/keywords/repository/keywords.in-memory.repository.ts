@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import * as AsyncLock from 'async-lock';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
+import { getOrCreateValue } from '../../common/util/MapUtil';
 
 type SerializedKeywordInfo = {
   questionId: number,
@@ -17,26 +18,15 @@ export class KeywordsInMemoryRepository {
   private readonly roomKeywordsStatistics = new Map<string, Map<string, KeywordsAlertDto[]>>(); // 키워드 통계
   private readonly lock = new AsyncLock();
 
-  private getOrCreateValue<K, V>(map: Map<K, V>, key: K, defaultValueCalculator: () => V): V {
-    let value = map.get(key);
-
-    if (value === undefined) {
-      value = defaultValueCalculator();
-      map.set(key, value);
-    }
-
-    return value;
-  }
-
   async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
     return await this.lock.acquire(`${ roomId }:keyword`, async () => {
-      const keywordsTotal = this.getOrCreateValue(
+      const keywordsTotal = getOrCreateValue(
         this.roomKeywordsTotal,
         roomId,
         () => new Map<string, Set<string>>()
       );
 
-      const selectors = this.getOrCreateValue(
+      const selectors = getOrCreateValue(
         keywordsTotal,
         `${ questionId }${ QUESTION_ID_KEYWORD_SEPARATOR }${ keyword }`,
         () => new Set<string>()
@@ -108,7 +98,7 @@ export class KeywordsInMemoryRepository {
       );
 
       for (const participantId of keywordInfo.participants) {
-        const participantStats = this.getOrCreateValue(
+        const participantStats = getOrCreateValue(
           statistics,
           participantId,
           () => new Array<KeywordsAlertDto>()

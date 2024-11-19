@@ -31,7 +31,6 @@ const RoomCreateButton = () => {
   const createRoom = async () => {
     try {
       setLoading(true);
-      console.log(config.SOCKET_SERVER_URL);
       const response = await fetch(`${config.SOCKET_SERVER_URL}/rooms`, {
         method: 'POST',
         headers: {

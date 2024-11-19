@@ -14,6 +14,9 @@ import { HostGuard } from './common/guard/host.guard';
 import { JoinGuard } from './common/guard/join.guard';
 import { ExistGuard } from './common/guard/exist.guard';
 import { ConnectGuard } from './common/guard/connect.guard';
+import { InterestsGateway } from './interests/gateway/interests.gateway';
+import { InterestsService } from './interests/service/interests.service';
+import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
 
 @Module({
   imports: [],
@@ -32,6 +35,9 @@ import { ConnectGuard } from './common/guard/connect.guard';
     KeywordsInMemoryRepository,
     ClientsGateway,
     ClientsService,
+    InterestsGateway,
+    InterestsService,
+    InterestsInMemoryRepository
   ],
 })
 export class AppModule {

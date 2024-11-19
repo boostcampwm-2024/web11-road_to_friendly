@@ -80,7 +80,7 @@ export class RoomsService {
     const delay = finishTimestamp - Date.now();
 
     setTimeout(async () => {
-      this.setPhase(roomId, PHASE.STATISTICS);
+      this.setPhase(roomId, PHASE.INTEREST);
       const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
       broadcastStatistics(roomId, statistics);
     }, delay);

@@ -15,4 +15,8 @@ export class InterestsService {
   async next(roomId: string, hostFlag: boolean, clientId: string) {
     return await this.interestsInMemoryRepository.next(roomId, hostFlag, clientId);
   }
+
+  deleteRoomInterest(roomId: string) {
+    this.interestsInMemoryRepository.deleteRoomInterest(roomId);
+  }
 }

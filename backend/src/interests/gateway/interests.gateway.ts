@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InterestsYoutubeLinkDto } from '../dto/interests.youtube.link.dto';
-import { UseFilters, UseGuards } from '@nestjs/common';
+import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { PhaseInterestGuard } from '../../common/guard/phase.guard';
 import { InterestsService } from '../service/interests.service';
 import { INTERESTS_RESOURCE } from '../definition/interests.resource';
@@ -18,7 +18,7 @@ import { JoinGuard } from '../../common/guard/join.guard';
 })
 @UseFilters(SocketCustomExceptionFilter)
 @UseGuards(JoinGuard, PhaseInterestGuard)
-export class InterestsGateway {
+export class InterestsGateway implements OnModuleInit {
 
   @WebSocketServer()
   server: Server;
@@ -27,6 +27,14 @@ export class InterestsGateway {
     private readonly interestsService: InterestsService,
     private readonly roomsService: RoomsService
   ) {
+  }
+
+  onModuleInit() {
+    const adapter = this.server.of('/').adapter;
+
+    adapter.on('delete-room', (roomId) => {
+      this.interestsService.deleteRoomInterest(roomId);
+    });
   }
 
   @SubscribeMessage('interest:youtube')

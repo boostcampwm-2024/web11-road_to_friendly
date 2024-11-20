@@ -28,4 +28,8 @@ export class InterestsInMemoryRepository {
       throw new CustomException('권한이 없습니다.');
     });
   }
+
+  deleteRoomInterest(roomId: string) {
+    this.roomInterest.delete(roomId);
+  }
 }

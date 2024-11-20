@@ -15,7 +15,7 @@ const QUESTION_ID_KEYWORD_SEPARATOR = ':';
 @Injectable()
 export class KeywordsInMemoryRepository {
   private readonly roomKeywordsTotal = new Map<string, Map<string, Set<string>>>(); // 키워드 집합
-  private readonly roomKeywordsStatistics = new Map<string, Map<string, KeywordsAlertDto[]>>(); // 키워드 통계
+  private readonly roomKeywordsStatistics = new Map<string, Record<string, KeywordsAlertDto[]>>(); // 키워드 통계
   private readonly lock = new AsyncLock();
 
   async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): Promise<KeywordsInfoDto> {
@@ -53,11 +53,11 @@ export class KeywordsInMemoryRepository {
     });
   }
 
-  private calculateStatistics(roomId: string): Map<string, KeywordsAlertDto[]> {
+  private calculateStatistics(roomId: string): Record<string, KeywordsAlertDto[]> {
     const keywordsTotal = this.roomKeywordsTotal.get(roomId);
 
     if (keywordsTotal === undefined) {
-      return new Map();
+      return {};
     }
 
     const serializedKeywordsInfo = this.serializeKeywordsTotal(keywordsTotal)
@@ -88,7 +88,7 @@ export class KeywordsInMemoryRepository {
   }
 
   private createStatistics(serializedKeywordsInfo: SerializedKeywordInfo[]) {
-    const statistics = new Map<string, KeywordsAlertDto[]>();
+    const statistics: Record<string, KeywordsAlertDto[]> = {};
 
     for (const keywordInfo of serializedKeywordsInfo) {
       const alertDto = new KeywordsAlertDto(

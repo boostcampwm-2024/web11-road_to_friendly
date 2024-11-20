@@ -47,7 +47,7 @@ export class ClientsGateway {
     this.roomsService.generateBroadcastStatisticsEvent(roomId, finishTime, this.endToEmpathise.bind(this));
   }
 
-  private endToEmpathise(roomId: string, statistics: Map<string, KeywordsAlertDto[]>) {
-    this.server.to(roomId).emit('empathy:result', Array.from(statistics.entries()));
+  private endToEmpathise(roomId: string, statistics: Record<string, KeywordsAlertDto[]>) {
+    this.server.to(roomId).emit('empathy:result', statistics);
   };
 }

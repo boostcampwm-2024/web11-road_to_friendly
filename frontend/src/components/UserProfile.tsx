@@ -80,7 +80,8 @@ interface UserProfileProps {
   isHost: boolean;
   position: Positon;
   isResultView: boolean;
-  setIsResultView: React.Dispatch<React.SetStateAction<boolean>>;
+  startResultLoading: () => void;
+  finishResultLoading: () => void;
 }
 
 const UserProfile = ({
@@ -89,8 +90,9 @@ const UserProfile = ({
   isCurrentUser,
   isHost,
   position,
-  isResultView = false,
-  setIsResultView
+  isResultView,
+  startResultLoading,
+  finishResultLoading
 }: UserProfileProps) => {
   const { radius } = useRadiusStore();
 
@@ -106,7 +108,13 @@ const UserProfile = ({
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>
-      {isResultView && <ResultView participant={participant} setIsResultView={setIsResultView} />}
+      {isResultView && (
+        <ResultView
+          participant={participant}
+          startResultLoading={startResultLoading}
+          finishResultLoading={finishResultLoading}
+        />
+      )}
     </div>
   );
 };

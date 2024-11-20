@@ -9,7 +9,6 @@ import { getRemainingSeconds } from '@/utils';
 import KeywordsView from './KeywordsView';
 import { MAX_LONG_RADIUS } from '@/constants';
 import { QuestionInput } from '@/components';
-import LoadingPage from '../LoadingPage';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
@@ -65,12 +64,12 @@ const progressBarStyle = css`
 
 interface QuestionViewProps {
   onQuestionStart: () => void;
+  onLastQuestionComplete: () => void;
 }
 
-const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
+const QuestionsView = ({ onQuestionStart, onLastQuestionComplete }: QuestionViewProps) => {
   const { socket } = useSocketStore();
   const { questions, setQuestions } = useQuestionsStore();
-  const [loading, setLoading] = useState<boolean>(false);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -82,19 +81,26 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   useEffect(() => {
     if (socket) {
       socket.on('empathy:start', (response: { questions: Question[] }) => {
+        console.log('Received questions from server:', response.questions);
+
         setQuestions(response.questions);
         onQuestionStart();
         if (response.questions.length > 0) {
           const firstQuestionTimeLeft = getRemainingSeconds(new Date(response.questions[0].expirationTime), new Date());
-          setTimeLeft(3000);
-          setInitialTimeLeft(3000);
+          console.log('firstQuestionTimeLeft', firstQuestionTimeLeft);
+          setTimeLeft(firstQuestionTimeLeft);
+          setInitialTimeLeft(firstQuestionTimeLeft);
         }
       });
     }
   }, [socket, setQuestions, onQuestionStart]);
 
   useEffect(() => {
-    if (currentQuestionIndex >= questions.length) return;
+    if (currentQuestionIndex >= questions.length) {
+      // 모든 질문이 완료되었을 때 호출
+      if (questions.length > 0) onLastQuestionComplete();
+      return;
+    }
 
     const intervalId = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -103,16 +109,6 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           setIsQuestionMovedUp(false);
           setShowInput(false);
 
-          //마지막 질문이 끝난 경우의 처리
-          if (currentQuestionIndex === questions.length - 1) {
-            //전환 페이지 표시
-            setLoading(true);
-
-            //서버에게 종료 알림 전송
-            if (socket) {
-              socket.emit('empathy:end');
-            }
-          }
           return prevTime;
         }
         return prevTime - 1;
@@ -150,9 +146,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
     }
   }, [isFadeIn]);
 
-  return loading ? (
-    <LoadingPage isAnalyzing={true} />
-  ) : questions.length > 0 && currentQuestionIndex < questions.length ? (
+  return questions.length > 0 && currentQuestionIndex < questions.length ? (
     <div css={MainContainer}>
       <div key={currentQuestionIndex} css={viewContainerStyle(isFadeIn)}>
         <div css={{ position: 'relative', width: '100%' }}>

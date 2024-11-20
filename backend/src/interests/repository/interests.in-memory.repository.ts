@@ -17,13 +17,6 @@ export class InterestsInMemoryRepository {
     });
   }
 
-  async isMyInterest(roomId: string, clientId: string) {
-    return await this.lock.acquire(`${ roomId }:share`, async () => {
-      const interestsManager = this.roomInterest.get(roomId);
-      return interestsManager.isMyInterest(clientId);
-    });
-  }
-
   async next(roomId: string, hostFlag: boolean, clientId: string) {
     return await this.lock.acquire(`${ roomId }:share`, async () => {
       const interestsManager = this.roomInterest.get(roomId);

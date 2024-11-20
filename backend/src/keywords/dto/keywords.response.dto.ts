@@ -1,7 +1,7 @@
 import { Action, KeywordsInfoDto } from './keywords.info.dto';
 
 export class KeywordsResponseDto {
-  readonly status: 'ok';
+  readonly status = 'ok';
   readonly questionId: number;
   readonly keyword: string;
   readonly action: Action;

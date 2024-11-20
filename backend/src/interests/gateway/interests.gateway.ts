@@ -8,6 +8,7 @@ import { INTERESTS_RESOURCE } from '../definition/interests.resource';
 import { Interest } from '../domain/interest';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
+import { JoinGuard } from '../../common/guard/join.guard';
 
 @WebSocketGateway({
   cors: {
@@ -16,7 +17,7 @@ import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-e
   },
 })
 @UseFilters(SocketCustomExceptionFilter)
-@UseGuards(PhaseInterestGuard)
+@UseGuards(JoinGuard, PhaseInterestGuard)
 export class InterestsGateway {
 
   @WebSocketServer()

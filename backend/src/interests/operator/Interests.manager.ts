@@ -5,22 +5,26 @@ export class InterestsManager {
   private readonly queue = new Queue<Interest>();
   private nowInterest = null;
 
-  checkAndEnqueueIfShared(interest: Interest) {
+  addInterestIfBroadcasting(interest: Interest) {
     if (this.nowInterest === null) {
       this.nowInterest = interest;
-      return true;
+    } else {
+      this.queue.enqueue(interest);
     }
 
-    this.queue.enqueue(interest);
-    return false;
+    return this.queue.getSize();
   }
 
-  getNextInterest() {
+  getNextInterest(): Interest | null {
     this.nowInterest = this.queue.dequeue();
     return this.nowInterest;
   }
 
   isMyInterest(clientId: string) {
     return clientId === this.nowInterest?.clientId;
+  }
+
+  getQueueSize() {
+    return this.queue.getSize();
   }
 }

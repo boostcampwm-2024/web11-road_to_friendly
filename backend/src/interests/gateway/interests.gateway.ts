@@ -41,10 +41,12 @@ export class InterestsGateway implements OnModuleInit {
   async suggestYoutube(@ConnectedSocket() client: Socket, @MessageBody() { link }: InterestsYoutubeLinkDto) {
     const roomId = client.data.roomId;
     const interest = new Interest(client.id, INTERESTS_RESOURCE.YOUTUBE, link);
-    const broadcastFlag = await this.interestsService.addInterest(roomId, interest);
+    const interestsBroadcastResponseDto = await this.interestsService.addInterest(roomId, interest);
 
-    if (broadcastFlag) {
-      this.server.to(roomId).emit('share:interest', interest);
+    if (interestsBroadcastResponseDto.nowQueueSize === 0) {
+      this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
+    } else {
+      this.server.to(roomId).emit('share:interest:add', interestsBroadcastResponseDto.nowQueueSize);
     }
   }
 
@@ -54,8 +56,8 @@ export class InterestsGateway implements OnModuleInit {
     const clientId = client.id;
     const hostFlag = this.roomsService.isHost(roomId, clientId);
 
-    const nextInterest = await this.interestsService.next(roomId, hostFlag, clientId);
+    const interestsBroadcastResponseDto = await this.interestsService.next(roomId, hostFlag, clientId);
 
-    this.server.to(roomId).emit('share:interest', nextInterest);
+    this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
   }
 }

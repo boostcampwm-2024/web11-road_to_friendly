@@ -9,7 +9,7 @@ export class InterestsService {
   }
 
   async addInterest(roomId: string, interest: Interest) {
-    return await this.interestsInMemoryRepository.checkAndEnqueueIfShared(roomId, interest);
+    return await this.interestsInMemoryRepository.addInterestIfBroadcasting(roomId, interest);
   }
 
   async next(roomId: string, hostFlag: boolean, clientId: string) {

@@ -8,6 +8,7 @@ import { RoomsService } from '../../rooms/service/rooms.service';
 import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
 import { PHASE } from '../../common/definition/phase';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
+import { PhaseReadyGuard } from '../../common/guard/phase.guard';
 
 @WebSocketGateway({
   cors: {
@@ -33,7 +34,7 @@ export class ClientsGateway {
     this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
   }
 
-  @UseGuards(JoinGuard, HostGuard)
+  @UseGuards(JoinGuard, HostGuard, PhaseReadyGuard)
   @SubscribeMessage('client:host:start')
   startToEmpathise(@ConnectedSocket() client: Socket): void {
     const roomId = client.data.roomId;

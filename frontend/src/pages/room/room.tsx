@@ -110,7 +110,6 @@ const Room = () => {
                   position={{ x: positions[index][0], y: positions[index][1] }}
                   isResultView={isResultView}
                   startResultLoading={startResultLoading}
-                  finishResultLoading={finishResultLoading}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
@@ -129,6 +128,7 @@ const Room = () => {
                     hideIntroView={hideIntroView}
                     resultLoading={resultLoading}
                     onLastQuestionComplete={startResultPage}
+                    finishResultLoading={finishResultLoading}
                   />
                 )}
               </div>

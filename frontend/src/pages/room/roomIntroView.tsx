@@ -10,6 +10,7 @@ interface RoomIntroViewProps {
   hideIntroView: () => void;
   resultLoading: boolean;
   onLastQuestionComplete: () => void;
+  finishResultLoading: () => void;
 }
 
 const RoomIntroView = ({
@@ -18,13 +19,18 @@ const RoomIntroView = ({
   hostId,
   participantCount,
   hideIntroView,
-  onLastQuestionComplete
+  onLastQuestionComplete,
+  finishResultLoading
 }: RoomIntroViewProps) => {
   return (
     <>
       {isIntroViewActive &&
         (hostId === currentUserId ? <HostView participantCount={participantCount} /> : <ParticipantView />)}
-      <QuestionsView onQuestionStart={hideIntroView} onLastQuestionComplete={onLastQuestionComplete} />
+      <QuestionsView
+        onQuestionStart={hideIntroView}
+        onLastQuestionComplete={onLastQuestionComplete}
+        finishResultLoading={finishResultLoading}
+      />
     </>
   );
 };

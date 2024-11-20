@@ -2,13 +2,15 @@ import { css, keyframes } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
-import { useQuestionsStore, useSocketStore } from '@/stores/';
+import { useParticipantsStore, useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
-import { Question } from '@/types';
+import { Question, CommonResult } from '@/types';
 import { getRemainingSeconds } from '@/utils';
 import KeywordsView from './KeywordsView';
 import { MAX_LONG_RADIUS } from '@/constants';
 import { QuestionInput } from '@/components';
+import { useToast } from '@/hooks';
+import { useKeywordsStore } from '@/stores/keywords';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
@@ -65,11 +67,15 @@ const progressBarStyle = css`
 interface QuestionViewProps {
   onQuestionStart: () => void;
   onLastQuestionComplete: () => void;
+  finishResultLoading: () => void;
 }
 
-const QuestionsView = ({ onQuestionStart, onLastQuestionComplete }: QuestionViewProps) => {
+const QuestionsView = ({ onQuestionStart, onLastQuestionComplete, finishResultLoading }: QuestionViewProps) => {
   const { socket } = useSocketStore();
   const { questions, setQuestions } = useQuestionsStore();
+  const { setStatisticsKeywords } = useKeywordsStore();
+  const { setParticipants } = useParticipantsStore();
+  const { openToast } = useToast();
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -81,17 +87,29 @@ const QuestionsView = ({ onQuestionStart, onLastQuestionComplete }: QuestionView
   useEffect(() => {
     if (socket) {
       socket.on('empathy:start', (response: { questions: Question[] }) => {
-        console.log('Received questions from server:', response.questions);
-
         setQuestions(response.questions);
         onQuestionStart();
         if (response.questions.length > 0) {
           const firstQuestionTimeLeft = getRemainingSeconds(new Date(response.questions[0].expirationTime), new Date());
-          console.log('firstQuestionTimeLeft', firstQuestionTimeLeft);
           setTimeLeft(firstQuestionTimeLeft);
           setInitialTimeLeft(firstQuestionTimeLeft);
         }
       });
+
+      if (socket && socket.connected) {
+        const handleResult = (response: CommonResult) => {
+          if (Object.keys(response).length > 0) {
+            finishResultLoading();
+            setStatisticsKeywords(response);
+            Object.entries(response).forEach(([userId, array]) => {
+              setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
+            });
+          } else {
+            openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
+          }
+        };
+        socket.on('empathy:result', handleResult);
+      }
     }
   }, [socket, setQuestions, onQuestionStart]);
 

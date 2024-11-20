@@ -13,24 +13,7 @@ interface ParticipantsStore {
 }
 
 export const useParticipantsStore = create<ParticipantsStore>((set) => ({
-  participants: {
-    eora21: {
-      nickname: 'eora21',
-      keywords: [
-        { questionId: 4, keyword: '고양이', count: 5 },
-        { questionId: 1, keyword: '짜장면', count: 3 },
-        { questionId: 2, keyword: 'java', count: 2 },
-        { questionId: 3, keyword: '심규선', count: 1 }
-      ]
-    },
-    TaF: {
-      nickname: 'TaF',
-      keywords: [
-        { questionId: 4, keyword: '고양이', count: 5 },
-        { questionId: 2, keyword: 'java', count: 2 }
-      ]
-    }
-  },
+  participants: {},
   hostId: null,
   setParticipants: (newParticipants) =>
     set((state) => ({

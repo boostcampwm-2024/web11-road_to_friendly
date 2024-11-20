@@ -23,6 +23,13 @@ export abstract class AbstractPhaseGuard implements CanActivate {
 }
 
 @Injectable()
+export class PhaseReadyGuard extends AbstractPhaseGuard {
+  constructor(roomsService: RoomsService) {
+    super(roomsService, PHASE.READY);
+  }
+}
+
+@Injectable()
 export class PhaseKeywordGuard extends AbstractPhaseGuard {
   constructor(roomsService: RoomsService) {
     super(roomsService, PHASE.KEYWORD);

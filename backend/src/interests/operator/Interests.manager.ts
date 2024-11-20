@@ -1,22 +1,26 @@
 import { Interest } from '../domain/interest';
+import { Queue } from '../../common/util/queue';
 
 export class InterestsManager {
   private readonly queue = new Queue<Interest>();
+  private nowInterest = null;
 
   checkAndEnqueueIfShared(interest: Interest) {
-    const nowInterest = this.queue.peek();
-    this.queue.enqueue(interest);
+    if (this.nowInterest === null) {
+      this.nowInterest = interest;
+      return true;
+    }
 
-    return nowInterest === undefined;
+    this.queue.enqueue(interest);
+    return false;
   }
 
   getNextInterest() {
-    this.queue.dequeue();
-    return this.queue.peek();
+    this.nowInterest = this.queue.dequeue();
+    return this.nowInterest;
   }
 
   isMyInterest(clientId: string) {
-    const nowInterest = this.queue.peek();
-    return nowInterest.clientId === clientId;
+    return clientId === this.nowInterest?.clientId;
   }
 }

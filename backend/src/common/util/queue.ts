@@ -1,4 +1,4 @@
-class Queue<T> {
+export class Queue<T> {
   private queue: (T | null)[];
   private head: number = 0;
   private tail: number = 0;

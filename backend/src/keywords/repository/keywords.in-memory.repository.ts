@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import * as AsyncLock from 'async-lock';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
-import { getOrCreateValue } from '../../common/util/map.function';
+import { getOrCreateValue } from '../../common/util/get-or-create-value';
 
 type SerializedKeywordInfo = {
   questionId: number,

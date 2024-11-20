@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { KeywordsGateway } from './keywords.gateway';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
-import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
+import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { RoomsInMemoryRepository } from '../../rooms/repository/rooms.in-memory.repository';
 

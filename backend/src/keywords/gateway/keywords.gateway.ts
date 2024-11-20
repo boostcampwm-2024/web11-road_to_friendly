@@ -4,9 +4,9 @@ import { KeywordsRequestDto } from '../dto/keywords.request.dto';
 import { KeywordsResponseDto } from '../dto/keywords.response.dto';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
-import { UseFilters, UseGuards } from '@nestjs/common';
-import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
-import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
+import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 
 @WebSocketGateway({
   cors: {
@@ -15,12 +15,20 @@ import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
   },
 })
 @UseGuards(PhaseKeywordGuard)
-@UseFilters(WsExceptionFilter)
-export class KeywordsGateway {
+@UseFilters(SocketCustomExceptionFilter)
+export class KeywordsGateway implements OnModuleInit {
+  constructor(private readonly keywordsService: KeywordsService) {
+  }
+
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly keywordsService: KeywordsService) {
+  onModuleInit() {
+    const adapter = this.server.of('/').adapter;
+
+    adapter.on('delete-room', (roomId) => {
+      this.keywordsService.deleteRoomKeywordsInfo(roomId);
+    });
   }
 
   @SubscribeMessage('keyword:pick')

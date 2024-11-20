@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { WsException } from '@nestjs/websockets';
+import { CustomException } from '../exception/custom-exception';
 
 @Injectable()
 export class JoinGuard implements CanActivate {
@@ -9,7 +9,7 @@ export class JoinGuard implements CanActivate {
     const roomId = client.data.roomId;
 
     if (roomId === undefined) {
-      throw new WsException('방에 참가하지 않으셨습니다.');
+      throw new CustomException('방에 참가하지 않으셨습니다.');
     }
 
     return true;

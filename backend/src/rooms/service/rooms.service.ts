@@ -60,7 +60,6 @@ export class RoomsService {
 
   deleteRoom(roomId: string) {
     this.roomsInMemoryRepository.deleteRoom(roomId);
-    this.keywordsInMemoryRepository.deleteRoomKeywordsInfo(roomId);
   }
 
   setHost(roomId: string, nextHostId: string) {
@@ -75,13 +74,14 @@ export class RoomsService {
     this.roomsInMemoryRepository.setPhase(roomId, phase);
   }
 
-  generateBroadcastStatisticsEvent(roomId: string, finishTime: string, broadcastStatistics: (roomId: string, statistics: Map<string, KeywordsAlertDto[]>) => void) {
+  generateBroadcastStatisticsEvent(roomId: string, finishTime: string, broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void) {
     const finishTimestamp = new Date(finishTime).getTime();
     const delay = finishTimestamp - Date.now();
 
     setTimeout(async () => {
-      this.setPhase(roomId, PHASE.STATISTICS);
+      this.setPhase(roomId, PHASE.INTEREST);
       const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+
       broadcastStatistics(roomId, statistics);
     }, delay);
   }

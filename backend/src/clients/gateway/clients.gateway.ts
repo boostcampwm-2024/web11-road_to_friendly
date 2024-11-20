@@ -7,7 +7,8 @@ import { HostGuard } from '../../common/guard/host.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
 import { PHASE } from '../../common/definition/phase';
-import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
+import { PhaseReadyGuard } from '../../common/guard/phase.guard';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +16,7 @@ import { WsExceptionFilter } from '../../common/filter/ws-exception.filter';
     methods: ['GET', 'POST'],
   },
 })
-@UseFilters(WsExceptionFilter)
+@UseFilters(SocketCustomExceptionFilter)
 export class ClientsGateway {
 
   constructor(private readonly roomsService: RoomsService) {
@@ -33,7 +34,7 @@ export class ClientsGateway {
     this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
   }
 
-  @UseGuards(JoinGuard, HostGuard)
+  @UseGuards(JoinGuard, HostGuard, PhaseReadyGuard)
   @SubscribeMessage('client:host:start')
   startToEmpathise(@ConnectedSocket() client: Socket): void {
     const roomId = client.data.roomId;
@@ -47,7 +48,7 @@ export class ClientsGateway {
     this.roomsService.generateBroadcastStatisticsEvent(roomId, finishTime, this.endToEmpathise.bind(this));
   }
 
-  private endToEmpathise(roomId: string, statistics: Map<string, KeywordsAlertDto[]>) {
-    this.server.to(roomId).emit('empathy:result', Array.from(statistics.entries()));
+  private endToEmpathise(roomId: string, statistics: Record<string, KeywordsAlertDto[]>) {
+    this.server.to(roomId).emit('empathy:result', statistics);
   };
 }

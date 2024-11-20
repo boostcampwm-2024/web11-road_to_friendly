@@ -2,7 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { InterestsYoutubeLinkDto } from '../dto/interests.youtube.link.dto';
 import { UseFilters, UseGuards } from '@nestjs/common';
-import { PhaseInterestGuard } from '../../common/guard/phase.keyword.guard';
+import { PhaseInterestGuard } from '../../common/guard/phase.guard';
 import { InterestsService } from '../service/interests.service';
 import { INTERESTS_RESOURCE } from '../definition/interests.resource';
 import { Interest } from '../domain/interest';

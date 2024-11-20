@@ -5,7 +5,7 @@ import { KeywordsResponseDto } from '../dto/keywords.response.dto';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
-import { PhaseKeywordGuard } from '../../common/guard/phase.keyword.guard';
+import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 
 @WebSocketGateway({

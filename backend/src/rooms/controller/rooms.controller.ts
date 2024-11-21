@@ -1,4 +1,4 @@
-import { Controller, Post, Res } from '@nestjs/common';
+import { Controller, Post, Req, Res } from '@nestjs/common';
 import { RoomsService } from '../service/rooms.service';
 import { Response } from 'express';
 
@@ -8,8 +8,8 @@ export class RoomsController {
   }
 
   @Post()
-  createRoom(@Res() response: Response) {
+  createRoom(@Req() request: Request, @Res() response: Response) {
     const roomId = this.roomsService.create();
-    response.redirect(`${ process.env.ORIGIN }/rooms/${ roomId }`);
+    response.redirect(`${ request.headers['origin'] }/rooms/${ roomId }`);
   }
 }

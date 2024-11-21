@@ -23,6 +23,7 @@ const KeywordStyle = css`
   border-radius: 50px;
   text-align: center;
   min-width: 90px;
+  height: 40px;
   list-style: none;
   display: flex;
   align-items: center;

@@ -6,7 +6,7 @@ export class CustomWebSocketAdapter extends IoAdapter {
     return super.createIOServer(port, {
       ...options,
       cors: {
-        origin: 'http://localhost:5173',
+        origin: process.env.ORIGIN,
       },
     });
   }

@@ -5,7 +5,7 @@ import { CustomWebSocketAdapter } from './common/ws-adapter/custom-web-socket-ad
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: 'http://localhost:5173' });
+  app.enableCors({ origin: process.env.ORIGIN });
   app.useWebSocketAdapter(new CustomWebSocketAdapter(app));
   await app.listen(process.env.PORT ?? 8080);
 }

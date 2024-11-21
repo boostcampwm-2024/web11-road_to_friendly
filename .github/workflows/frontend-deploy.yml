@@ -1,0 +1,65 @@
+name: Release Frontend Build
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 리포지토리 클론
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Node.js 환경 설정
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3. 의존성 설치
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      # 4. 빌드
+      - name: Build
+        working-directory: ./frontend
+        env:
+          VITE_SOCKET_SERVER_URL: ${{ secrets.VITE_SOCKET_SERVER_URL }}
+        run: npm run build
+
+      # 5. 빌드된 파일을 인스턴스 서버로 전송
+      - name: Deploy to Instance
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "frontend/dist/*"
+          target: "/tmp/build"
+          strip_components: 2
+
+      # 6. 백업 및 기존파일 삭제, 복사
+      - name: Configure Instance
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # 기존 파일 백업
+            sudo tar -czf /var/www/backup/$(date +%Y%m%d_%H%M%S).tar.gz -C /var/www/html .
+
+            # 새 빌드 파일 복사
+            # sudo rm -rf /var/www/html/*
+            sudo cp -r /tmp/build/* /var/www/html/
+
+            # 권한 설정
+            sudo chown -R www-data:www-data /var/www/html
+
+            # Nginx 설정 파일의 유효성 검사 및 리로드(기존 연결을 끊지 않고 새로운 설정 적용)
+            sudo nginx -t && sudo systemctl reload nginx

@@ -2,15 +2,16 @@ import { css, keyframes } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
-import { useParticipantsStore, useQuestionsStore, useSocketStore } from '@/stores/';
-import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
-import { Question, CommonResult } from '@/types';
-import { getRemainingSeconds } from '@/utils';
-import KeywordsView from './KeywordsView';
-import { MAX_LONG_RADIUS } from '@/constants';
+import { useParticipantsStore, useQuestionsStore, useSocketStore, useKeywordsStore } from '@/stores/';
 import { QuestionInput } from '@/components';
+import { MAX_LONG_RADIUS } from '@/constants';
+import { flexStyle, Variables, fadeIn, fadeOut, StatisticsStyleMap } from '@/styles';
+import { Question, CommonResult, Participant } from '@/types';
+import { getRemainingSeconds } from '@/utils';
 import { useToast } from '@/hooks';
-import { useKeywordsStore } from '@/stores/keywords';
+
+import KeywordsView from './KeywordsView';
+import LoadingPage from '../LoadingPage';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
@@ -91,6 +92,19 @@ const QuestionsView = ({
   const [showInput, setShowInput] = useState(false);
   const [resultResponse, setResultResponse] = useState<CommonResult | null>(null);
 
+  const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
+  const updateSelectedKeywords = (keyword: string, type: 'add' | 'delete') => {
+    if (type === 'add') {
+      setSelectedKeywords((prev) => new Set(prev.add(keyword)));
+    } else {
+      setSelectedKeywords((prev) => {
+        prev.delete(keyword);
+        return new Set(prev);
+      });
+    }
+  };
+  const resetSelectedKeywords = () => setSelectedKeywords(new Set());
+
   useEffect(() => {
     if (socket) {
       socket.on('empathy:start', (response: { questions: Question[] }) => {
@@ -135,6 +149,8 @@ const QuestionsView = ({
 
       return;
     }
+
+    resetSelectedKeywords(); // 새 질문으로 전환되면 선택된 키워드 초기화
 
     const intervalId = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -189,7 +205,7 @@ const QuestionsView = ({
           >{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
           {showInput && (
             <div css={{ width: '100%', animation: `${fadeIn} 2s ease forwards` }}>
-              <QuestionInput currentQuestionIndex={currentQuestionIndex} />
+              <QuestionInput currentQuestionIndex={currentQuestionIndex} onSubmit={updateSelectedKeywords} />
               <div css={progressWrapperStyle}>
                 <ClockIcon width="35px" height="35px" fill="#000" />
                 <progress
@@ -203,7 +219,11 @@ const QuestionsView = ({
           )}
           <div></div>
         </div>
-        <KeywordsView questionId={questions[currentQuestionIndex].questionId} />
+        <KeywordsView
+          questionId={questions[currentQuestionIndex].questionId}
+          selectedKeywords={selectedKeywords}
+          updateSelectedKeywords={updateSelectedKeywords}
+        />
       </div>
     </div>
   ) : null;

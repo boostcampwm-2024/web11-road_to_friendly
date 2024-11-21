@@ -1,11 +1,13 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'react';
 
+import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+import { useToast } from '@/hooks';
+import { sendPickKeywordMessage, sendReleaseKeywordMessage } from '@/services';
 import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
 import { keywordStyleMap, scaleIn, Variables } from '@/styles';
 import { Group, Keyword, KeywordsCoordinates, PrefixSum } from '@/types';
-import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
 
 const KeywordsViewContainer = css`
   width: 100%;
@@ -49,10 +51,13 @@ const KeywordStyle = css`
   transition: all 0.3s ease;
   transform: scale(0); // 초기 스케일 값 0
   animation: ${scaleIn} 0.3s forwards; // keyframes 애니메이션 호출
+  cursor: pointer;
 `;
 
 interface KeywordsViewProps {
   questionId: number;
+  selectedKeywords: Set<string>;
+  updateSelectedKeywords: (keyword: string, type: 'add' | 'delete') => void;
 }
 
 function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: PrefixSum): Group {
@@ -70,8 +75,9 @@ function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: P
   return 'Tiny';
 }
 
-const KeywordsView = ({ questionId }: KeywordsViewProps) => {
+const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: KeywordsViewProps) => {
   const { socket } = useSocketStore();
+  const { openToast } = useToast();
   const { keywords, prefixSumMap, upsertKeyword } = useKeywordsStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [keywordsCoordinates, setKeywordsCoordinates] = useState<KeywordsCoordinates>({});
@@ -132,14 +138,14 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
     const alreadyPlacedWords: HTMLElement[] = [];
 
     const drawOneWord = (index: number, word: Keyword) => {
-      let wordId = `word-${index}`;
+      const wordId = `word-${index}`;
       let angle = Math.random() * Math.PI * 2;
       let radius = 0.0;
       const step = 2.0;
       let weight = 1;
-      let customClass = '';
-      let innerHTML = '';
-      let wordSpan: HTMLSpanElement = document.createElement('span');
+      const customClass = '';
+      const innerHTML = '';
+      const wordSpan: HTMLSpanElement = document.createElement('span');
 
       wordSpan.setAttribute('id', wordId);
 
@@ -156,8 +162,8 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
       // TODO: 클릭 핸들러 붙이기
       wordSpan.addEventListener('click', () => {});
 
-      let width = wordSpan.offsetWidth;
-      let height = wordSpan.offsetHeight;
+      const width = wordSpan.offsetWidth;
+      const height = wordSpan.offsetHeight;
       let left = containerCenterX - width / 2;
       let top = containerCenterY - height / 2;
 
@@ -212,6 +218,28 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
     });
   }, [keywords[questionId]]);
 
+  const pickKeyword = async (keyword: string) => {
+    if (!socket) return;
+    try {
+      await sendPickKeywordMessage(socket, questionId, keyword); // 서버에 키워드 공감 요청
+      updateSelectedKeywords(keyword, 'add');
+      openToast({ text: '키워드에 공감을 표시했어요!', type: 'check' });
+    } catch (error) {
+      if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+    }
+  };
+
+  const unpickKeyword = async (keyword: string) => {
+    if (!socket) return;
+    try {
+      await sendReleaseKeywordMessage(socket, questionId, keyword); // 서버에 키워드 공감 취소 요청
+      updateSelectedKeywords(keyword, 'delete');
+      openToast({ text: '키워드 공감을 취소했어요', type: 'check' });
+    } catch (error) {
+      if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+    }
+  };
+
   return (
     <div css={KeywordsViewContainer}>
       <div css={HiddenKeywordsContainer} ref={containerRef}></div>
@@ -220,10 +248,10 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
           const keywordObject: Keyword = { keyword, count: keywordsCoordinates[keyword].count };
           return (
             <div
-              key={`${questionId}-${keywordObject.keyword}`}
+              key={`${questionId}-${keyword}`}
               css={[
                 KeywordStyle,
-                keywordStyleMap(false)[
+                keywordStyleMap(selectedKeywords.has(keyword))[
                   getKeywordGroup(keywordObject, Object.keys(keywordsCoordinates).length, prefixSumMap[questionId])
                 ],
                 {
@@ -231,6 +259,9 @@ const KeywordsView = ({ questionId }: KeywordsViewProps) => {
                   top: keywordsCoordinates[keyword].y
                 }
               ]}
+              onClick={() => {
+                selectedKeywords.has(keyword) ? unpickKeyword(keyword) : pickKeyword(keyword);
+              }}
             >
               {keywordObject.keyword}
             </div>

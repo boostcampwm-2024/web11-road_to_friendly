@@ -1,12 +1,15 @@
-import { useToast } from '@/hooks';
-import { useSocketStore } from '@/stores';
-import { Variables } from '@/styles';
-import { KeywordResponse } from '@/types';
 import { css } from '@emotion/react';
 import { useState } from 'react';
 
+import { useToast } from '@/hooks';
+import { sendPickKeywordMessage } from '@/services';
+import { useSocketStore } from '@/stores';
+import { Variables } from '@/styles';
+import { KeywordResponse } from '@/types';
+
 interface QuestionInputProps {
   currentQuestionIndex: number;
+  onSubmit: (keyword: string, type: 'add') => void;
 }
 
 const inputStyle = css`
@@ -24,12 +27,12 @@ const inputStyle = css`
   opacity: 1;
 `;
 
-const QuestionInput = ({ currentQuestionIndex }: QuestionInputProps) => {
+const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) => {
   const [keyword, setKeyword] = useState('');
   const { openToast } = useToast();
   const { socket } = useSocketStore();
 
-  function handleEnter(e: React.KeyboardEvent) {
+  async function handleEnter(e: React.KeyboardEvent) {
     if (e.code !== 'Enter') return;
 
     if (keyword.length === 0) {
@@ -37,21 +40,15 @@ const QuestionInput = ({ currentQuestionIndex }: QuestionInputProps) => {
       return;
     }
 
-    if (socket && socket.connected) {
-      socket.emit('keyword:pick', { questionId: currentQuestionIndex + 1, keyword }, (response: KeywordResponse) => {
-        console.log(response);
-        if (!response) {
-          //response.status !== 'pick'
-          /*
-            TODO: 추후 서버 로직에서 status가 ok로 바뀐다면 수정 필요
-            */
-          openToast({ text: '서버에서 문제가 생긴 것 같아요. Enter를 눌러 다시 전송해주세요.', type: 'error' });
-        } else {
-          setKeyword('');
-        }
-      });
-    } else {
-      openToast({ text: '연결 상태가 원활하지 않은 것 같아요. Enter를 눌러 다시 전송해주세요.', type: 'error' });
+    if (socket) {
+      try {
+        await sendPickKeywordMessage(socket, currentQuestionIndex + 1, keyword); // 서버에 키워드 추가 요청
+        setKeyword('');
+        onSubmit(keyword, 'add'); // 내가 선택한 키워드에 추가
+      } catch (error) {
+        if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+      }
+
     }
   }
 

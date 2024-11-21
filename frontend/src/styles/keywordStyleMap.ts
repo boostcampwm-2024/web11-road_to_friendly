@@ -1,5 +1,7 @@
-import { Group } from '@/types';
 import { css, SerializedStyles } from '@emotion/react';
+
+import { Group } from '@/types';
+
 import { Variables } from './Variables';
 
 type KeywordStyleMap = (selected: boolean) => Record<Group, SerializedStyles>;

@@ -1,5 +1,6 @@
-import { Content } from '@/types';
 import { css } from '@emotion/react';
+
+import { Content } from '@/types';
 
 const ContentPresentSectionStyle = css({
   flexGrow: 1,

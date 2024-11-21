@@ -1,10 +1,13 @@
-import { useParticipantsStore, useSocketStore } from '@/stores';
-import { useState } from 'react';
 import { css } from '@emotion/react';
+import { useState } from 'react';
+
+import StopIcon from '@/assets/icons/stop.svg?react';
+import { useParticipantsStore, useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 import { Content } from '@/types';
+
 import { ContentPresentSection, WaitingListEmpty, WaitingListInfo } from './index';
-import StopIcon from '@/assets/icons/stop.svg?react';
+
 
 const ContentShareViewStyle = css([
   {

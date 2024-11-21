@@ -1,8 +1,9 @@
 import { css } from '@emotion/react';
 import { Variables, StatisticsStyleMap } from '@/styles';
-import { useSocketStore } from '@/stores';
+import { useParticipantsStore, useSocketStore } from '@/stores';
 import { useCallback, useEffect, useState } from 'react';
-import { Participant } from '@/types';
+import { useToast } from '@/hooks';     
+import { Keyword, Participant } from '@/types';
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
 import { useKeywordsStore } from '@/stores/keywords';
 

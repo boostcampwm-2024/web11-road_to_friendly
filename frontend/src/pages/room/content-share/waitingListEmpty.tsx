@@ -1,5 +1,6 @@
-import { flexStyle, Variables } from '@/styles';
 import { css } from '@emotion/react';
+
+import { flexStyle, Variables } from '@/styles';
 
 const WaitingListEmpty = () => {
   return (

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 
-import { Variables } from '@/styles';
 import CloseX from '@/assets/icons/closeX.svg?react';
+import { Variables } from '@/styles';
 
 const ModalOverlayStyle = css`
   position: relative;

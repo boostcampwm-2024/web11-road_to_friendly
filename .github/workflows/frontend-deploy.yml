@@ -28,6 +28,8 @@ jobs:
       # 4. 빌드
       - name: Build
         working-directory: ./frontend
+        env:
+          VITE_SOCKET_SERVER_URL: ${{ secrets.VITE_SOCKET_SERVER_URL }}
         run: npm run build
 
       # 5. 빌드된 파일을 인스턴스 서버로 전송

@@ -10,12 +10,7 @@ import { RoomsService } from '../../rooms/service/rooms.service';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 import { JoinGuard } from '../../common/guard/join.guard';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-})
+@WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
 @UseGuards(JoinGuard, PhaseInterestGuard)
 export class InterestsGateway implements OnModuleInit {

@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 
 import LinkIcon from '@/assets/icons/link.svg?react';
+import { useToast } from '@/hooks';
 import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
-import { useToast } from '@/hooks';
 
 const shareButtonStyle = css({
   display: 'flex',

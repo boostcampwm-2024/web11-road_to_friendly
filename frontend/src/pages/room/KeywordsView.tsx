@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useSocketStore } from '@/stores';
-import { useKeywordsStore } from '@/stores/keywords';
-import { keywordStyleMap, scaleIn, Variables } from '@/styles';
-import { Group, Keyword, KeywordsCoordinates, PrefixSum, KeywordResponse } from '@/types';
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
 import { useToast } from '@/hooks';
 import { sendPickKeywordMessage, sendReleaseKeywordMessage } from '@/services';
+import { useSocketStore } from '@/stores';
+import { useKeywordsStore } from '@/stores/keywords';
+import { keywordStyleMap, scaleIn, Variables } from '@/styles';
+import { Group, Keyword, KeywordsCoordinates, PrefixSum } from '@/types';
 
 const KeywordsViewContainer = css`
   width: 100%;
@@ -138,14 +138,14 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
     const alreadyPlacedWords: HTMLElement[] = [];
 
     const drawOneWord = (index: number, word: Keyword) => {
-      let wordId = `word-${index}`;
+      const wordId = `word-${index}`;
       let angle = Math.random() * Math.PI * 2;
       let radius = 0.0;
       const step = 2.0;
       let weight = 1;
-      let customClass = '';
-      let innerHTML = '';
-      let wordSpan: HTMLSpanElement = document.createElement('span');
+      const customClass = '';
+      const innerHTML = '';
+      const wordSpan: HTMLSpanElement = document.createElement('span');
 
       wordSpan.setAttribute('id', wordId);
 
@@ -162,8 +162,8 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
       // TODO: 클릭 핸들러 붙이기
       wordSpan.addEventListener('click', () => {});
 
-      let width = wordSpan.offsetWidth;
-      let height = wordSpan.offsetHeight;
+      const width = wordSpan.offsetWidth;
+      const height = wordSpan.offsetHeight;
       let left = containerCenterX - width / 2;
       let top = containerCenterY - height / 2;
 

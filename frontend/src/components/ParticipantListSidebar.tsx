@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
 
+import Profile from '@/assets/icons/profile.svg?react';
+import { useParticipantsStore } from '@/stores';
 import { Variables } from '@/styles';
 
 import Modal from './common/Modal';
-import { useParticipantsStore } from '@/stores';
 
-import Profile from '@/assets/icons/profile.svg?react';
 
 const ListContainerStyle = css`
   display: flex;

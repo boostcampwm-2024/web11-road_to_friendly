@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { Participant } from '@/types';
 
 interface ParticipantsStore {

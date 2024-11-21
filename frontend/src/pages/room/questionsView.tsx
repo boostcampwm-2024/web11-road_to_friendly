@@ -2,13 +2,14 @@ import { css, keyframes } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
+import { QuestionInput } from '@/components';
+import { MAX_LONG_RADIUS } from '@/constants';
 import { useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
 import { Question } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+
 import KeywordsView from './KeywordsView';
-import { MAX_LONG_RADIUS } from '@/constants';
-import { QuestionInput } from '@/components';
 import LoadingPage from '../LoadingPage';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);

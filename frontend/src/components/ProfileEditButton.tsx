@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
-import Modal from './common/Modal';
-import { useParticipantsStore, useSocketStore } from '@/stores';
-
-import Profile from '@/assets/icons/profile.svg?react';
 import Edit from '@/assets/icons/edit.svg?react';
+import Profile from '@/assets/icons/profile.svg?react';
+import { useParticipantsStore, useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
+
+import Modal from './common/Modal';
 
 const profileImageStyle = css`
   width: 40px;

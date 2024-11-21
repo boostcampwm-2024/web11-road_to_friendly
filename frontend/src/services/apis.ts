@@ -1,5 +1,7 @@
-import { KeywordResponse } from '@/types';
 import { Socket } from 'socket.io-client';
+
+import { KeywordResponse } from '@/types';
+
 import { SERVICE_ERROR_MESSAGES } from './errorMessages';
 
 export const sendPickKeywordMessage = (socket: Socket, questionId: number, keyword: string): Promise<boolean> => {

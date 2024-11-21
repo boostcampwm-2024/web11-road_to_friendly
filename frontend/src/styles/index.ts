@@ -2,3 +2,4 @@ export { rotate, growAndShrink, hoverGrowJumpAnimation, fadeIn, fadeOut, scaleIn
 export { flexStyle } from './flex';
 export { Variables } from './Variables';
 export { keywordStyleMap } from './keywordStyleMap';
+export { StatisticsStyleMap } from './StatisticsStyleMap';

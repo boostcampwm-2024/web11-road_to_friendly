@@ -48,6 +48,7 @@ const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) =
       } catch (error) {
         if (error instanceof Error) openToast({ text: error.message, type: 'error' });
       }
+
     }
   }
 

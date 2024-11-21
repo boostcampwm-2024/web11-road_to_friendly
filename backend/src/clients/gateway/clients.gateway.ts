@@ -10,12 +10,7 @@ import { PHASE } from '../../common/definition/phase';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 import { PhaseReadyGuard } from '../../common/guard/phase.guard';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-})
+@WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
 export class ClientsGateway {
 

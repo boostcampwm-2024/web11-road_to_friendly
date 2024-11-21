@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Variables, StatisticsStyleMap } from '@/styles';
-import {  useSocketStore } from '@/stores';
+import { useSocketStore } from '@/stores';
 import { useCallback, useEffect, useState } from 'react';
 import { Participant } from '@/types';
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
@@ -88,7 +88,7 @@ const ResultView = ({ participant }: ResultViewProps) => {
 
   return (
     <ul css={KeywordsContainer}>
-      {participant.keywords?.map(({ keyword }, index: number) => (
+      {participant.keywords.slice(0, 3)?.map(({ keyword }, index: number) => (
         <li key={index} css={[KeywordStyle, StatisticsStyleMap()[getKeywordStyle(keyword)]]}>
           {keyword}
         </li>

@@ -31,7 +31,7 @@ const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) =
   const { openToast } = useToast();
   const { socket } = useSocketStore();
 
-  function handleEnter(e: React.KeyboardEvent) {
+  async function handleEnter(e: React.KeyboardEvent) {
     if (e.code !== 'Enter') return;
 
     if (keyword.length === 0) {
@@ -41,7 +41,7 @@ const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) =
 
     if (socket) {
       try {
-        sendPickKeywordMessage(socket, currentQuestionIndex + 1, keyword); // 서버에 키워드 추가 요청
+        await sendPickKeywordMessage(socket, currentQuestionIndex + 1, keyword); // 서버에 키워드 추가 요청
         setKeyword('');
         onSubmit(keyword, 'add'); // 내가 선택한 키워드에 추가
       } catch (error) {

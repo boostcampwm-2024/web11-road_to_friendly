@@ -218,10 +218,10 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
     });
   }, [keywords[questionId]]);
 
-  const pickKeyword = (keyword: string) => {
+  const pickKeyword = async (keyword: string) => {
     if (!socket) return;
     try {
-      sendPickKeywordMessage(socket, questionId, keyword); // 서버에 키워드 공감 요청
+      await sendPickKeywordMessage(socket, questionId, keyword); // 서버에 키워드 공감 요청
       updateSelectedKeywords(keyword, 'add');
       openToast({ text: '키워드에 공감을 표시했어요!', type: 'check' });
     } catch (error) {
@@ -229,10 +229,10 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
     }
   };
 
-  const unpickKeyword = (keyword: string) => {
+  const unpickKeyword = async (keyword: string) => {
     if (!socket) return;
     try {
-      sendReleaseKeywordMessage(socket, questionId, keyword); // 서버에 키워드 공감 취소 요청
+      await sendReleaseKeywordMessage(socket, questionId, keyword); // 서버에 키워드 공감 취소 요청
       updateSelectedKeywords(keyword, 'delete');
       openToast({ text: '키워드 공감을 취소했어요', type: 'check' });
     } catch (error) {

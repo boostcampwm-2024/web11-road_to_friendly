@@ -1,9 +1,8 @@
 import { css } from '@emotion/react';
 import { Variables, StatisticsStyleMap } from '@/styles';
-import { useParticipantsStore, useSocketStore } from '@/stores';
+import {  useSocketStore } from '@/stores';
 import { useCallback, useEffect, useState } from 'react';
-import { useToast } from '@/hooks';     
-import { Keyword, Participant } from '@/types';
+import { Participant } from '@/types';
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
 import { useKeywordsStore } from '@/stores/keywords';
 
@@ -39,28 +38,17 @@ const ResultView = ({ participant }: ResultViewProps) => {
   const { statisticsKeywords } = useKeywordsStore();
   const [allKeywords, setAllKeywords] = useState<{ [keyword: string]: number }>({});
 
-  // 전체 키워드의 종류의 개수
-  const totalKeywords = Object.keys(allKeywords).length;
-
   // 비율에 따라 스타일 적용
   const getKeywordStyle = useCallback(
     (keyword: string) => {
-      const ratio = Math.ceil((allKeywords[keyword] / totalKeywords) * 100);
-
-      // 모든 랭크가 같은지 확인
-      const uniqueRanks = new Set(Object.values(allKeywords));
-
-      // 만약 랭크가 하나의 값만 있으면 'Tiny' 반환
-      if (uniqueRanks.size === 1) {
-        return 'Tiny';
-      }
+      const ratio = allKeywords[keyword];
 
       if (ratio < BIG_THRESHOLD) return 'Big';
       if (ratio < MIDEIUM_THRESHOLD) return 'Medium';
       if (ratio < SMALL_THRESHOLD) return 'Small';
       return 'Tiny';
     },
-    [allKeywords, totalKeywords]
+    [allKeywords]
   );
 
   useEffect(() => {
@@ -73,25 +61,26 @@ const ResultView = ({ participant }: ResultViewProps) => {
     }, {});
 
     const sortedKeywords = Object.entries(keywordCountMap).sort((a, b) => b[1] - a[1]);
+    const totalCount = sortedKeywords.reduce((sum, arr) => sum + arr[1], 0);
 
-    // 각 키워드의 랭크 계산 (동순위 처리)
-    const sortedRanks = [];
-    let currentRank = 1;
+    const ratioData = sortedKeywords.reduce((acc: { [keyword: string]: number }, [keyword, count], index) => {
+      // 자신과 같거나 더 큰 카운트를 모두 합산
+      const sumGreaterOrEqual = sortedKeywords
+        .filter(([_, otherCount]) => otherCount >= count)
+        .reduce((acc, [_, count]) => acc + count, 0);
 
-    for (let i = 0; i < sortedKeywords.length; i++) {
-      const [targetKeyword] = sortedKeywords[i];
+      // 상위 비율 계산 (합산된 값이 전체 카운트에서 차지하는 비율)
+      const ratio = Math.ceil((sumGreaterOrEqual / totalCount) * 100);
 
-      if (i === 0 || sortedKeywords[i][1] !== sortedKeywords[i - 1][1]) {
-        currentRank = i + 1;
-      }
-      sortedRanks.push([targetKeyword, currentRank]);
-    }
+      acc[keyword] = ratio;
 
-    setAllKeywords(Object.fromEntries(sortedRanks));
+      return acc;
+    }, {});
+
+    setAllKeywords(ratioData);
   }, []);
 
   useEffect(() => {
-
     return () => {
       socket?.off('empathy:result');
     };

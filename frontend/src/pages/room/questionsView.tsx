@@ -2,15 +2,15 @@ import { css, keyframes } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
+import { useParticipantsStore, useQuestionsStore, useSocketStore, useKeywordsStore } from '@/stores/';
 import { QuestionInput } from '@/components';
 import { MAX_LONG_RADIUS } from '@/constants';
-import { useQuestionsStore, useSocketStore } from '@/stores/';
 import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
-import { Question } from '@/types';
+import { Question, CommonResult } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+import { useToast } from '@/hooks';
 
 import KeywordsView from './KeywordsView';
-import LoadingPage from '../LoadingPage';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 
@@ -66,12 +66,22 @@ const progressBarStyle = css`
 
 interface QuestionViewProps {
   onQuestionStart: () => void;
+  onLastQuestionComplete: () => void;
+  finishResultLoading: () => void;
+  startResultLoading: () => void;
 }
 
-const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
+const QuestionsView = ({
+  onQuestionStart,
+  onLastQuestionComplete,
+  finishResultLoading,
+  startResultLoading
+}: QuestionViewProps) => {
   const { socket } = useSocketStore();
   const { questions, setQuestions } = useQuestionsStore();
-  const [loading, setLoading] = useState<boolean>(false);
+  const { setStatisticsKeywords } = useKeywordsStore();
+  const { setParticipants } = useParticipantsStore();
+  const { openToast } = useToast();
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -79,6 +89,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
   const [isFadeIn, setIsFadeIn] = useState(true);
   const [isQuestionMovedUp, setIsQuestionMovedUp] = useState(false);
   const [showInput, setShowInput] = useState(false);
+  const [resultResponse, setResultResponse] = useState<CommonResult | null>(null);
 
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const updateSelectedKeywords = (keyword: string, type: 'add' | 'delete') => {
@@ -100,15 +111,43 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
         onQuestionStart();
         if (response.questions.length > 0) {
           const firstQuestionTimeLeft = getRemainingSeconds(new Date(response.questions[0].expirationTime), new Date());
-          setTimeLeft(3000);
-          setInitialTimeLeft(3000);
+          setTimeLeft(firstQuestionTimeLeft);
+          setInitialTimeLeft(firstQuestionTimeLeft);
         }
       });
+
+      if (socket && socket.connected) {
+        const handleResult = (response: CommonResult) => {
+          //통계결과를 임시로 저장
+          setResultResponse(response);
+        };
+        socket.on('empathy:result', handleResult);
+      }
     }
   }, [socket, setQuestions, onQuestionStart]);
 
   useEffect(() => {
-    if (currentQuestionIndex >= questions.length) return;
+    if (currentQuestionIndex >= questions.length) {
+      if (questions.length > 0) {
+        //마지막 질문이 끝나고 로딩 시작
+        onLastQuestionComplete();
+        startResultLoading();
+
+        if (resultResponse) {
+          // 통계 데이터 처리
+          setStatisticsKeywords(resultResponse);
+          Object.entries(resultResponse).forEach(([userId, array]) => {
+            setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
+          });
+        } else {
+          openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
+        }
+
+        finishResultLoading();
+      }
+
+      return;
+    }
 
     resetSelectedKeywords(); // 새 질문으로 전환되면 선택된 키워드 초기화
 
@@ -119,16 +158,6 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
           setIsQuestionMovedUp(false);
           setShowInput(false);
 
-          //마지막 질문이 끝난 경우의 처리
-          if (currentQuestionIndex === questions.length - 1) {
-            //전환 페이지 표시
-            setLoading(true);
-
-            //서버에게 종료 알림 전송
-            if (socket) {
-              socket.emit('empathy:end');
-            }
-          }
           return prevTime;
         }
         return prevTime - 1;
@@ -166,9 +195,7 @@ const QuestionsView = ({ onQuestionStart }: QuestionViewProps) => {
     }
   }, [isFadeIn]);
 
-  return loading ? (
-    <LoadingPage isAnalyzing={true} />
-  ) : questions.length > 0 && currentQuestionIndex < questions.length ? (
+  return questions.length > 0 && currentQuestionIndex < questions.length ? (
     <div css={MainContainer}>
       <div key={currentQuestionIndex} css={viewContainerStyle(isFadeIn)}>
         <div css={{ position: 'relative', width: '100%' }}>

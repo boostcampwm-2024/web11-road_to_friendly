@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
-import { useEffect } from 'react';
-
-import { useToast } from '@/hooks';
-import { useParticipantsStore, useSocketStore } from '@/stores';
-import { Variables } from '@/styles';
-import { Keyword, Participant } from '@/types';
+import { Variables, StatisticsStyleMap } from '@/styles';
+import {  useSocketStore } from '@/stores';
+import { useCallback, useEffect, useState } from 'react';
+import { Participant } from '@/types';
+import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+import { useKeywordsStore } from '@/stores/keywords';
 
 const KeywordsContainer = css`
   width: 100%;
@@ -22,56 +22,75 @@ const KeywordStyle = css`
   border-radius: 50px;
   text-align: center;
   min-width: 90px;
+  height: 40px;
   list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
-
-interface CommonResult {
-  status: string;
-  body: {
-    [userId: string]: Keyword[];
-  };
-}
 
 interface ResultViewProps {
   participant: Participant;
-  setIsResultView: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ResultView = ({ participant, setIsResultView }: ResultViewProps) => {
-  // const { socket } = useSocketStore();
-  // const { setParticipants } = useParticipantsStore();
-  // const { openToast } = useToast();
+const ResultView = ({ participant }: ResultViewProps) => {
+  const { socket } = useSocketStore();
+  const { statisticsKeywords } = useKeywordsStore();
+  const [allKeywords, setAllKeywords] = useState<{ [keyword: string]: number }>({});
 
-  // useEffect(() => {
-  //   if (socket) {y:keyword:resul
-  //     socket.on('empatht', (response: CommonResult) => {
-  //       setIsResultView(response.status === 'ok');
-  //       if (response.status === 'ok') {
-  //         Object.entries(response.body).forEach(([userId, array]) => {
-  //           setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
-  //         });
-  //       } else {
-  //         openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
-  //       }
-  //     });
-  //   }
+  // 비율에 따라 스타일 적용
+  const getKeywordStyle = useCallback(
+    (keyword: string) => {
+      const ratio = allKeywords[keyword];
 
-  //   return () => {
-  //     socket?.disconnect();
-  //   };
-  // }, [socket]);
+      if (ratio < BIG_THRESHOLD) return 'Big';
+      if (ratio < MIDEIUM_THRESHOLD) return 'Medium';
+      if (ratio < SMALL_THRESHOLD) return 'Small';
+      return 'Tiny';
+    },
+    [allKeywords]
+  );
+
+  useEffect(() => {
+    const allKeywordsFlat = Object.values(statisticsKeywords).flat();
+
+    // 중복 키워드를 제외하고 Map(키워드 : 카운트) 생성
+    const keywordCountMap = allKeywordsFlat.reduce((acc: { [keyword: string]: number }, { keyword, count }) => {
+      !acc[keyword] && (acc[keyword] = count);
+      return acc;
+    }, {});
+
+    const sortedKeywords = Object.entries(keywordCountMap).sort((a, b) => b[1] - a[1]);
+    const totalCount = sortedKeywords.reduce((sum, arr) => sum + arr[1], 0);
+
+    const ratioData = sortedKeywords.reduce((acc: { [keyword: string]: number }, [keyword, count], index) => {
+      // 자신과 같거나 더 큰 카운트를 모두 합산
+      const sumGreaterOrEqual = sortedKeywords
+        .filter(([_, otherCount]) => otherCount >= count)
+        .reduce((acc, [_, count]) => acc + count, 0);
+
+      // 상위 비율 계산 (합산된 값이 전체 카운트에서 차지하는 비율)
+      const ratio = Math.ceil((sumGreaterOrEqual / totalCount) * 100);
+
+      acc[keyword] = ratio;
+
+      return acc;
+    }, {});
+
+    setAllKeywords(ratioData);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      socket?.off('empathy:result');
+    };
+  }, [socket]);
 
   return (
     <ul css={KeywordsContainer}>
-      {/*participant.keywords?.로 수정필요*/}
-      {[
-        { questionId: 4, keyword: '고양이', count: 5 },
-        { questionId: 1, keyword: '짜장면', count: 3 },
-        { questionId: 2, keyword: 'java', count: 2 },
-        { questionId: 3, keyword: '심규선', count: 1 }
-      ]?.map((obj: Keyword, index: number) => (
-        <li key={index} css={KeywordStyle}>
-          {obj.keyword}
+      {participant.keywords?.map(({ keyword }, index: number) => (
+        <li key={index} css={[KeywordStyle, StatisticsStyleMap()[getKeywordStyle(keyword)]]}>
+          {keyword}
         </li>
       ))}
     </ul>

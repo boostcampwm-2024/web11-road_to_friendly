@@ -1,9 +1,10 @@
 import { css } from '@emotion/react';
-import { Variables } from '@/styles';
-import { useParticipantsStore, useSocketStore } from '@/stores';
 import { useEffect } from 'react';
-import { Keyword, Participant } from '@/types';
+
 import { useToast } from '@/hooks';
+import { useParticipantsStore, useSocketStore } from '@/stores';
+import { Variables } from '@/styles';
+import { Keyword, Participant } from '@/types';
 
 const KeywordsContainer = css`
   width: 100%;

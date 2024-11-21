@@ -1,10 +1,11 @@
+import { css } from '@emotion/react';
+import { useState } from 'react';
+
 import { useToast } from '@/hooks';
 import { sendPickKeywordMessage } from '@/services';
 import { useSocketStore } from '@/stores';
 import { Variables } from '@/styles';
 import { KeywordResponse } from '@/types';
-import { css } from '@emotion/react';
-import { useState } from 'react';
 
 interface QuestionInputProps {
   currentQuestionIndex: number;

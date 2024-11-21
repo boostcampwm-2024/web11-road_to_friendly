@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
+
 import Crown from '@/assets/icons/crown.svg?react';
-import { useRadiusStore } from '@/stores';
-import { Variables } from '@/styles';
-import { Participant } from '@/types';
 import ResultView from '@/pages/room/resultView';
-import { flexStyle } from '@/styles';
+import { useRadiusStore } from '@/stores';
+import { Variables , flexStyle } from '@/styles';
+import { Participant } from '@/types';
 
 const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number) => css`
   position: absolute;

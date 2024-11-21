@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+
 import { Variables } from '@/styles/Variables';
 
 const ResultInstructionStyle = css`

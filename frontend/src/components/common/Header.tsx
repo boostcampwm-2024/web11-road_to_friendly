@@ -1,8 +1,9 @@
 import { css } from '@emotion/react';
+import { useLocation } from 'react-router-dom';
+
+import ProfileEditButton from '@/components/ProfileEditButton';
 
 import { Variables } from '@/styles';
-import ProfileEditButton from '@components/ProfileEditButton';
-import { useLocation } from 'react-router-dom';
 
 const headerWrapperStyle = css({
   position: 'fixed',

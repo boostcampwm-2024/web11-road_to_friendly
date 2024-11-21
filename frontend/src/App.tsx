@@ -4,6 +4,7 @@ import LandingPage from '@/pages/LandingPage';
 
 import Room from '@/pages/room/room';
 import { GlobalStyle } from '@/styles/GlobalStyle';
+
 import { ToastProvider } from './contexts';
 
 function App() {

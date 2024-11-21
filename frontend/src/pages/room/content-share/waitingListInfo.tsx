@@ -1,6 +1,7 @@
-import { flexStyle, Variables } from '@/styles';
 import { css } from '@emotion/react';
+
 import PlusIcon from '@/assets/icons/plus.svg?react';
+import { flexStyle, Variables } from '@/styles';
 
 interface WaitingListInfoProps {
   numWaiting: number;

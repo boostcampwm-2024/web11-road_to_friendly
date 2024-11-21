@@ -56,14 +56,19 @@ const Room = () => {
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
 
   const startResultPage = () => {
-    setIsResultView(true); // 로딩 화면 활성화
+    console.log('startResultPage');
+    setIsResultView(true);
   };
 
   const startResultLoading = () => {
+    console.log('startResultLoading');
     setResultLoading(true);
   };
 
-  const finishResultLoading = () => {};
+  const finishResultLoading = () => {
+    console.log('finishResultLoading');
+    setResultLoading(false);
+  };
 
   const positions = useMemo(
     () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
@@ -109,7 +114,6 @@ const Room = () => {
                   isHost={hostId === participantId}
                   position={{ x: positions[index][0], y: positions[index][1] }}
                   isResultView={isResultView}
-                  startResultLoading={startResultLoading}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
@@ -128,6 +132,7 @@ const Room = () => {
                     hideIntroView={hideIntroView}
                     resultLoading={resultLoading}
                     onLastQuestionComplete={startResultPage}
+                    startResultLoading={startResultLoading}
                     finishResultLoading={finishResultLoading}
                   />
                 )}

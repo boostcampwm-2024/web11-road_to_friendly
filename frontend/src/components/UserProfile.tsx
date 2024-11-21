@@ -80,7 +80,6 @@ interface UserProfileProps {
   isHost: boolean;
   position: Positon;
   isResultView: boolean;
-  startResultLoading: () => void;
 }
 
 const UserProfile = ({
@@ -90,7 +89,6 @@ const UserProfile = ({
   isHost,
   position,
   isResultView,
-  startResultLoading,
 }: UserProfileProps) => {
   const { radius } = useRadiusStore();
 
@@ -109,7 +107,6 @@ const UserProfile = ({
       {isResultView && (
         <ResultView
           participant={participant}
-          startResultLoading={startResultLoading}
         />
       )}
     </div>

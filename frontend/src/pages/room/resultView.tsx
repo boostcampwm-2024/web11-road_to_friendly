@@ -30,10 +30,9 @@ const KeywordStyle = css`
 
 interface ResultViewProps {
   participant: Participant;
-  startResultLoading: () => void;
 }
 
-const ResultView = ({ participant, startResultLoading }: ResultViewProps) => {
+const ResultView = ({ participant }: ResultViewProps) => {
   const { socket } = useSocketStore();
   const { statisticsKeywords } = useKeywordsStore();
   const [allKeywords, setAllKeywords] = useState<{ [keyword: string]: number }>({});
@@ -45,7 +44,15 @@ const ResultView = ({ participant, startResultLoading }: ResultViewProps) => {
   const getKeywordStyle = useCallback(
     (keyword: string) => {
       const ratio = Math.ceil((allKeywords[keyword] / totalKeywords) * 100);
-      console.log(keyword, ratio);
+
+      // 모든 랭크가 같은지 확인
+      const uniqueRanks = new Set(Object.values(allKeywords));
+
+      // 만약 랭크가 하나의 값만 있으면 'Tiny' 반환
+      if (uniqueRanks.size === 1) {
+        return 'Tiny';
+      }
+
       if (ratio < BIG_THRESHOLD) return 'Big';
       if (ratio < MIDEIUM_THRESHOLD) return 'Medium';
       if (ratio < SMALL_THRESHOLD) return 'Small';
@@ -82,7 +89,6 @@ const ResultView = ({ participant, startResultLoading }: ResultViewProps) => {
   }, []);
 
   useEffect(() => {
-    startResultLoading();
 
     return () => {
       socket?.off('empathy:result');

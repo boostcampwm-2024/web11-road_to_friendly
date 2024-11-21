@@ -68,9 +68,15 @@ interface QuestionViewProps {
   onQuestionStart: () => void;
   onLastQuestionComplete: () => void;
   finishResultLoading: () => void;
+  startResultLoading: () => void;
 }
 
-const QuestionsView = ({ onQuestionStart, onLastQuestionComplete, finishResultLoading }: QuestionViewProps) => {
+const QuestionsView = ({
+  onQuestionStart,
+  onLastQuestionComplete,
+  finishResultLoading,
+  startResultLoading
+}: QuestionViewProps) => {
   const { socket } = useSocketStore();
   const { questions, setQuestions } = useQuestionsStore();
   const { setStatisticsKeywords } = useKeywordsStore();
@@ -83,6 +89,7 @@ const QuestionsView = ({ onQuestionStart, onLastQuestionComplete, finishResultLo
   const [isFadeIn, setIsFadeIn] = useState(true);
   const [isQuestionMovedUp, setIsQuestionMovedUp] = useState(false);
   const [showInput, setShowInput] = useState(false);
+  const [resultResponse, setResultResponse] = useState<CommonResult | null>(null);
 
   useEffect(() => {
     if (socket) {
@@ -98,15 +105,8 @@ const QuestionsView = ({ onQuestionStart, onLastQuestionComplete, finishResultLo
 
       if (socket && socket.connected) {
         const handleResult = (response: CommonResult) => {
-          if (Object.keys(response).length > 0) {
-            finishResultLoading();
-            setStatisticsKeywords(response);
-            Object.entries(response).forEach(([userId, array]) => {
-              setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
-            });
-          } else {
-            openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
-          }
+          //통계결과를 임시로 저장
+          setResultResponse(response);
         };
         socket.on('empathy:result', handleResult);
       }
@@ -115,8 +115,24 @@ const QuestionsView = ({ onQuestionStart, onLastQuestionComplete, finishResultLo
 
   useEffect(() => {
     if (currentQuestionIndex >= questions.length) {
-      // 모든 질문이 완료되었을 때 호출
-      if (questions.length > 0) onLastQuestionComplete();
+      if (questions.length > 0) {
+        //마지막 질문이 끝나고 로딩 시작
+        onLastQuestionComplete();
+        startResultLoading();
+
+        if (resultResponse) {
+          // 통계 데이터 처리
+          setStatisticsKeywords(resultResponse);
+          Object.entries(resultResponse).forEach(([userId, array]) => {
+            setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
+          });
+        } else {
+          openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
+        }
+
+        finishResultLoading();
+      }
+
       return;
     }
 

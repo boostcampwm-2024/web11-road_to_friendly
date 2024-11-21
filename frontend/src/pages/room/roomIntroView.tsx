@@ -10,6 +10,7 @@ interface RoomIntroViewProps {
   hideIntroView: () => void;
   resultLoading: boolean;
   onLastQuestionComplete: () => void;
+  startResultLoading: () => void;
   finishResultLoading: () => void;
 }
 
@@ -20,6 +21,7 @@ const RoomIntroView = ({
   participantCount,
   hideIntroView,
   onLastQuestionComplete,
+  startResultLoading,
   finishResultLoading
 }: RoomIntroViewProps) => {
   return (
@@ -29,6 +31,7 @@ const RoomIntroView = ({
       <QuestionsView
         onQuestionStart={hideIntroView}
         onLastQuestionComplete={onLastQuestionComplete}
+        startResultLoading={startResultLoading}
         finishResultLoading={finishResultLoading}
       />
     </>

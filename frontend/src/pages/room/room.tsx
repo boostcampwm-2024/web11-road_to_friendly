@@ -56,17 +56,14 @@ const Room = () => {
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
 
   const startResultPage = () => {
-    console.log('startResultPage');
     setIsResultView(true);
   };
 
   const startResultLoading = () => {
-    console.log('startResultLoading');
     setResultLoading(true);
   };
 
   const finishResultLoading = () => {
-    console.log('finishResultLoading');
     setResultLoading(false);
   };
 

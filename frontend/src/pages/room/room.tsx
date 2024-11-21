@@ -16,6 +16,7 @@ import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
 import useParticipants from '@/hooks/useParticipants';
 import { Header } from '@components/common';
+import { ContentShareView } from './content-share';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -104,7 +105,10 @@ const Room = () => {
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
-                  <ResultInstruction />
+                  <>
+                    <ResultInstruction />
+                    <ContentShareView />
+                  </>
                 ) : (
                   <RoomIntroView
                     isIntroViewActive={isIntroViewActive}

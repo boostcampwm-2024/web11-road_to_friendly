@@ -5,13 +5,12 @@ import ClockIcon from '@/assets/icons/clock.svg?react';
 import { useParticipantsStore, useQuestionsStore, useSocketStore, useKeywordsStore } from '@/stores/';
 import { QuestionInput } from '@/components';
 import { MAX_LONG_RADIUS } from '@/constants';
-import { flexStyle, Variables, fadeIn, fadeOut, StatisticsStyleMap } from '@/styles';
-import { Question, CommonResult, Participant } from '@/types';
+import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
+import { Question, CommonResult } from '@/types';
 import { getRemainingSeconds } from '@/utils';
 import { useToast } from '@/hooks';
 
 import KeywordsView from './KeywordsView';
-import LoadingPage from '../LoadingPage';
 
 const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
 

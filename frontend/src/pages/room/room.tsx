@@ -2,8 +2,6 @@ import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import useParticipants from '@/hooks/useParticipants';
-
 import { Header } from '@/components/common';
 import ParticipantListSidebar from '@/components/ParticipantListSidebar';
 import RoomNotFoundError from '@/components/RoomNotFound';
@@ -19,7 +17,6 @@ import { ContentShareView } from './content-share';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
 import useParticipants from '@/hooks/useParticipants';
-import { Header } from '@components/common';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};

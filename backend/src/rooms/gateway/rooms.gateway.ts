@@ -16,12 +16,7 @@ import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-e
 import { ExistGuard } from '../../common/guard/exist.guard';
 import { ClientsService } from '../../clients/service/clients.service';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-})
+@WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
 export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
   @WebSocketServer()

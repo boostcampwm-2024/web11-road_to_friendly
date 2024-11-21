@@ -17,9 +17,18 @@ import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
 import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${ process.env.NODE_ENV || 'dev' }`,
+      validationOptions: {
+        abortEarly: true,
+      },
+    })
+  ],
   controllers: [AppController, RoomsController],
   providers: [
     AppService,

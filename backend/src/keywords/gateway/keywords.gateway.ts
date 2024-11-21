@@ -8,12 +8,7 @@ import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-})
+@WebSocketGateway()
 @UseGuards(PhaseKeywordGuard)
 @UseFilters(SocketCustomExceptionFilter)
 export class KeywordsGateway implements OnModuleInit {

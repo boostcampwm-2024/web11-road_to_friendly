@@ -16,7 +16,7 @@ const QuestionStartButton = () => {
 
   const onClickStart = () => {
     if (socket) {
-      socket.emit('participant:host:start');
+      socket.emit('client:host:start');
     }
   };
 

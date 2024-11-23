@@ -39,20 +39,20 @@ export const Variables = {
     surface_oragne_weak: '#FFB184'
   },
   typography: {
-    font_medium_48: '500 48px "Pretendard-Variable", sans-serif',
-    font_medium_36: '500 36px "Pretendard-Variable", sans-serif',
-    font_medium_24: '500 24px "Pretendard-Variable", sans-serif',
-    font_medium_20: '500 20px "Pretendard-Variable", sans-serif',
-    font_medium_18: '500 20px "Pretendard-Variable", sans-serif',
-    font_medium_16: '500 16px "Pretendard-Variable", sans-serif',
-    font_bold_72: '700 72px "Pretendard-Variable", sans-serif',
-    font_bold_56: '700 56px "Pretendard-Variable", sans-serif',
-    font_bold_48: '700 48px "Pretendard-Variable", sans-serif',
-    font_bold_36: '700 36px "Pretendard-Variable", sans-serif',
-    font_bold_32: '700 32px "Pretendard-Variable", sans-serif',
-    font_bold_24: '700 24px "Pretendard-Variable", sans-serif',
-    font_bold_20: '700 20px "Pretendard-Variable", sans-serif',
-    font_bold_16: '700 16px "Pretendard-Variable", sans-serif'
+    font_medium_48: '500 48px "Pretendard", sans-serif',
+    font_medium_36: '500 36px "Pretendard", sans-serif',
+    font_medium_24: '500 24px "Pretendard", sans-serif',
+    font_medium_20: '500 20px "Pretendard", sans-serif',
+    font_medium_18: '500 20px "Pretendard", sans-serif',
+    font_medium_16: '500 16px "Pretendard", sans-serif',
+    font_bold_72: '700 72px "Pretendard", sans-serif',
+    font_bold_56: '700 56px "Pretendard", sans-serif',
+    font_bold_48: '700 48px "Pretendard", sans-serif',
+    font_bold_36: '700 36px "Pretendard", sans-serif',
+    font_bold_32: '700 32px "Pretendard", sans-serif',
+    font_bold_24: '700 24px "Pretendard", sans-serif',
+    font_bold_20: '700 20px "Pretendard", sans-serif',
+    font_bold_16: '700 16px "Pretendard", sans-serif'
   },
   shadow: {
     shadow_floating: '0px 4px 8px #00000040'

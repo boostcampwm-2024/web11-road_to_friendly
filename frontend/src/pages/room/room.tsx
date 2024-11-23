@@ -16,7 +16,7 @@ import LoadingPage from '../LoadingPage';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
 import useParticipants from '@/hooks/useParticipants';
-
+//test입니다
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
   height: 100vh;

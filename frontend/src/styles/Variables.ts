@@ -6,6 +6,7 @@ export const Variables = {
     surface_alt: '#C4C4C4',
     surface_strong: '#434343',
     surface_black: '#000000',
+    surface_weak: '#EFEFEF',
     surface_transparent_black_50: 'rgba(0, 0, 0, 0.5)', //50% 투명도
     surface_point: '#FF8A8A',
     text_default: '#000000',
@@ -30,7 +31,12 @@ export const Variables = {
     text_word_weak: '#62CA90',
     text_word_medium: '#00A549',
     text_word_strong: '#00602B',
-    surface_orange_strong: '#FF8548'
+    surface_youtube_weak: '#FFEBEB',
+    surface_file_weak: '#DCEBFF',
+    surface_green_strong: '#35BD79',
+    surface_green_weak: '#67E7A5',
+    surface_orange_strong: '#FF8548',
+    surface_oragne_weak: '#FFB184'
   },
   typography: {
     font_medium_48: '500 48px "Pretendard", sans-serif',

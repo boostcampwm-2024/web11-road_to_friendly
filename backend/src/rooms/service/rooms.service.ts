@@ -1,55 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { Room } from '../entity/Room';
-import { v4 as uuid } from 'uuid';
-import { Socket } from 'socket.io';
-import { RoomsJoinDto } from '../dto/rooms.join.dto';
 import { Topic } from '../entity/Topic';
+import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
+import { PHASE, Phase } from '../../common/definition/phase';
+import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
+import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.in-memory.repository';
 
 @Injectable()
 export class RoomsService {
-  private readonly rooms = new Map<string, Room>;
+  constructor(
+    private readonly roomsInMemoryRepository: RoomsInMemoryRepository,
+    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository
+  ) {
+  }
 
   create() {
-    const roomId = uuid();
-    this.rooms.set(roomId, new Room());
-    return roomId;
+    return this.roomsInMemoryRepository.create();
   }
 
   isExistRoom(roomId: string) {
-    return this.rooms.has(roomId);
+    return this.roomsInMemoryRepository.isExistRoom(roomId);
   }
 
-  isHost(client: Socket) {
-    const roomId = client.data.roomId;
-    const room = this.rooms.get(roomId);
-    const { participantId: hostId } = room.getHostInfo();
-    return hostId === client.id;
+  isHost(roomId: string, clientId: string) {
+    const hostId = this.roomsInMemoryRepository.getHostId(roomId);
+    return hostId === clientId;
   }
 
-  join(client: Socket, roomId: string): RoomsJoinDto {
-    client.join(roomId);
-    const room = this.rooms.get(roomId);
-
-    client.data.roomId = roomId;
-    client.data.nickname = this.randomNickname();
-    return room.join(client);
+  setHostIfHostUndefined(roomId: string, clientId: string) {
+    return this.roomsInMemoryRepository.setHostIfHostUndefined(roomId, clientId);
   }
 
-  private randomNickname() {
-    const cho = Math.floor(Math.random() * 19);
-    const jung = Math.floor(Math.random() * 21);
-    const jong = Math.floor(Math.random() * 28);
-    return String.fromCharCode(0xAC00 + 21 * 28 * cho + 28 * jung + jong);
-  }
-
-  exit(client: Socket, roomId: string) {
-    const room = this.rooms.get(roomId);
-    return room.exit(client);
-  }
-
-  getHostInfo(roomId: string) {
-    const room = this.rooms.get(roomId);
-    return room.getHostInfo();
+  getHostId(roomId: string) {
+    return this.roomsInMemoryRepository.getHostId(roomId);
   }
 
   private readonly topicTitles: string[] = [
@@ -71,7 +53,36 @@ export class RoomsService {
       [randomTopicTitles[i], randomTopicTitles[j]] = [randomTopicTitles[j], randomTopicTitles[i]];
     }
 
-    return randomTopicTitles.slice(0, count)
+    return randomTopicTitles
+      .slice(0, count)
       .map((title, index) => new Topic(index + 1, title, (index + 1) * (topicSecond + topicTermSecond)));
+  }
+
+  deleteRoom(roomId: string) {
+    this.roomsInMemoryRepository.deleteRoom(roomId);
+  }
+
+  setHost(roomId: string, nextHostId: string) {
+    this.roomsInMemoryRepository.updateHost(roomId, nextHostId);
+  }
+
+  isPhase(roomId: string, phase: Phase) {
+    return this.roomsInMemoryRepository.getPhase(roomId) === phase;
+  }
+
+  setPhase(roomId: string, phase: Phase) {
+    this.roomsInMemoryRepository.setPhase(roomId, phase);
+  }
+
+  generateBroadcastStatisticsEvent(roomId: string, finishTime: string, broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void) {
+    const finishTimestamp = new Date(finishTime).getTime();
+    const delay = finishTimestamp - Date.now();
+
+    setTimeout(async () => {
+      this.setPhase(roomId, PHASE.INTEREST);
+      const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+
+      broadcastStatistics(roomId, statistics);
+    }, delay);
   }
 }

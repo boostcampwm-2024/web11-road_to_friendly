@@ -4,18 +4,26 @@ import { KeywordsRequestDto } from '../dto/keywords.request.dto';
 import { KeywordsResponseDto } from '../dto/keywords.response.dto';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
+import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-})
-export class KeywordsGateway {
+@WebSocketGateway()
+@UseGuards(PhaseKeywordGuard)
+@UseFilters(SocketCustomExceptionFilter)
+export class KeywordsGateway implements OnModuleInit {
+  constructor(private readonly keywordsService: KeywordsService) {
+  }
+
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly keywordsService: KeywordsService) {
+  onModuleInit() {
+    const adapter = this.server.of('/').adapter;
+
+    adapter.on('delete-room', (roomId) => {
+      this.keywordsService.deleteRoomKeywordsInfo(roomId);
+    });
   }
 
   @SubscribeMessage('keyword:pick')
@@ -44,12 +52,5 @@ export class KeywordsGateway {
     this.server.to(roomId).emit('empathy:keyword:count', KeywordsAlertDto.of(keywordsInfoDto));
 
     return new KeywordsResponseDto(keywordsInfoDto);
-  }
-
-  @SubscribeMessage('keyword:result')
-  async broadcastKeywordStatistics(@ConnectedSocket() client: Socket) {
-    const roomId = client.data.roomId;
-    const statics = await this.keywordsService.getStatistics(roomId);
-    return Array.from(statics.entries());
   }
 }

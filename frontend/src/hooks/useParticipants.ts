@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useSocketStore } from '@/stores';
-import { convertArrayToObject } from '@/utils';
+
+import { useSocketStore , useParticipantsStore } from '@/stores';
 import { ParticipantItem } from '@/types';
-import { useParticipantsStore } from '@/stores';
+import { convertArrayToObject } from '@/utils';
 
 const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
   const { socket, connect, disconnect } = useSocketStore();

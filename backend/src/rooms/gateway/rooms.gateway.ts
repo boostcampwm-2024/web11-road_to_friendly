@@ -5,94 +5,99 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsException
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
-import { RoomsEnterResponseDto } from '../dto/rooms.enter.response.dto';
+import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+import { ConnectGuard } from '../../common/guard/connect.guard';
+import { JoinGuard } from '../../common/guard/join.guard';
+import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
+import { ExistGuard } from '../../common/guard/exist.guard';
+import { ClientsService } from '../../clients/service/clients.service';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-})
-export class RoomsGateway implements OnGatewayDisconnect {
+@WebSocketGateway()
+@UseFilters(SocketCustomExceptionFilter)
+export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly roomsService: RoomsService) {
+  constructor(
+    private readonly roomsService: RoomsService,
+    private readonly clientsService: ClientsService,
+  ) {
   }
 
+  onModuleInit() {
+    const adapter = this.server.of('/').adapter;
+
+    adapter.on('delete-room', (roomId) => {
+      this.roomsService.deleteRoom(roomId);
+    });
+  }
+
+  @UseGuards(ConnectGuard, ExistGuard)
   @SubscribeMessage('join')
-  join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto): RoomsEnterResponseDto {
-    if (!this.roomsService.isExistRoom(roomId)) {
-      return { status: 'error', message: '존재하지 않는 방입니다.' };
-    }
+  join(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { roomId }: RoomsEnterRequestDto,
+  ) {
+    client.join(roomId);
+    const hostId = this.roomsService.setHostIfHostUndefined(roomId, client.id);
 
-    if (client.rooms.size !== 1) {
-      return { status: 'error', message: '이미 접속한 방이 존재합니다.' };
-    }
-
-    const roomsJoinDto = this.roomsService.join(client, roomId);
+    client.data.roomId = roomId;
+    client.data.nickname = this.clientsService.randomNickname();
 
     this.server.to(roomId).emit('participant:join', {
       participantId: client.id,
-      nickname: client.data.nickname
+      nickname: client.data.nickname,
     });
+
+    const socketIds = this.server.sockets.adapter.rooms.get(roomId);
+
+    const participants = Array.from(socketIds).map((socketId) => {
+      const socket = this.server.sockets.sockets.get(socketId);
+      return {
+        id: socketId,
+        nickname: socket?.data?.nickname
+      };
+    });
+
+    const roomsJoinDto = { participants, hostId };
 
     return { status: 'ok', body: roomsJoinDto };
   }
 
-  @SubscribeMessage('client:update')
-  updateClientInfo(@ConnectedSocket() client: Socket, @MessageBody() { nickname }): void {
-    const roomId = client.data.roomId;
-
-    if (roomId === undefined) {
-      throw new WsException('방에 참가하지 않으셨습니다.');
-    }
-
-    client.data.nickname = nickname;
-
-    this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
-  }
-
-  @SubscribeMessage('participant:host:start')
-  startToEmpathise(@ConnectedSocket() client: Socket): void {
-    const roomId = client.data.roomId;
-
-    if (roomId === undefined) {
-      throw new WsException('방에 참가하지 않으셨습니다.');
-    }
-
-    if (!this.roomsService.isHost(client)) {
-      throw new WsException('호스트가 아닙니다.');
-    }
-
-    const empathyTopics = this.roomsService.getEmpathyTopics();
-
-    this.server.to(roomId).emit('empathy:start', { questions: empathyTopics });
-  }
-
+  @UseGuards(JoinGuard)
   handleDisconnect(client: Socket): void {
     const roomId = client.data.roomId;
 
-    if (!roomId) {
+    const clients = this.server.sockets.adapter.rooms.get(roomId);
+
+    if (clients === undefined || clients.size === 0) {
       return;
     }
 
-    const { hostChangeFlag } = this.roomsService.exit(client, roomId);
+    const hostId = this.roomsService.getHostId(roomId);
+    const hostChangeFlag = hostId === client.id;
+
     this.server.to(roomId).emit('participant:exit', {
       participantId: client.id,
-      nickname: client.data.nickname
+      nickname: client.data.nickname,
     });
 
     if (!hostChangeFlag) {
       return;
     }
 
-    const hostInfo = this.roomsService.getHostInfo(roomId);
-    this.server.to(roomId).emit('participant:host:change', hostInfo);
+    const nextHostId = Array.from(clients)[0];
+    const socket = this.server.sockets.sockets.get(nextHostId);
+
+    this.roomsService.setHost(roomId, nextHostId);
+
+    this.server.to(roomId).emit('participant:host:change', {
+      participantId: socket.id,
+      nickname: socket.data?.nickname,
+    });
   }
 }

@@ -1,7 +1,7 @@
 export class Topic {
-  private readonly questionId: number;
-  private readonly title: string;
-  private readonly expirationTime: string;
+  readonly questionId: number;
+  readonly title: string;
+  readonly expirationTime: string;
 
   constructor(questionId: number, title: string, addSecond: number) {
     this.questionId = questionId;

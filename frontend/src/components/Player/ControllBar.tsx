@@ -6,7 +6,6 @@ import PauseIcon from '@/assets/icons/pause-line.svg?react';
 import VolumeFillIcon from '@/assets/icons/volume-down-fill.svg?react';
 import VolumneMuteFillIcon from '@/assets/icons/volume-mute-fill.svg?react';
 
-import CCFillIcon from '@/assets/icons/closed-captioning-fill.svg?react';
 import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 
 import { useEffect, useRef } from 'react';
@@ -157,7 +156,6 @@ const ControllBar = ({
         </div>
       </div>
       <div css={rightSectionStyle}>
-        <CCFillIcon css={iconStyle} />
         <SettingFillIcon css={iconStyle} />
       </div>
     </div>

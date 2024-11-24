@@ -14,6 +14,7 @@ interface SliderProps {
   shouldHoverGrow?: boolean;
   shouldExtendWhenDrag?: boolean;
   color?: Color;
+  onMouseDownStateChange?: (isDown: boolean) => void;
 }
 
 const sliderWrapperStyle = (shouldExtendWhenDrag: boolean) =>
@@ -89,7 +90,8 @@ const Slider = ({
   bottom,
   shouldHoverGrow = false,
   shouldExtendWhenDrag = false,
-  color = { empty: Variables.colors.surface_transparent_white_35, fill: Variables.colors.surface_orange_strong }
+  color = { empty: Variables.colors.surface_transparent_white_35, fill: Variables.colors.surface_orange_strong },
+  onMouseDownStateChange = () => {}
 }: SliderProps) => {
   const [width, setWidth] = useState(0);
 
@@ -107,6 +109,7 @@ const Slider = ({
 
   function startDragging() {
     isMouseDownRef.current = true;
+    onMouseDownStateChange(true);
   }
 
   function syncProgressWithDrag(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -121,6 +124,7 @@ const Slider = ({
 
   function endDragging() {
     isMouseDownRef.current = false;
+    onMouseDownStateChange(false);
   }
 
   useEffect(() => {

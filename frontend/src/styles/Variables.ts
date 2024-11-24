@@ -3,6 +3,7 @@ export const Variables = {
     primary: '#fe4902',
     surface_default: '#F8F8F8',
     surface_white: '#FFFFFF',
+    surface_transparent_white_35: 'rgba(255, 255, 255, 0.35)',
     surface_alt: '#C4C4C4',
     surface_strong: '#434343',
     surface_black: '#000000',

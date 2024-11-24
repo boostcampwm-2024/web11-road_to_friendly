@@ -36,13 +36,17 @@ const Player = ({ url }: PlayerProps) => {
   const [controllbarHeight, setControllbarHeight] = useState(0);
 
   const prevPlayedSecRef = useRef(0);
+  const prevIsPlayingRef = useRef(false);
   const hasEndedRef = useRef(false);
+  const isDraggingSliderRef = useRef(false);
 
   function playVideo() {
+    prevIsPlayingRef.current = true;
     setIsPlaying(true);
   }
 
   function pauseVideo() {
+    prevIsPlayingRef.current = false;
     setIsPlaying(false);
   }
 
@@ -85,7 +89,11 @@ const Player = ({ url }: PlayerProps) => {
   function setFractionAndMove(newFraction: number) {
     player?.seekTo(newFraction, 'fraction');
     setFraction(newFraction);
-    if (!isPlaying) setIsPlaying(true);
+
+    // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
+    if (isDraggingSliderRef.current) setIsPlaying(false);
+    else setIsPlaying(prevIsPlayingRef.current);
+    // if (!isPlaying) setIsPlaying(true);
   }
 
   useEffect(() => {
@@ -115,9 +123,10 @@ const Player = ({ url }: PlayerProps) => {
             sendStateChangeIfHost('play');
           }}
           onEnded={() => {
+            if (isDraggingSliderRef.current) return;
             syncFractionWithProgress({ played: 1 });
             hasEndedRef.current = true;
-            setIsPlaying(false);
+            pauseVideo();
           }}
         />
         {isHovering && player && (
@@ -128,6 +137,9 @@ const Player = ({ url }: PlayerProps) => {
               bottom={controllbarHeight}
               shouldHoverGrow={true}
               shouldExtendWhenDrag={true}
+              onMouseDownStateChange={(isDown: boolean) => {
+                isDraggingSliderRef.current = isDown;
+              }}
             />
             <ControllBar
               currentTime={player.getCurrentTime()}

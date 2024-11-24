@@ -130,8 +130,8 @@ const Player = ({ url }: PlayerProps) => {
               shouldExtendWhenDrag={true}
             />
             <ControllBar
-              currentTime={Math.floor(player.getCurrentTime())}
-              duration={Math.floor(player.getDuration())}
+              currentTime={player.getCurrentTime()}
+              duration={player.getDuration()}
               setControllbarHeight={setControllbarHeight}
               volume={volume}
               setVolume={setVolume}

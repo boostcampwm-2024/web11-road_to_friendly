@@ -107,7 +107,7 @@ const ControllBar = ({
         </div>
 
         <div css={timeSectionStyle}>
-          {convertSecToHHMMSS(currentTime)} / {convertSecToHHMMSS(duration)}
+          {convertSecToHHMMSS(Math.round(currentTime))} / {convertSecToHHMMSS(Math.round(duration))}
         </div>
       </div>
       <div css={rightSectionStyle}>

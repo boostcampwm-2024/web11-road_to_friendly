@@ -2,9 +2,9 @@ import { useParticipantsStore, useSocketStore } from '@/stores';
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import ProgressBar from './ProgressBar';
 import ControllBar from './ControllBar';
 import { divideSize, multiplySize } from '@/utils';
+import { Slider } from '@components/common';
 
 type StateChange = 'pause' | 'play';
 
@@ -94,10 +94,12 @@ const Player = ({ url }: PlayerProps) => {
         />
         {isHovering && player && (
           <div>
-            <ProgressBar
+            <Slider
               fraction={fraction}
-              setFractionAndMove={setFractionAndMove}
-              progressBarBottom={controllbarHeight}
+              setFraction={setFractionAndMove}
+              bottom={controllbarHeight}
+              shouldHoverGrow={true}
+              shouldExtendWhenDrag={true}
             />
             <ControllBar
               currentTime={Math.floor(player.getCurrentTime())}

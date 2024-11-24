@@ -1,6 +1,6 @@
 import { useParticipantsStore, useSocketStore } from '@/stores';
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import ControllBar from './ControllBar';
 import { divideSize, multiplySize } from '@/utils';
@@ -33,8 +33,10 @@ const Player = ({ url }: PlayerProps) => {
   const [fraction, setFraction] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const [volume, setVolume] = useState(0);
-
   const [controllbarHeight, setControllbarHeight] = useState(0);
+
+  const prevPlayedSecRef = useRef(0);
+  const hasEndedRef = useRef(false);
 
   function playVideo() {
     setIsPlaying(true);
@@ -57,7 +59,27 @@ const Player = ({ url }: PlayerProps) => {
   }
 
   function syncFractionWithProgress({ played }: { played: number }) {
+    if (hasEndedRef.current) return;
     setFraction(played);
+  }
+
+  function onProgressWithReqeustAnimation(callback: Function) {
+    if (!(isPlaying && player && !hasEndedRef.current)) return;
+
+    const playedSec = player.getCurrentTime();
+    const duration = player.getDuration();
+
+    if (duration) {
+      const played = playedSec / duration;
+
+      if (playedSec !== prevPlayedSecRef.current) {
+        callback({ played });
+      }
+
+      prevPlayedSecRef.current = playedSec;
+    }
+
+    requestAnimationFrame(() => onProgressWithReqeustAnimation(callback));
   }
 
   function setFractionAndMove(newFraction: number) {
@@ -88,9 +110,15 @@ const Player = ({ url }: PlayerProps) => {
             sendStateChangeIfHost('pause');
           }}
           onPlay={() => {
+            hasEndedRef.current = false;
+            onProgressWithReqeustAnimation(syncFractionWithProgress);
             sendStateChangeIfHost('play');
           }}
-          onProgress={syncFractionWithProgress}
+          onEnded={() => {
+            syncFractionWithProgress({ played: 1 });
+            hasEndedRef.current = true;
+            setIsPlaying(false);
+          }}
         />
         {isHovering && player && (
           <div>

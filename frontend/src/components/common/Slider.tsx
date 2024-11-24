@@ -57,13 +57,7 @@ const sliderStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: boolea
       : {}
   );
 
-const sliderFillStyle = (
-  fraction: number,
-  colorFill: string,
-  isMouseDown: boolean,
-  bottom: number,
-  shouldHoverGrow: boolean
-) =>
+const sliderFillStyle = (fraction: number, colorFill: string, bottom: number, shouldHoverGrow: boolean) =>
   css(
     {
       position: 'absolute',
@@ -74,8 +68,7 @@ const sliderFillStyle = (
 
       PointerEvent: 'none',
       transformOrigin: 'left',
-      transform: `scaleX(${fraction})`,
-      transition: isMouseDown ? 'none' : 'transform 0.1s ease'
+      transform: `scaleX(${fraction})`
     },
     shouldHoverGrow
       ? {
@@ -148,7 +141,7 @@ const Slider = ({
         onMouseLeave={endDragging}
       >
         <div css={sliderStyle(bottom, color.empty, shouldHoverGrow)}></div>
-        <div css={sliderFillStyle(fraction, color.fill, isMouseDownRef.current, bottom, shouldHoverGrow)}></div>
+        <div css={sliderFillStyle(fraction, color.fill, bottom, shouldHoverGrow)}></div>
       </div>
     </>
   );

@@ -4,11 +4,13 @@ import { css } from '@emotion/react';
 import PlayIcon from '@/assets/icons/play-fill.svg?react';
 import PauseIcon from '@/assets/icons/pause-line.svg?react';
 import VolumeFillIcon from '@/assets/icons/volume-down-fill.svg?react';
+import VolumneMuteFillIcon from '@/assets/icons/volume-mute-fill.svg?react';
 
 import CCFillIcon from '@/assets/icons/closed-captioning-fill.svg?react';
 import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 
 import { useEffect, useRef } from 'react';
+import { Slider } from '@components/common';
 
 interface ControllBarProps {
   setControllbarHeight: React.Dispatch<React.SetStateAction<number>>;
@@ -16,30 +18,34 @@ interface ControllBarProps {
   duration: number;
   volume: number;
   setVolume: React.Dispatch<React.SetStateAction<number>>;
+  prevVolumeRef: React.MutableRefObject<number>;
   isPlaying: boolean;
   playVideo: () => void;
   pauseVideo: () => void;
 }
 
-const controllBarStyle = css({
-  position: 'absolute',
-  bottom: '0',
+const controllBarStyle = (height: string) =>
+  css({
+    position: 'absolute',
+    bottom: '0',
 
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '0.275rem 2rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0.25rem 2rem',
 
-  width: '100%',
-  backgroundColor: Variables.colors.surface_strong,
-  zIndex: '998'
-});
+    width: '100%',
+    height: height,
+    backgroundColor: Variables.colors.surface_strong,
+    zIndex: '998'
+  });
 
 const leftSectionStyle = css({
   display: 'flex',
   alignItems: 'center',
   gap: '2rem'
 });
+
 const rightSectionStyle = css({ display: 'flex', gap: '2rem', alignItems: 'center' });
 
 const timeSectionStyle = css({ color: Variables.colors.text_white, font: Variables.typography.font_medium_16 });
@@ -53,9 +59,12 @@ const iconStyle = css({
 });
 
 const volumeContainerStyle = css({
+  position: 'relative',
   display: 'flex',
   alignItems: 'center',
-  gap: '1rem'
+  gap: '1rem',
+  cursor: 'pointer',
+  height: '100%'
 });
 
 function convertSecToHHMMSS(sec: number, minParts: number = 2) {
@@ -83,19 +92,42 @@ const ControllBar = ({
   setControllbarHeight,
   volume,
   setVolume,
+  prevVolumeRef,
   isPlaying,
   playVideo,
   pauseVideo
 }: ControllBarProps) => {
   const controllBarRef = useRef<HTMLDivElement>(null);
+  const isMuted = volume === 0;
 
   useEffect(() => {
     if (!controllBarRef.current) return;
     setControllbarHeight(controllBarRef.current.offsetHeight);
   }, []);
 
+  function toggleVolume() {
+    if (isMuted) setVolume(prevVolumeRef.current);
+    else {
+      prevVolumeRef.current = volume;
+      setVolume(0);
+    }
+  }
+
+  const VolumeIcon = isMuted ? VolumneMuteFillIcon : VolumeFillIcon;
+
   return (
-    <div css={controllBarStyle} ref={controllBarRef}>
+    <div
+      css={
+        controllBarRef.current
+          ? controllBarStyle(`${controllBarRef.current.offsetHeight}px`)
+          : controllBarStyle('fit-content')
+      }
+      ref={controllBarRef}
+      onDrag={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       <div css={leftSectionStyle}>
         {isPlaying ? (
           <PauseIcon css={iconStyle} onClick={pauseVideo} />
@@ -103,7 +135,21 @@ const ControllBar = ({
           <PlayIcon css={iconStyle} onClick={playVideo} />
         )}
         <div css={volumeContainerStyle}>
-          <VolumeFillIcon css={iconStyle} />
+          <VolumeIcon css={iconStyle} onClick={toggleVolume} />
+          <div
+            css={{
+              position: 'relative',
+              width: '3rem',
+              height: controllBarRef.current ? `${controllBarRef.current.offsetHeight}px` : '100%'
+            }}
+          >
+            <Slider
+              fraction={volume}
+              setFraction={setVolume}
+              bottom={controllBarRef.current ? controllBarRef.current.offsetHeight / 2 : 0}
+              shouldExtendAnytime={true}
+            />
+          </div>
         </div>
 
         <div css={timeSectionStyle}>

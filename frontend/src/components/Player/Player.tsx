@@ -36,6 +36,7 @@ const Player = ({ url }: PlayerProps) => {
   const [controllbarHeight, setControllbarHeight] = useState(0);
 
   const prevPlayedSecRef = useRef(0);
+  const prevVolumeRef = useRef(0);
   const prevIsPlayingRef = useRef(false);
   const hasEndedRef = useRef(false);
   const isDraggingSliderRef = useRef(false);
@@ -93,7 +94,6 @@ const Player = ({ url }: PlayerProps) => {
     // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
     if (isDraggingSliderRef.current) setIsPlaying(false);
     else setIsPlaying(prevIsPlayingRef.current);
-    // if (!isPlaying) setIsPlaying(true);
   }
 
   useEffect(() => {
@@ -147,6 +147,7 @@ const Player = ({ url }: PlayerProps) => {
               setControllbarHeight={setControllbarHeight}
               volume={volume}
               setVolume={setVolume}
+              prevVolumeRef={prevVolumeRef}
               isPlaying={isPlaying}
               playVideo={playVideo}
               pauseVideo={pauseVideo}

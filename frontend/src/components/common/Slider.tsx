@@ -13,20 +13,22 @@ interface SliderProps {
   bottom: number;
   shouldHoverGrow?: boolean;
   shouldExtendWhenDrag?: boolean;
+  shouldExtendAnytime?: boolean;
   color?: Color;
   onMouseDownStateChange?: (isDown: boolean) => void;
 }
 
-const sliderWrapperStyle = (shouldExtendWhenDrag: boolean) =>
+const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: boolean) =>
   css(
     {
       position: 'absolute',
       bottom: '0',
       width: '100%',
-      height: '0.25rem',
+      height: '0.35rem',
       zIndex: '999',
       cursor: 'pointer'
     },
+    shouldExtendAnytime ? { height: '100%' } : {},
     shouldExtendWhenDrag
       ? {
           ':active': {
@@ -90,6 +92,7 @@ const Slider = ({
   bottom,
   shouldHoverGrow = false,
   shouldExtendWhenDrag = false,
+  shouldExtendAnytime = false,
   color = { empty: Variables.colors.surface_transparent_white_35, fill: Variables.colors.surface_orange_strong },
   onMouseDownStateChange = () => {}
 }: SliderProps) => {
@@ -134,7 +137,7 @@ const Slider = ({
   return (
     <>
       <div
-        css={sliderWrapperStyle(shouldExtendWhenDrag)}
+        css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime)}
         ref={sliderRef}
         onDrag={(e) => {
           e.preventDefault();

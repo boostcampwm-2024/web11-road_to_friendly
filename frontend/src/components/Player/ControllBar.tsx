@@ -8,8 +8,9 @@ import VolumneMuteFillIcon from '@/assets/icons/volume-mute-fill.svg?react';
 
 import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Slider } from '@components/common';
+import SettingPanel from './SettingPanel';
 
 interface ControllBarProps {
   setControllbarHeight: React.Dispatch<React.SetStateAction<number>>;
@@ -47,7 +48,7 @@ const leftSectionStyle = css({
 
 const rightSectionStyle = css({ display: 'flex', gap: '2rem', alignItems: 'center' });
 
-const timeSectionStyle = css({ color: Variables.colors.text_white, font: Variables.typography.font_medium_16 });
+const timeSectionStyle = css({ color: Variables.colors.text_white, font: Variables.typography.font_medium_14 });
 
 const iconStyle = css({
   fill: Variables.colors.text_white,
@@ -96,6 +97,7 @@ const ControllBar = ({
   playVideo,
   pauseVideo
 }: ControllBarProps) => {
+  const [settingPanel, setSettingPanel] = useState(false);
   const controllBarRef = useRef<HTMLDivElement>(null);
   const isMuted = volume === 0;
 
@@ -156,7 +158,10 @@ const ControllBar = ({
         </div>
       </div>
       <div css={rightSectionStyle}>
-        <SettingFillIcon css={iconStyle} />
+        <SettingFillIcon css={iconStyle} onClick={() => setSettingPanel(!settingPanel)} />
+        {settingPanel && controllBarRef.current && (
+          <SettingPanel controllBarHeight={controllBarRef.current.offsetHeight} />
+        )}
       </div>
     </div>
   );

@@ -12,8 +12,16 @@ interface PlayerProps {
   url: string;
 }
 
+// 기본 플레이어의 비율은 16:9 비율
+const PLAYER_WIDTH_DEFAULT = '40rem';
+const PLAYER_HEIGHT_DEFAULT = divideSize(PLAYER_WIDTH_DEFAULT, 16 / 9);
+const PLAYER_HEIGHT_DOUBLE = multiplySize(PLAYER_HEIGHT_DEFAULT, 2);
+
 const wrapperStyle = css({
-  position: 'relative'
+  position: 'relative',
+  width: PLAYER_WIDTH_DEFAULT,
+  height: PLAYER_HEIGHT_DEFAULT,
+  overflow: 'hidden'
 });
 
 const Player = ({ url }: PlayerProps) => {
@@ -68,7 +76,8 @@ const Player = ({ url }: PlayerProps) => {
     <>
       <div css={wrapperStyle} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
         <ReactPlayer
-          style={{ pointerEvents: 'none', zIndex: '998' }}
+          style={{ pointerEvents: 'none', zIndex: '998', position: 'relative', transform: 'translateY(-25%)' }}
+          height={PLAYER_HEIGHT_DOUBLE}
           playing={isPlaying}
           onReady={attachPlayerEvent}
           controls={false}
@@ -82,11 +91,6 @@ const Player = ({ url }: PlayerProps) => {
             sendStateChangeIfHost('play');
           }}
           onProgress={syncFractionWithProgress}
-          config={{
-            embedOptions: {
-              ecver: 2
-            }
-          }}
         />
         {isHovering && player && (
           <div>

@@ -35,13 +35,19 @@ const sliderWrapperStyle = (shouldExtendWhenDrag: boolean) =>
       : {}
   );
 
-const sliderStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: boolean) =>
+const sliderCommonStyle = (bottom: number) =>
+  css({
+    position: 'absolute',
+    bottom: `${bottom}px`,
+    width: '100%',
+    height: '0.25rem',
+    borderRadius: '1rem'
+  });
+
+const sliderEmptyStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: boolean) =>
   css(
+    sliderCommonStyle(bottom),
     {
-      position: 'absolute',
-      bottom: `${bottom}px`,
-      width: '100%',
-      height: '0.25rem',
       backgroundColor: colorEmpty,
       transition: 'transform 0.2s ease-in-out'
     },
@@ -59,14 +65,9 @@ const sliderStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: boolea
 
 const sliderFillStyle = (fraction: number, colorFill: string, bottom: number, shouldHoverGrow: boolean) =>
   css(
+    sliderCommonStyle(bottom),
     {
-      position: 'absolute',
-      bottom: `${bottom}px`,
       backgroundColor: colorFill,
-      width: '100%',
-      height: '0.25rem',
-
-      PointerEvent: 'none',
       transformOrigin: 'left',
       transform: `scaleX(${fraction})`
     },
@@ -88,7 +89,7 @@ const Slider = ({
   bottom,
   shouldHoverGrow = false,
   shouldExtendWhenDrag = false,
-  color = { empty: Variables.colors.surface_word_weak, fill: Variables.colors.surface_orange_strong }
+  color = { empty: Variables.colors.surface_transparent_white_35, fill: Variables.colors.surface_orange_strong }
 }: SliderProps) => {
   const [width, setWidth] = useState(0);
 
@@ -140,7 +141,7 @@ const Slider = ({
         onMouseUp={endDragging}
         onMouseLeave={endDragging}
       >
-        <div css={sliderStyle(bottom, color.empty, shouldHoverGrow)}></div>
+        <div css={sliderEmptyStyle(bottom, color.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, color.fill, bottom, shouldHoverGrow)}></div>
       </div>
     </>

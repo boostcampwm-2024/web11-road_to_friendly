@@ -11,8 +11,10 @@ import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 import { useEffect, useRef, useState } from 'react';
 import { Slider } from '@components/common';
 import SettingPanel from './SettingPanel';
+import YouTubePlayer from 'react-player/youtube';
 
 interface ControllBarProps {
+  player: YouTubePlayer;
   setControllbarHeight: React.Dispatch<React.SetStateAction<number>>;
   currentTime: number;
   duration: number;
@@ -87,6 +89,7 @@ function convertSecToHHMMSS(sec: number, minParts: number = 2) {
 }
 
 const ControllBar = ({
+  player,
   currentTime,
   duration,
   setControllbarHeight,
@@ -160,7 +163,7 @@ const ControllBar = ({
       <div css={rightSectionStyle}>
         <SettingFillIcon css={iconStyle} onClick={() => setSettingPanel(!settingPanel)} />
         {settingPanel && controllBarRef.current && (
-          <SettingPanel controllBarHeight={controllBarRef.current.offsetHeight} />
+          <SettingPanel player={player} controllBarHeight={controllBarRef.current.offsetHeight} />
         )}
       </div>
     </div>

@@ -24,7 +24,7 @@ const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: 
       position: 'absolute',
       bottom: '0',
       width: '100%',
-      height: '0.35rem',
+      height: '0.25rem',
       zIndex: '999',
       cursor: 'pointer'
     },

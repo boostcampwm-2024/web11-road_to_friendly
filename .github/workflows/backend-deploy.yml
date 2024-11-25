@@ -2,7 +2,7 @@ name: Deploy BE(NestJS with PM2)
 on:
   push:
     branches:
-      - cicd/be
+      - release
 jobs:
   deploy:
     runs-on: ubuntu-latest

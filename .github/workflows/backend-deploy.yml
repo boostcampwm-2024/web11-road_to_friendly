@@ -1,6 +1,6 @@
 name: Deploy BE(NestJS with PM2)
 on:
-  pull_request:
+  push:
     branches:
       - cicd/be
 jobs:
@@ -40,6 +40,9 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            
             APP_NAME="road-to-friendly"
             DEPLOY_PATH="~/project"
             

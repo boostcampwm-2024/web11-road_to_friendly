@@ -8,7 +8,6 @@ import { Content } from '@/types';
 
 import { ContentPresentSection, WaitingListEmpty, WaitingListInfo } from './index';
 
-
 const ContentShareViewStyle = css([
   {
     position: 'relative',

@@ -43,6 +43,8 @@ export class InterestsGateway implements OnModuleInit {
     } else {
       this.server.to(roomId).emit('share:interest:add', interestsBroadcastResponseDto.nowQueueSize);
     }
+
+    return { status: 'ok' };
   }
 
   @SubscribeMessage('interest:youtube')
@@ -56,6 +58,8 @@ export class InterestsGateway implements OnModuleInit {
     } else {
       this.server.to(roomId).emit('share:interest:add', interestsBroadcastResponseDto.nowQueueSize);
     }
+
+    return { status: 'ok' };
   }
 
   @SubscribeMessage('interest:next')

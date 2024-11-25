@@ -67,7 +67,7 @@ export class InterestsImageRepository implements InterestsRepository {
   }
 
   async uploadImage(data: InterestsImageDto) {
-    const extension = data.fileName.split('.').pop()?.toLowerCase();
+    const extension = data.fileName.split('.').pop()?.toUpperCase();
     const uniqueFileName = `${uuid()}-${data.fileName}`;
 
     const params = {

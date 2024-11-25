@@ -27,7 +27,7 @@ const wrapperStyle = css({
 const Player = ({ url }: PlayerProps) => {
   const { socket, connect } = useSocketStore();
   const { hostId } = useParticipantsStore();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
   const [isHost, setIsHost] = useState(false);
   const [fraction, setFraction] = useState(0);
@@ -106,7 +106,7 @@ const Player = ({ url }: PlayerProps) => {
     <>
       <div css={wrapperStyle} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
         <ReactPlayer
-          style={{ pointerEvents: 'none', zIndex: '998', position: 'relative', transform: 'translateY(-25%)' }}
+          style={{ pointerEvents: 'none', zIndex: '997', position: 'relative', transform: 'translateY(-25%)' }}
           height={PLAYER_HEIGHT_DOUBLE}
           playing={isPlaying}
           onReady={attachPlayerEvent}
@@ -128,20 +128,35 @@ const Player = ({ url }: PlayerProps) => {
             hasEndedRef.current = true;
             pauseVideo();
           }}
+          config={{ playerVars: { autoplay: 1 } }}
         />
         {isHovering && player && (
           <div>
-            <Slider
-              fraction={fraction}
-              setFraction={setFractionAndMove}
-              bottom={controllbarHeight}
-              shouldHoverGrow={true}
-              shouldExtendWhenDrag={true}
-              onMouseDownStateChange={(isDown: boolean) => {
-                isDraggingSliderRef.current = isDown;
+            <div
+              css={{
+                position: 'absolute',
+                bottom: '0',
+                width: '95%',
+                height: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: '998'
               }}
-            />
+            >
+              <Slider
+                fraction={fraction}
+                setFraction={setFractionAndMove}
+                bottom={controllbarHeight + 4}
+                shouldHoverGrow={true}
+                shouldExtendWhenDrag={true}
+                shouldThumbAnytime={false}
+                onMouseDownStateChange={(isDown: boolean) => {
+                  isDraggingSliderRef.current = isDown;
+                }}
+              />
+            </div>
             <ControllBar
+              player={player}
               currentTime={player.getCurrentTime()}
               duration={player.getDuration()}
               setControllbarHeight={setControllbarHeight}

@@ -26,6 +26,17 @@ interface ControllBarProps {
   pauseVideo: () => void;
 }
 
+const controllBarBackgroundStyle = css({
+  position: 'absolute',
+  bottom: '0',
+
+  background: `linear-gradient(to bottom, transparent, ${Variables.colors.surface_transparent_black_50} 85%)`,
+  width: '100%',
+  height: '3.5rem',
+  zIndex: '997',
+  pointerEvents: 'none'
+});
+
 const controllBarStyle = (height: string) =>
   css({
     position: 'absolute',
@@ -34,11 +45,10 @@ const controllBarStyle = (height: string) =>
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '0.25rem 2rem',
+    padding: '0.25rem 2rem 0.5rem 2rem',
 
     width: '100%',
     height: height,
-    backgroundColor: Variables.colors.surface_strong,
     zIndex: '998'
   });
 
@@ -100,7 +110,7 @@ const ControllBar = ({
   playVideo,
   pauseVideo
 }: ControllBarProps) => {
-  const [settingPanel, setSettingPanel] = useState(false);
+  const [openSettingPanel, setOpenSettingPanel] = useState(false);
   const controllBarRef = useRef<HTMLDivElement>(null);
   const isMuted = volume === 0;
 
@@ -120,53 +130,60 @@ const ControllBar = ({
   const VolumeIcon = isMuted ? VolumneMuteFillIcon : VolumeFillIcon;
 
   return (
-    <div
-      css={
-        controllBarRef.current
-          ? controllBarStyle(`${controllBarRef.current.offsetHeight}px`)
-          : controllBarStyle('fit-content')
-      }
-      ref={controllBarRef}
-      onDrag={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-    >
-      <div css={leftSectionStyle}>
-        {isPlaying ? (
-          <PauseIcon css={iconStyle} onClick={pauseVideo} />
-        ) : (
-          <PlayIcon css={iconStyle} onClick={playVideo} />
-        )}
-        <div css={volumeContainerStyle}>
-          <VolumeIcon css={iconStyle} onClick={toggleVolume} />
-          <div
-            css={{
-              position: 'relative',
-              width: '3rem',
-              height: controllBarRef.current ? `${controllBarRef.current.offsetHeight}px` : '100%'
-            }}
-          >
-            <Slider
-              fraction={volume}
-              setFraction={setVolume}
-              bottom={controllBarRef.current ? controllBarRef.current.offsetHeight / 2 : 0}
-              shouldExtendAnytime={true}
-            />
+    <>
+      <div css={controllBarBackgroundStyle}> </div>
+      <div
+        css={
+          controllBarRef.current
+            ? controllBarStyle(`${controllBarRef.current.offsetHeight}px`)
+            : controllBarStyle('fit-content')
+        }
+        ref={controllBarRef}
+        onDrag={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <div css={leftSectionStyle}>
+          {isPlaying ? (
+            <PauseIcon css={iconStyle} onClick={pauseVideo} />
+          ) : (
+            <PlayIcon css={iconStyle} onClick={playVideo} />
+          )}
+          <div css={volumeContainerStyle}>
+            <VolumeIcon css={iconStyle} onClick={toggleVolume} />
+            <div
+              css={{
+                position: 'relative',
+                width: '3rem',
+                height: controllBarRef.current ? `${controllBarRef.current.offsetHeight}px` : '100%'
+              }}
+            >
+              <Slider
+                fraction={volume}
+                setFraction={setVolume}
+                bottom={controllBarRef.current ? controllBarRef.current.offsetHeight / 2 : 0}
+                shouldExtendAnytime={true}
+              />
+            </div>
+          </div>
+
+          <div css={timeSectionStyle}>
+            {convertSecToHHMMSS(Math.round(currentTime))} / {convertSecToHHMMSS(Math.round(duration))}
           </div>
         </div>
-
-        <div css={timeSectionStyle}>
-          {convertSecToHHMMSS(Math.round(currentTime))} / {convertSecToHHMMSS(Math.round(duration))}
+        <div css={rightSectionStyle}>
+          <SettingFillIcon css={iconStyle} onClick={() => setOpenSettingPanel(!openSettingPanel)} />
+          {controllBarRef.current && (
+            <SettingPanel
+              openSettingPanel={openSettingPanel}
+              player={player}
+              controllBarHeight={controllBarRef.current.offsetHeight}
+            />
+          )}
         </div>
       </div>
-      <div css={rightSectionStyle}>
-        <SettingFillIcon css={iconStyle} onClick={() => setSettingPanel(!settingPanel)} />
-        {settingPanel && controllBarRef.current && (
-          <SettingPanel player={player} controllBarHeight={controllBarRef.current.offsetHeight} />
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 

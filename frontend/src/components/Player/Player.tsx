@@ -24,7 +24,8 @@ const wrapperStyle = css({
   position: 'relative',
   width: PLAYER_WIDTH_DEFAULT,
   height: PLAYER_HEIGHT_DEFAULT,
-  overflow: 'hidden'
+  overflow: 'hidden',
+  borderRadius: '1rem'
 });
 
 const mediaSectionStyle = css({
@@ -152,7 +153,14 @@ const Player = ({ url }: PlayerProps) => {
 
   return (
     <>
-      <div css={wrapperStyle} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+      <div
+        css={wrapperStyle}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => {
+          setIsHovering(false);
+          debugger;
+        }}
+      >
         <div css={mediaSectionStyle} onClick={toggleVideo}></div>
 
         {isPlaying ? (
@@ -162,7 +170,7 @@ const Player = ({ url }: PlayerProps) => {
         )}
 
         <ReactPlayer
-          style={{ pointerEvents: 'none', zIndex: '997', position: 'relative', transform: 'translateY(-25%)' }}
+          style={{ pointerEvents: 'none', zIndex: '996', position: 'relative', transform: 'translateY(-25%)' }}
           height={PLAYER_HEIGHT_DOUBLE}
           playing={isPlaying}
           onReady={attachPlayerEvent}
@@ -202,7 +210,7 @@ const Player = ({ url }: PlayerProps) => {
               <Slider
                 fraction={fraction}
                 setFraction={setFractionAndMove}
-                bottom={controllbarHeight + 4}
+                bottom={controllbarHeight + 6}
                 shouldHoverGrow={true}
                 shouldExtendWhenDrag={true}
                 shouldThumbAnytime={false}

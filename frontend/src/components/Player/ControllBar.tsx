@@ -32,8 +32,8 @@ const controllBarBackgroundStyle = css({
 
   background: `linear-gradient(to bottom, transparent, ${Variables.colors.surface_transparent_black_50} 85%)`,
   width: '100%',
-  height: '3.5rem',
-  zIndex: '997',
+  height: '4rem',
+  zIndex: '996',
   pointerEvents: 'none'
 });
 
@@ -45,7 +45,7 @@ const controllBarStyle = (height: string) =>
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '0.25rem 2rem 0.5rem 2rem',
+    padding: '0.25rem 2rem 0.65rem 2rem',
 
     width: '100%',
     height: height,
@@ -60,7 +60,7 @@ const leftSectionStyle = css({
 
 const rightSectionStyle = css({ display: 'flex', gap: '2rem', alignItems: 'center' });
 
-const timeSectionStyle = css({ color: Variables.colors.text_white, font: Variables.typography.font_medium_14 });
+const timeSectionStyle = css({ color: Variables.colors.text_white, font: Variables.typography.font_light_14 });
 
 const iconStyle = css({
   fill: Variables.colors.text_white,
@@ -164,6 +164,7 @@ const ControllBar = ({
                 setFraction={setVolume}
                 bottom={controllBarRef.current ? controllBarRef.current.offsetHeight / 2 : 0}
                 shouldExtendAnytime={true}
+                color={{ thumb: Variables.colors.surface_white }}
               />
             </div>
           </div>

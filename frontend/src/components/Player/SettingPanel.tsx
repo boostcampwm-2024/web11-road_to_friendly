@@ -40,7 +40,7 @@ const settingPanelStyle = (openSettingPanel: boolean, controllBarHeight: number)
 
     position: 'absolute',
     right: '1rem',
-    bottom: `${controllBarHeight + 12}px`,
+    bottom: `${controllBarHeight + 16}px`,
 
     button: {
       backgroundColor: 'transparent'

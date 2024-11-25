@@ -26,8 +26,20 @@ interface SettingSpeedProps {
 }
 
 interface SettingQualityProps {
+  player: YouTubePlayer;
   setSettingTarget: React.Dispatch<React.SetStateAction<SettingTarget>>;
 }
+
+const qualityTextMap: Record<string, string> = {
+  highres: '최고 화질',
+  hd1080: '1080p',
+  hd720: '720p',
+  large: '480p',
+  medium: '360p',
+  small: '240p',
+  tiny: '144p',
+  auto: '자동'
+};
 
 const settingPanelStyle = (controllBarHeight: number) =>
   css({
@@ -172,15 +184,48 @@ const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
   );
 };
 
-const SettingQuality = ({ setSettingTarget }: SettingQualityProps) => {
+const SettingQuality = ({ setSettingTarget, player }: SettingQualityProps) => {
+  const internalPlayer = player.getInternalPlayer();
+
+  const [quality, setQuality] = useState(internalPlayer.getPlaybackQuality());
+
+  function getQualityText(quality: string) {
+    if (qualityTextMap[quality]) return qualityTextMap[quality];
+
+    const numberRegex = /([0-9]+)/;
+    const numberMatches = quality.match(numberRegex);
+    if (numberMatches) return numberMatches[1];
+    return quality;
+  }
+
   return (
     <>
-      <div>
-        <button css={panelHeaderStyle} onClick={() => setSettingTarget('selection')}>
-          <ArrowLeftIcon css={iconStyle} />
-          <p>화질</p>
-        </button>
-        <div>옵션리스트</div>
+      <button css={panelHeaderStyle} onClick={() => setSettingTarget('selection')}>
+        <ArrowLeftIcon css={iconStyle} />
+        <p>화질</p>
+      </button>
+      <div css={detailOptionListStyle}>
+        {internalPlayer.getAvailableQualityLevels().map((playbackQuality: number) => {
+          const checked = quality === playbackQuality;
+          return (
+            <label key={playbackQuality} css={optionItemStyle(checked)}>
+              {checked && <CheckIcon css={checkedIconStyle} />}
+              {getQualityText(playbackQuality.toString())}
+              <input
+                type="radio"
+                name="playbackRadio"
+                css={{ display: 'none' }}
+                value={playbackQuality}
+                checked={checked}
+                onChange={(e) => {
+                  const newQuality = e.target.value;
+                  setQuality(newQuality);
+                  internalPlayer.setPlaybackQuality(newQuality);
+                }}
+              />
+            </label>
+          );
+        })}
       </div>
     </>
   );
@@ -194,7 +239,7 @@ const SettingPanel = ({ player, controllBarHeight }: SettingPanelProps) => {
       <div css={[settingPanelStyle(controllBarHeight), scrollbarStyle]}>
         {settingTarget === 'selection' && <SettingSelection setSettingTarget={setSettingTarget} />}
         {settingTarget === 'speed' && <SettingSpeed setSettingTarget={setSettingTarget} player={player} />}
-        {settingTarget === 'quality' && <SettingQuality setSettingTarget={setSettingTarget} />}
+        {settingTarget === 'quality' && <SettingQuality setSettingTarget={setSettingTarget} player={player} />}
       </div>
     </>
   );

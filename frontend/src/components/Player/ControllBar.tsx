@@ -19,7 +19,7 @@ interface ControllBarProps {
   currentTime: number;
   duration: number;
   volume: number;
-  setVolume: React.Dispatch<React.SetStateAction<number>>;
+  setVolume: (volume: number) => void;
   prevVolumeRef: React.MutableRefObject<number>;
   isPlaying: boolean;
   playVideo: () => void;

@@ -8,6 +8,7 @@ import ReactPlayer from 'react-player/youtube';
 import ControllBar from './ControllBar';
 import PlayIcon from '@/assets/icons/play-fill.svg?react';
 import PauseIcon from '@/assets/icons/pause-line.svg?react';
+import { useFraction } from '@/hooks';
 
 type StateChange = 'pause' | 'play';
 
@@ -74,9 +75,9 @@ const Player = ({ url }: PlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
   const [isHost, setIsHost] = useState(false);
-  const [fraction, setFraction] = useState(0);
+  const [fraction, setFraction] = useFraction(0);
   const [isHovering, setIsHovering] = useState(false);
-  const [volume, setVolume] = useState(0);
+  const [volume, setVolume] = useFraction(0);
   const [controllbarHeight, setControllbarHeight] = useState(0);
 
   const prevPlayedSecRef = useRef(0);
@@ -153,14 +154,7 @@ const Player = ({ url }: PlayerProps) => {
 
   return (
     <>
-      <div
-        css={wrapperStyle}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => {
-          setIsHovering(false);
-          debugger;
-        }}
-      >
+      <div css={wrapperStyle} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
         <div css={mediaSectionStyle} onClick={toggleVideo}></div>
 
         {isPlaying ? (

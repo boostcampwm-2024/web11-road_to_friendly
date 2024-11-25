@@ -16,18 +16,24 @@ import { ExistGuard } from './common/guard/exist.guard';
 import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
-import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
 import { ConfigModule } from '@nestjs/config';
+import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${ process.env.NODE_ENV || 'dev' }`,
+      envFilePath: `.env.${process.env.NODE_ENV || 'dev'}`,
       validationOptions: {
         abortEarly: true,
       },
-    })
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'backend', 'interests', 'shareImage'),
+      serveRoot: '/shareImage',
+    }),
   ],
   controllers: [AppController, RoomsController],
   providers: [
@@ -46,8 +52,8 @@ import { ConfigModule } from '@nestjs/config';
     ClientsService,
     InterestsGateway,
     InterestsService,
-    InterestsInMemoryRepository
+    InterestsRepositoryProvider,
   ],
+  exports: ['INTERESTS_REPOSITORY'],
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -52,3 +52,14 @@ export const sendYoutubeEnrollRequest = (socket: Socket, youtubeURL: string): Pr
     }
   });
 };
+
+export const sendShareStopRequest = (socket: Socket): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    if (socket && socket.connected) {
+      socket.emit('interest:next');
+      resolve(true);
+    } else {
+      reject(new Error(SERVICE_ERROR_MESSAGES.SOCKET_NOT_FOUND));
+    }
+  });
+};

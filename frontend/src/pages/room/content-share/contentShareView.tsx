@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import StopIcon from '@/assets/icons/stop.svg?react';
 import { useToast } from '@/hooks';
+import { sendShareStopRequest } from '@/services';
 import { useParticipantsStore, useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 import { Content, NextContentResponse, WaitingQueueResponse } from '@/types';
@@ -48,6 +49,15 @@ const ContentShareView = () => {
   const [currentContent, setCurrentContent] = useState<Content | null>(null);
   const [numberOfWaiters, setNumberOfWaiters] = useState(0);
 
+  const stopSharing = async () => {
+    try {
+      await sendShareStopRequest(socket);
+      openToast({ text: '컨텐츠 공유를 중지했어요!', type: 'check' });
+    } catch (error) {
+      if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+    }
+  };
+
   const isHostOrSharer =
     currentContent && socket ? currentContent.sharerSocketId === socket.id || socket.id === hostId : false;
 
@@ -85,7 +95,7 @@ const ContentShareView = () => {
           <WaitingListInfo numWaiting={numberOfWaiters} />
           <ContentPresentSection content={currentContent} />
           {isHostOrSharer && (
-            <button css={StopShareButtonStyle}>
+            <button css={StopShareButtonStyle} onClick={stopSharing}>
               <StopIcon fill={Variables.colors.text_white} />
               <span>공유 중지</span>
             </button>

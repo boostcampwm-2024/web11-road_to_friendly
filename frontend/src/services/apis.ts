@@ -41,3 +41,14 @@ export const sendReleaseKeywordMessage = (socket: Socket, questionId: number, ke
     }
   });
 };
+
+export const sendYoutubeEnrollRequest = (socket: Socket, youtubeURL: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    if (socket && socket.connected) {
+      socket.emit('interest:youtube', { link: youtubeURL });
+      resolve(true);
+    } else {
+      reject(new Error(SERVICE_ERROR_MESSAGES.SOCKET_NOT_FOUND));
+    }
+  });
+};

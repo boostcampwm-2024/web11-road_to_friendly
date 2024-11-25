@@ -51,6 +51,7 @@ const ContentShareView = () => {
   const isHostOrSharer =
     currentContent && socket ? currentContent.sharerSocketId === socket.id || socket.id === hostId : false;
 
+  console.log('공유중인 컨텐츠', currentContent);
   useEffect(() => {
     if (socket) {
       socket.on('share:interest:broadcast', (response: NextContentResponse) => {

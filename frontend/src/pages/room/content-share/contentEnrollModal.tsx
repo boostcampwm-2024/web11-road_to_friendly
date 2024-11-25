@@ -1,15 +1,20 @@
-import { flexStyle, Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { useState } from 'react';
+
 import CloseIcon from '@/assets/icons/close.svg?react';
 import LeftArrowIcon from '@/assets/icons/leftArrow.svg?react';
-import { EnrollImageContent, EnrollYoutubeContent, StepComponentType } from './enroll-modal-steps';
+import { flexStyle, Variables } from '@/styles';
+
+import { EnrollImageContent, EnrollYoutubeContent, ChooseContentType } from './enroll-modal-steps';
 
 interface ContentEnrollModalProps {
   closeModal: () => void;
 }
 
-export type StepComponentType = React.ComponentType<{ changeStepIndex: (index: number) => void }>;
+export type StepComponentType = React.ComponentType<{
+  changeStepIndex: (index: number) => void;
+  closeModal: () => void;
+}>;
 
 interface EnrollModalSteps {
   previousStepIndex: number;
@@ -21,7 +26,7 @@ const steps: EnrollModalSteps[] = [
   {
     previousStepIndex: -1,
     label: '',
-    component: StepComponentType
+    component: ChooseContentType
   },
   {
     previousStepIndex: 0,
@@ -90,7 +95,7 @@ const ContentEnrollModal = ({ closeModal }: ContentEnrollModalProps) => {
           <CloseIcon fill={'#777'} stroke={'#777'} width={16} height={16} cursor={'pointer'} />
         </button>
       </div>
-      <StepComponent changeStepIndex={changeStepIndex} />
+      <StepComponent changeStepIndex={changeStepIndex} closeModal={closeModal} />
     </div>
   );
 };

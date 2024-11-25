@@ -42,14 +42,7 @@ jobs:
           script: |
             APP_NAME="road-to-friendly"
             DEPLOY_PATH="~/project"
-            BACKUP_PATH="$DEPLOY_PATH-backup-$(date +'%Y%m%d%H%M%S')"
             
-            if [ -d "$DEPLOY_PATH" ]; then
-              echo "기존의 배포 파일을 백업합니다."
-              mv $DEPLOY_PATH $BACKUP_PATH
-            fi
-            
-            mkdir -p $DEPLOY_PATH
             cd $DEPLOY_PATH
             npm install --production
             
@@ -58,13 +51,10 @@ jobs:
               if pm2 reload $APP_NAME --time; then
                 echo "[$APP_NAME] reload 확인"
               else
-                echo "Reload 실패, 롤백 시도"
-                rm -rf $DEPLOY_PATH
-                mv $BACKUP_PATH $DEPLOY_PATH
-                pm2 reload $APP_NAME --time
+                echo "Reload 실패"
                 exit 1
               fi
             else
               echo "[$APP_NAME] 배포중이 아님. 배포 시도"
-              pm2 start main.js --name $APP_NAME --time
+              pm2 start dist/main.js --name $APP_NAME --time
             fi

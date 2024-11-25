@@ -11,3 +11,13 @@ export interface KeywordResponse {
   readonly status: 'ok' | 'error';
   readonly action: ActionStatus;
 }
+export interface WaitingQueueResponse {
+  nowQueueSize: number;
+}
+
+export interface NextContentResponse {
+  participantId: string;
+  resourceType: 'IMAGE' | 'YOUTUBE';
+  resourceUrl: string;
+  nowQueueSize: number;
+}

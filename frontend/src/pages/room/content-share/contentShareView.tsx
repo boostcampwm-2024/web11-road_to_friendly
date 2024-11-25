@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import StopIcon from '@/assets/icons/stop.svg?react';
+import { useToast } from '@/hooks';
 import { useParticipantsStore, useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
-import { Content } from '@/types';
+import { Content, NextContentResponse, WaitingQueueResponse } from '@/types';
 
 import { ContentPresentSection, WaitingListEmpty, WaitingListInfo } from './index';
 
@@ -41,13 +42,38 @@ const StopShareButtonStyle = css([
 ]);
 
 const ContentShareView = () => {
-  const { socket } = useSocketStore();
+  const { socket, connect } = useSocketStore();
+  const { openToast } = useToast();
   const { hostId } = useParticipantsStore();
-  const [currentContent, setCurrentContent] = useState<Content | null>({ sharerSocketId: '' });
+  const [currentContent, setCurrentContent] = useState<Content | null>(null);
   const [numberOfWaiters, setNumberOfWaiters] = useState(0);
 
-  // const isHostOrSharer = currentContent?.sharerSocketId === socket?.id || socket?.id === hostId;
-  const isHostOrSharer = true;
+  const isHostOrSharer =
+    currentContent && socket ? currentContent.sharerSocketId === socket.id || socket.id === hostId : false;
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('share:interest:broadcast', (response: NextContentResponse) => {
+        setCurrentContent({
+          sharerSocketId: response.participantId,
+          type: response.resourceType,
+          resourceURL: response.resourceUrl
+        });
+        setNumberOfWaiters(response.nowQueueSize);
+      });
+
+      socket.on('share:interest:add', (response: WaitingQueueResponse) => setNumberOfWaiters(response.nowQueueSize));
+    } else {
+      connect();
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('share:interest:broadcast');
+        socket.off('share:interest:add');
+      }
+    };
+  }, [socket, connect]);
 
   return (
     <section css={ContentShareViewStyle}>

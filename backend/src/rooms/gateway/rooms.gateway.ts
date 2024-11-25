@@ -15,6 +15,7 @@ import { JoinGuard } from '../../common/guard/join.guard';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 import { ExistGuard } from '../../common/guard/exist.guard';
 import { ClientsService } from '../../clients/service/clients.service';
+import { PhaseReadyGuard } from '../../common/guard/phase.guard';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
@@ -36,7 +37,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
     });
   }
 
-  @UseGuards(ConnectGuard, ExistGuard)
+  @UseGuards(ConnectGuard, ExistGuard, PhaseReadyGuard)
   @SubscribeMessage('join')
   join(
     @ConnectedSocket() client: Socket,

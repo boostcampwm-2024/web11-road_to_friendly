@@ -81,7 +81,7 @@ const buttonStyle = (isValid: boolean | null) =>
   css({
     width: '100%',
     padding: '10px 20px',
-    backgroundColor: isValid ? '#4caf50' : '#ccc',
+    backgroundColor: isValid ? Variables.colors.surface_green_strong : '#ccc',
     color: Variables.colors.text_white,
     font: Variables.typography.font_medium_16,
     border: 'none',

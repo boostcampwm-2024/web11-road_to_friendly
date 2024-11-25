@@ -9,7 +9,7 @@ import VolumneMuteFillIcon from '@/assets/icons/volume-mute-fill.svg?react';
 import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 
 import { useEffect, useRef, useState } from 'react';
-import { Slider } from '@components/common';
+import { Slider } from '@/components/common';
 import SettingPanel from './SettingPanel';
 import YouTubePlayer from 'react-player/youtube';
 

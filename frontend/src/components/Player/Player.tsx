@@ -1,10 +1,13 @@
 import { useParticipantsStore, useSocketStore } from '@/stores';
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import { useEffect, useRef, useState } from 'react';
+import { divideSize, multiplySize } from '@/utils';
+import { Slider } from '@/components/common';
+import { Variables } from '@/styles';
 import ReactPlayer from 'react-player/youtube';
 import ControllBar from './ControllBar';
-import { divideSize, multiplySize } from '@/utils';
-import { Slider } from '@components/common';
+import PlayIcon from '@/assets/icons/play-fill.svg?react';
+import PauseIcon from '@/assets/icons/pause-line.svg?react';
 
 type StateChange = 'pause' | 'play';
 
@@ -23,6 +26,46 @@ const wrapperStyle = css({
   height: PLAYER_HEIGHT_DEFAULT,
   overflow: 'hidden'
 });
+
+const mediaSectionStyle = css({
+  position: 'absolute',
+  zIndex: '998',
+  top: '0',
+  width: '100%',
+  height: '80%'
+});
+
+const growAndDiplay = (baseTransform: string) =>
+  keyframes({
+    '0%': {
+      opacity: '0',
+      transform: `${baseTransform} scale(0)`
+    },
+    '48%': {
+      opacity: '1',
+      transform: `${baseTransform} scale(1)`
+    },
+    '60%': {
+      opacity: '0.3',
+      transform: `${baseTransform} scale(1.4)`
+    },
+    '100%': {
+      opacity: '0',
+      transform: `${baseTransform} scale(2)`
+    }
+  });
+
+const stateChangeIndicatorStyle = (stateChanged: boolean) =>
+  css({
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    opacity: '0',
+    animation: stateChanged ? `${growAndDiplay('translate(-50%, -50%)')} 0.5s ease-out` : '',
+    fill: Variables.colors.surface_white,
+    width: '3rem',
+    zIndex: '999'
+  });
 
 const Player = ({ url }: PlayerProps) => {
   const { socket, connect } = useSocketStore();
@@ -49,6 +92,11 @@ const Player = ({ url }: PlayerProps) => {
   function pauseVideo() {
     prevIsPlayingRef.current = false;
     setIsPlaying(false);
+  }
+
+  function toggleVideo() {
+    if (isPlaying) pauseVideo();
+    else playVideo();
   }
 
   function attachPlayerEvent() {
@@ -105,6 +153,14 @@ const Player = ({ url }: PlayerProps) => {
   return (
     <>
       <div css={wrapperStyle} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+        <div css={mediaSectionStyle} onClick={toggleVideo}></div>
+
+        {isPlaying ? (
+          <PlayIcon css={stateChangeIndicatorStyle(prevIsPlayingRef.current === isPlaying)} />
+        ) : (
+          <PauseIcon css={stateChangeIndicatorStyle(prevIsPlayingRef.current === isPlaying)} />
+        )}
+
         <ReactPlayer
           style={{ pointerEvents: 'none', zIndex: '997', position: 'relative', transform: 'translateY(-25%)' }}
           height={PLAYER_HEIGHT_DOUBLE}
@@ -140,7 +196,7 @@ const Player = ({ url }: PlayerProps) => {
                 height: '100%',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                zIndex: '998'
+                zIndex: '997'
               }}
             >
               <Slider

@@ -104,7 +104,8 @@ const optionItemStyle = (checked: boolean) =>
     padding: '0.25rem 1.25rem',
     textAlign: 'left',
     borderRadius: '0.25rem',
-    backgroundColor: checked ? Variables.colors.surface_transparent_white_35 : 'transparent'
+    backgroundColor: checked ? Variables.colors.surface_transparent_white_35 : 'transparent',
+    transition: 'background-color 0.15s ease-out'
   });
 
 const checkedIconStyle = css(iconStyle, {

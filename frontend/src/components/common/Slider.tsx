@@ -14,11 +14,26 @@ interface SliderProps {
   shouldHoverGrow?: boolean;
   shouldExtendWhenDrag?: boolean;
   shouldExtendAnytime?: boolean;
+  shouldThumbAnytime?: boolean;
   color?: Color;
   onMouseDownStateChange?: (isDown: boolean) => void;
 }
 
-const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: boolean) =>
+const thumbDisplayStyle = (shouldThumbAnytime: boolean) =>
+  css(
+    !shouldThumbAnytime && {
+      ':hover, :active': {
+        '.thumb': {
+          opacity: '1'
+        }
+      },
+      '.thumb': {
+        opacity: '0'
+      }
+    }
+  );
+
+const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: boolean, shouldThumbAnytime: boolean) =>
   css(
     {
       position: 'absolute',
@@ -26,7 +41,8 @@ const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: 
       width: '100%',
       height: '0.25rem',
       zIndex: '999',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      boxSizing: 'border-box'
     },
     shouldExtendAnytime ? { height: '100%' } : {},
     shouldExtendWhenDrag
@@ -35,13 +51,18 @@ const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: 
             height: '100%'
           }
         }
-      : {}
+      : {},
+    thumbDisplayStyle(shouldThumbAnytime)
   );
 
-const sliderCommonStyle = (bottom: number) =>
+const sliderPositionStyle = (bottom: number) =>
   css({
     position: 'absolute',
-    bottom: `${bottom}px`,
+    bottom: `${bottom}px`
+  });
+
+const sliderCommonStyle = (bottom: number) =>
+  css(sliderPositionStyle(bottom), {
     width: '100%',
     height: '0.25rem',
     borderRadius: '1rem'
@@ -56,10 +77,7 @@ const sliderEmptyStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: b
     },
     shouldHoverGrow
       ? {
-          ':hover': {
-            transform: `scaleY(${1.535})`
-          },
-          ':active': {
+          ':hover, :active': {
             transform: `scaleY(${1.535})`
           }
         }
@@ -86,6 +104,16 @@ const sliderFillStyle = (fraction: number, colorFill: string, bottom: number, sh
       : {}
   );
 
+const thumbStyle = (fraction: number, colorFill: string, bottom: number, sliderWidth: number) =>
+  css(sliderPositionStyle(bottom), {
+    width: '0.75rem',
+    height: '0.75rem',
+    borderRadius: '100%',
+    backgroundColor: colorFill,
+    transform: `translateX(${fraction * sliderWidth - 4}px) translateY(37.5%)`,
+    transition: 'opacity 0.1s ease-out'
+  });
+
 const Slider = ({
   fraction,
   setFraction,
@@ -93,7 +121,8 @@ const Slider = ({
   shouldHoverGrow = false,
   shouldExtendWhenDrag = false,
   shouldExtendAnytime = false,
-  color = { empty: Variables.colors.surface_transparent_white_35, fill: Variables.colors.surface_orange_strong },
+  shouldThumbAnytime = true,
+  color = { empty: Variables.colors.surface_transparent_white_35, fill: Variables.colors.surface_white },
   onMouseDownStateChange = () => {}
 }: SliderProps) => {
   const [width, setWidth] = useState(0);
@@ -137,7 +166,7 @@ const Slider = ({
   return (
     <>
       <div
-        css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime)}
+        css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime, shouldThumbAnytime)}
         ref={sliderRef}
         onDrag={(e) => {
           e.preventDefault();
@@ -150,6 +179,7 @@ const Slider = ({
       >
         <div css={sliderEmptyStyle(bottom, color.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, color.fill, bottom, shouldHoverGrow)}></div>
+        <div className="thumb" css={thumbStyle(fraction, color.fill, bottom, width)}></div>
       </div>
     </>
   );

@@ -1,15 +1,18 @@
+import { join } from 'path';
+import { promises as fs } from 'fs';
+
+import * as AsyncLock from 'async-lock';
+import { v4 as uuid } from 'uuid';
+
 import { InterestsManager } from '../operator/Interests.manager';
 import { getOrCreateValue } from '../../common/util/get-or-create-value';
 import { Interest } from '../domain/interest';
-import * as AsyncLock from 'async-lock';
 import { CustomException } from '../../common/exception/custom-exception';
 import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
 import { InterestsImageDto } from '../dto/interests.image.dto';
-import { v4 as uuid } from 'uuid';
-import { join } from 'path';
-import { promises as fs } from 'fs';
-import { InterestsRepository } from './interests.repository';
 import { ContentTypes } from '../definition/contentType';
+
+import { InterestsRepository } from './interests.repository';
 
 export class InterestsInMemoryRepository implements InterestsRepository {
   private readonly roomInterest = new Map<string, InterestsManager>();

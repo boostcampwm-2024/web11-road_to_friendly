@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClientsGateway } from './clients.gateway';
+
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { RoomsInMemoryRepository } from '../../rooms/repository/rooms.in-memory.repository';
 import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.in-memory.repository';
+
+import { ClientsGateway } from './clients.gateway';
 
 describe('ClientsGateway', () => {
   let gateway: ClientsGateway;

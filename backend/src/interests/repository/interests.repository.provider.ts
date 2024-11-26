@@ -1,5 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
 import { InterestsImageRepository } from './interests.image.repository';
 import { InterestsInMemoryRepository } from './interests.in-memory.repository';
 

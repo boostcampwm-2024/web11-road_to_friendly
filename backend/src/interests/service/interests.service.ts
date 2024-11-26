@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+
 import { Interest } from '../domain/interest';
 import { InterestsRepository } from '../repository/interests.repository';
 import { InterestsImageDto } from '../dto/interests.image.dto';

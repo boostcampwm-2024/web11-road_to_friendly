@@ -1,14 +1,17 @@
 import * as AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
-import { InterestsImageDto } from '../dto/interests.image.dto';
-import { ContentTypes } from '../definition/contentType';
 import { ConfigService } from '@nestjs/config';
-import { InterestsManager } from '../operator/Interests.manager';
 import * as AsyncLock from 'async-lock';
 import { getOrCreateValue } from 'src/common/util/get-or-create-value';
+import { CustomException } from 'src/common/exception/custom-exception';
+
+import { InterestsImageDto } from '../dto/interests.image.dto';
+import { ContentTypes } from '../definition/contentType';
+import { InterestsManager } from '../operator/Interests.manager';
 import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
 import { Interest } from '../domain/interest';
-import { CustomException } from 'src/common/exception/custom-exception';
+
+
 import { InterestsRepository } from './interests.repository';
 
 export class InterestsImageRepository implements InterestsRepository {

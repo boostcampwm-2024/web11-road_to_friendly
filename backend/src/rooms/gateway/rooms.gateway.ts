@@ -7,9 +7,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
-import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';

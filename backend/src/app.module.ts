@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+
 import { RoomsGateway } from './rooms/gateway/rooms.gateway';
 import { RoomsService } from './rooms/service/rooms.service';
 import { RoomsController } from './rooms/controller/rooms.controller';
@@ -17,7 +17,6 @@ import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
 import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -29,9 +28,8 @@ import { ConfigModule } from '@nestjs/config';
       },
     })
   ],
-  controllers: [AppController, RoomsController],
+  controllers: [RoomsController],
   providers: [
-    AppService,
     RoomsGateway,
     RoomsService,
     RoomsInMemoryRepository,

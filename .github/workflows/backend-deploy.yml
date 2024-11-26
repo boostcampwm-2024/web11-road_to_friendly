@@ -1,0 +1,63 @@
+name: Deploy BE(NestJS with PM2)
+on:
+  push:
+    branches:
+      - release
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 리포지토리 체크
+        uses: actions/checkout@v4
+
+      - name: 종속성 설치
+        working-directory: ./backend
+        run: npm ci
+
+      - name: .env.release 파일 생성
+        run: echo "$RELEASE_ENV" > ./backend/.env.release
+        env:
+          RELEASE_ENV: ${{ secrets.RELEASE_ENV }}
+
+      - name: 프로젝트 빌드
+        working-directory: ./backend
+        run: npm run build:release
+
+      - name: 배포 파일 전송
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "backend/dist/,backend/package*.json"
+          target: "~/project"
+          strip_components: 1
+
+      - name: PM2 배포 실행
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            
+            APP_NAME="road-to-friendly"
+            DEPLOY_PATH="~/project"
+            
+            cd $DEPLOY_PATH
+            npm install --production
+            
+            if pm2 describe $APP_NAME > /dev/null; then
+              echo "[$APP_NAME] 배포중, reload 수행"
+              if pm2 reload $APP_NAME --time; then
+                echo "[$APP_NAME] reload 확인"
+              else
+                echo "Reload 실패"
+                exit 1
+              fi
+            else
+              echo "[$APP_NAME] 배포중이 아님. 배포 시도"
+              pm2 start dist/main.js --name $APP_NAME --time
+            fi

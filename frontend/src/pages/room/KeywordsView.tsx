@@ -10,9 +10,9 @@ import { keywordStyleMap, scaleIn, Variables } from '@/styles';
 import { Group, Keyword, KeywordsCoordinates, PrefixSum } from '@/types';
 
 const KeywordsViewContainer = css`
-  width: 100%;
+  width: 150%;
   height: 400px;
-  margin-top: 50px;
+  margin-top: 20px;
   position: relative;
 `;
 

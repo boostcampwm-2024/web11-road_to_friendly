@@ -18,15 +18,14 @@ const ListContainerStyle = css`
 `;
 
 const SidebarButtonStyle = (isSidebarOpen: boolean) => css`
-  position: absolute;
-  left: ${isSidebarOpen ? '250px' : '10px'}; /* 모달 열리면 버튼 이동 */
+  position: fixed;
+  left: ${isSidebarOpen ? '250px' : '10px'};
   top: 50%;
   transform: translateY(-50%);
   transition: left 0.3s ease-in-out; /* 버튼 이동 애니메이션 */
   background: none;
   border: none;
   cursor: pointer;
-
   svg {
     transform: ${isSidebarOpen ? 'rotate(180deg)' : 'rotate(0deg)'}; /* 버튼 방향 */
   }

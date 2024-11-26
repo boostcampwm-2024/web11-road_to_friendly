@@ -1,18 +1,18 @@
 import { Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { useState } from 'react';
-import YouTubePlayer from 'react-player/youtube';
 
 import SpeedFillIcon from '@/assets/icons/speed-fill.svg?react';
 import ArrowLeftIcon from '@/assets/icons/arrow-left-s-line.svg?react';
 import ArrowRightIcon from '@/assets/icons/arrow-right-s-line.svg?react';
 import CheckIcon from '@/assets/icons/check-line.svg?react';
+import ReactPlayer from 'react-player';
 
 type SettingTarget = 'selection' | 'speed';
 
 interface SettingPanelProps {
   openSettingPanel: boolean;
-  player: YouTubePlayer;
+  player: ReactPlayer;
   controllBarHeight: number;
 }
 
@@ -21,7 +21,7 @@ interface SettingSelectionProps {
 }
 
 interface SettingSpeedProps {
-  player: YouTubePlayer;
+  player: ReactPlayer;
   setSettingTarget: React.Dispatch<React.SetStateAction<SettingTarget>>;
 }
 

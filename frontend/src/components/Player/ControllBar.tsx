@@ -11,11 +11,11 @@ import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 import { useEffect, useRef, useState } from 'react';
 import { Slider } from '@/components/common';
 import SettingPanel from './SettingPanel';
-import YouTubePlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player';
 
 interface ControllBarProps {
   isSharer: boolean;
-  player: YouTubePlayer;
+  player: ReactPlayer;
   setControllbarHeight: React.Dispatch<React.SetStateAction<number>>;
   currentTime: number;
   duration: number;

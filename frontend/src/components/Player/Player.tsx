@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { divideSize, multiplySize } from '@/utils';
 import { Slider } from '@/components/common';
 import { Variables } from '@/styles';
-import ReactPlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player';
 import ControllBar from './ControllBar';
 import PlayIcon from '@/assets/icons/play-fill.svg?react';
 import PauseIcon from '@/assets/icons/pause-line.svg?react';
@@ -15,6 +15,7 @@ type StateChange = 'pause' | 'play';
 interface PlayerProps {
   url: string;
   isSharer: boolean;
+  isShorts: boolean;
 }
 
 // 기본 플레이어의 비율은 16:9 비율
@@ -75,7 +76,7 @@ const stateChangeIndicatorStyle = (stateChanged: boolean) =>
     zIndex: '999'
   });
 
-const Player = ({ url, isSharer }: PlayerProps) => {
+const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   const { socket } = useSocketStore();
   const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
@@ -171,8 +172,13 @@ const Player = ({ url, isSharer }: PlayerProps) => {
         )}
 
         <ReactPlayer
-          style={{ pointerEvents: 'none', zIndex: '996', position: 'relative', transform: 'translateY(-25%)' }}
-          height={PLAYER_HEIGHT_DOUBLE}
+          style={{
+            pointerEvents: 'none',
+            zIndex: '996',
+            position: 'relative',
+            transform: isShorts ? 'none' : 'translateY(-25%)'
+          }}
+          height={isShorts ? '100%' : PLAYER_HEIGHT_DOUBLE}
           playing={isPlaying}
           onReady={attachPlayerEvent}
           controls={false}
@@ -189,7 +195,7 @@ const Player = ({ url, isSharer }: PlayerProps) => {
             hasEndedRef.current = true;
             pauseVideo();
           }}
-          config={{ playerVars: { autoplay: 1 } }}
+          config={{ youtube: { playerVars: { autoplay: 1 } } }}
         />
         {isHovering && player && (
           <div>

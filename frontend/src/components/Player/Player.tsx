@@ -1,6 +1,6 @@
-import { useParticipantsStore, useSocketStore } from '@/stores';
+import { useSocketStore } from '@/stores';
 import { css, keyframes } from '@emotion/react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { divideSize, multiplySize } from '@/utils';
 import { Slider } from '@/components/common';
 import { Variables } from '@/styles';
@@ -14,12 +14,18 @@ type StateChange = 'pause' | 'play';
 
 interface PlayerProps {
   url: string;
+  isSharer: boolean;
 }
 
 // 기본 플레이어의 비율은 16:9 비율
 const PLAYER_WIDTH_DEFAULT = '40rem';
 const PLAYER_HEIGHT_DEFAULT = divideSize(PLAYER_WIDTH_DEFAULT, 16 / 9);
 const PLAYER_HEIGHT_DOUBLE = multiplySize(PLAYER_HEIGHT_DEFAULT, 2);
+
+const statusEventNameMap: Record<StateChange, string> = {
+  play: 'interest:youtube:play',
+  pause: 'interest:youtube:stop'
+};
 
 const wrapperStyle = css({
   position: 'relative',
@@ -69,12 +75,10 @@ const stateChangeIndicatorStyle = (stateChanged: boolean) =>
     zIndex: '999'
   });
 
-const Player = ({ url }: PlayerProps) => {
-  const { socket, connect } = useSocketStore();
-  const { hostId } = useParticipantsStore();
+const Player = ({ url, isSharer }: PlayerProps) => {
+  const { socket } = useSocketStore();
   const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
-  const [isHost, setIsHost] = useState(false);
   const [fraction, setFraction] = useFraction(0);
   const [isHovering, setIsHovering] = useState(false);
   const [volume, setVolume] = useFraction(0);
@@ -87,13 +91,17 @@ const Player = ({ url }: PlayerProps) => {
   const isDraggingSliderRef = useRef(false);
 
   function playVideo() {
+    if (!isSharer) return;
     prevIsPlayingRef.current = true;
     setIsPlaying(true);
+    sendStateChange('play');
   }
 
   function pauseVideo() {
+    if (!isSharer) return;
     prevIsPlayingRef.current = false;
     setIsPlaying(false);
+    sendStateChange('pause');
   }
 
   function toggleVideo() {
@@ -107,10 +115,13 @@ const Player = ({ url }: PlayerProps) => {
     */
   }
 
-  function sendStateChangeIfHost(stateChange: StateChange) {
-    if (!isHost) return;
-
-    socket?.emit(stateChange, { second: player?.getCurrentTime() });
+  function sendStateChange(stateChange: StateChange) {
+    const eventName = statusEventNameMap[stateChange];
+    socket?.emit(eventName, {
+      clientTimestamp: Date.now(),
+      videoCurrentTime: player?.getCurrentTime(),
+      playStatus: stateChange
+    });
   }
 
   function syncFractionWithProgress({ played }: { played: number }) {
@@ -138,6 +149,8 @@ const Player = ({ url }: PlayerProps) => {
   }
 
   function setFractionAndMove(newFraction: number) {
+    if (!isSharer) return;
+
     player?.seekTo(newFraction, 'fraction');
     setFraction(newFraction);
 
@@ -145,12 +158,6 @@ const Player = ({ url }: PlayerProps) => {
     if (isDraggingSliderRef.current) setIsPlaying(false);
     else setIsPlaying(prevIsPlayingRef.current);
   }
-
-  useEffect(() => {
-    if (!socket) connect();
-    const currentUserId = socket?.id || '';
-    setIsHost(currentUserId === hostId);
-  }, [socket]);
 
   return (
     <>
@@ -172,13 +179,9 @@ const Player = ({ url }: PlayerProps) => {
           volume={volume}
           url={url}
           ref={(player) => setPlayer(player)}
-          onPause={() => {
-            sendStateChangeIfHost('pause');
-          }}
           onPlay={() => {
             hasEndedRef.current = false;
             onProgressWithReqeustAnimation(syncFractionWithProgress);
-            sendStateChangeIfHost('play');
           }}
           onEnded={() => {
             if (isDraggingSliderRef.current) return;
@@ -202,6 +205,7 @@ const Player = ({ url }: PlayerProps) => {
               }}
             >
               <Slider
+                showThumb={isSharer}
                 fraction={fraction}
                 setFraction={setFractionAndMove}
                 bottom={controllbarHeight + 6}
@@ -214,6 +218,7 @@ const Player = ({ url }: PlayerProps) => {
               />
             </div>
             <ControllBar
+              isSharer={isSharer}
               player={player}
               currentTime={player.getCurrentTime()}
               duration={player.getDuration()}

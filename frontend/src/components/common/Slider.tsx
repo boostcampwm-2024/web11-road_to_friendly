@@ -9,6 +9,7 @@ interface Color {
 }
 
 interface SliderProps {
+  showThumb?: boolean;
   fraction: number;
   setFraction: (newFraction: number) => void;
   bottom: number;
@@ -128,6 +129,7 @@ const defaultColor = {
 };
 
 const Slider = ({
+  showThumb = true,
   fraction,
   setFraction,
   bottom,
@@ -193,7 +195,7 @@ const Slider = ({
       >
         <div css={sliderEmptyStyle(bottom, mergedColor.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, bottom, shouldHoverGrow)}></div>
-        <div className="thumb" css={thumbStyle(fraction, mergedColor.thumb, bottom, width)}></div>
+        {showThumb && <div className="thumb" css={thumbStyle(fraction, mergedColor.thumb, bottom, width)}></div>}
       </div>
     </>
   );

@@ -14,6 +14,7 @@ import SettingPanel from './SettingPanel';
 import YouTubePlayer from 'react-player/youtube';
 
 interface ControllBarProps {
+  isSharer: boolean;
   player: YouTubePlayer;
   setControllbarHeight: React.Dispatch<React.SetStateAction<number>>;
   currentTime: number;
@@ -99,6 +100,7 @@ function convertSecToHHMMSS(sec: number, minParts: number = 2) {
 }
 
 const ControllBar = ({
+  isSharer,
   player,
   currentTime,
   duration,
@@ -145,11 +147,8 @@ const ControllBar = ({
         }}
       >
         <div css={leftSectionStyle}>
-          {isPlaying ? (
-            <PauseIcon css={iconStyle} onClick={pauseVideo} />
-          ) : (
-            <PlayIcon css={iconStyle} onClick={playVideo} />
-          )}
+          {isSharer && isPlaying && <PauseIcon css={iconStyle} onClick={pauseVideo} />}
+          {isSharer && !isPlaying && <PlayIcon css={iconStyle} onClick={playVideo} />}
           <div css={volumeContainerStyle}>
             <VolumeIcon css={iconStyle} onClick={toggleVolume} />
             <div
@@ -174,13 +173,17 @@ const ControllBar = ({
           </div>
         </div>
         <div css={rightSectionStyle}>
-          <SettingFillIcon css={iconStyle} onClick={() => setOpenSettingPanel(!openSettingPanel)} />
-          {controllBarRef.current && (
-            <SettingPanel
-              openSettingPanel={openSettingPanel}
-              player={player}
-              controllBarHeight={controllBarRef.current.offsetHeight}
-            />
+          {isSharer && (
+            <>
+              <SettingFillIcon css={iconStyle} onClick={() => setOpenSettingPanel(!openSettingPanel)} />
+              {controllBarRef.current && (
+                <SettingPanel
+                  openSettingPanel={openSettingPanel}
+                  player={player}
+                  controllBarHeight={controllBarRef.current.offsetHeight}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

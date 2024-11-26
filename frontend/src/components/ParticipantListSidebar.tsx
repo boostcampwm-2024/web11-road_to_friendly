@@ -14,11 +14,12 @@ const ListContainerStyle = css`
   gap: 10px;
   padding: 8px;
   width: 200px;
-  min-height: 500px;
+  height: 500px;
+  overflow: auto;
 `;
 
 const SidebarButtonStyle = (isSidebarOpen: boolean) => css`
-  position: fixed;
+  position: absolute;
   left: ${isSidebarOpen ? '250px' : '10px'};
   top: 50%;
   transform: translateY(-50%);

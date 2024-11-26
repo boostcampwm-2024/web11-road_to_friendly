@@ -69,7 +69,7 @@ const Room = () => {
   };
 
   const positions = useMemo(
-    () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
+    () => calculatePosition(Math.min(Object.keys(participants).length, 10), radius[0], radius[1]), //10명으로 제한
     [radius, participants]
   );
 
@@ -103,17 +103,21 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {Object.keys(participants).map((participantId, index) => (
-                <UserProfile
-                  key={participantId}
-                  participant={participants[participantId]}
-                  index={index}
-                  isCurrentUser={participantId === currentUserId}
-                  isHost={hostId === participantId}
-                  position={{ x: positions[index][0], y: positions[index][1] }}
-                  isResultView={isResultView}
-                />
-              ))}
+              {Object.keys(participants).map((participantId, index) => {
+                const position = positions[index];
+                if (!position) return null;
+                return (
+                  <UserProfile
+                    key={participantId}
+                    participant={participants[participantId]}
+                    index={index}
+                    isCurrentUser={participantId === currentUserId}
+                    isHost={hostId === participantId}
+                    position={{ x: positions[index][0], y: positions[index][1] }}
+                    isResultView={isResultView}
+                  />
+                );
+              })}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
                   resultLoading ? (

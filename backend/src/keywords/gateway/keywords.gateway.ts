@@ -1,10 +1,11 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+
 import { KeywordsRequestDto } from '../dto/keywords.request.dto';
 import { KeywordsResponseDto } from '../dto/keywords.response.dto';
 import { KeywordsService } from '../service/keywords.service';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
-import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 

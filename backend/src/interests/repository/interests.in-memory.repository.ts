@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import * as AsyncLock from 'async-lock';
+
 import { InterestsManager } from '../operator/Interests.manager';
 import { getOrCreateValue } from '../../common/util/get-or-create-value';
 import { Interest } from '../domain/interest';
-import * as AsyncLock from 'async-lock';
 import { CustomException } from '../../common/exception/custom-exception';
 import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
 

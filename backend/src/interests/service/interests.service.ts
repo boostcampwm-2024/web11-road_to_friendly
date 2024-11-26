@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { InterestsInMemoryRepository } from '../repository/interests.in-memory.repository';
 import { Interest } from '../domain/interest';
 

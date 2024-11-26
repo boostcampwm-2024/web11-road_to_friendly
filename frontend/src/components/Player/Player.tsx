@@ -8,7 +8,10 @@ import ReactPlayer from 'react-player';
 import ControllBar from './ControllBar';
 import PlayIcon from '@/assets/icons/play-fill.svg?react';
 import PauseIcon from '@/assets/icons/pause-line.svg?react';
-import { useFraction } from '@/hooks';
+import { useFraction, useToast } from '@/hooks';
+import { InterestYoutubeResponse, YoutubeRequestType } from '@/types';
+import { YOUTUBE_ERROR_MESSAGES } from '@/constants';
+import SharerDraggingIndicator from './SharerDraggingIndicator';
 
 type StateChange = 'pause' | 'play';
 
@@ -77,19 +80,30 @@ const stateChangeIndicatorStyle = (stateChanged: boolean) =>
   });
 
 const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
-  const { socket } = useSocketStore();
   const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
   const [fraction, setFraction] = useFraction(0);
   const [isHovering, setIsHovering] = useState(false);
   const [volume, setVolume] = useFraction(0);
   const [controllbarHeight, setControllbarHeight] = useState(0);
+  const [isSharerDragging, setIsSharerDragging] = useState(false);
 
   const prevPlayedSecRef = useRef(0);
   const prevVolumeRef = useRef(0);
   const prevIsPlayingRef = useRef(false);
   const hasEndedRef = useRef(false);
   const isDraggingSliderRef = useRef(false);
+
+  const { socket } = useSocketStore();
+  const { openToast } = useToast();
+
+  const requestFunctionMap: Record<YoutubeRequestType, Function> = {
+    PLAY: syncWithSharerPlayOrPause,
+    STOP: syncWithSharerPlayOrPause,
+    TIMELINE: syncWithSharerTimelineChange,
+    SPEED: syncWithSharerSpeedChange,
+    DRAGGING: syncWithSharerDragStart
+  };
 
   function playVideo() {
     if (!isSharer) return;
@@ -110,10 +124,60 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     else playVideo();
   }
 
+  function syncWithSharerPlayOrPause({
+    requestType,
+    videoCurrentTime
+  }: {
+    requestType: 'PLAY' | 'STOP';
+    videoCurrentTime: number;
+  }) {
+    if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
+
+    player.seekTo(videoCurrentTime, 'seconds');
+    if (requestType === 'PLAY') setIsPlaying(true);
+    else setIsPlaying(false);
+  }
+
+  function syncWithSharerDragEnd() {
+    setIsSharerDragging(false);
+    setIsPlaying(true);
+  }
+
+  function syncWithSharerTimelineChange({ targetTime }: { targetTime: number }) {
+    if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
+
+    if (isSharerDragging) {
+      syncWithSharerDragEnd();
+    }
+
+    player.seekTo(targetTime, 'seconds');
+  }
+
+  function syncWithSharerSpeedChange({ playSpeed }: { playSpeed: number }) {
+    if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
+
+    player.getInternalPlayer().setPlaybackRate(playSpeed);
+  }
+
+  function syncWithSharerDragStart() {
+    if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
+
+    setIsPlaying(false);
+    setIsSharerDragging(true);
+  }
+
   function attachPlayerEvent() {
-    /*
-    TODO: 플레이어가 준비된 이후부터 이벤트를 받아야 하므로, 이곳에 서버와 연결하는 코드 추가 필요
-    */
+    if (!socket) return;
+
+    socket.on('share:interest:youtube', (response: InterestYoutubeResponse) => {
+      if (isSharer) return;
+
+      try {
+        requestFunctionMap[response.requestType](response);
+      } catch (error) {
+        if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+      }
+    });
   }
 
   function sendStateChange(stateChange: StateChange) {
@@ -123,6 +187,10 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
       videoCurrentTime: player?.getCurrentTime(),
       playStatus: stateChange
     });
+  }
+
+  function sendTimelineChange(targetTime: number) {
+    socket?.emit('interest:youtube:timeline', { targetTime });
   }
 
   function syncFractionWithProgress({ played }: { played: number }) {
@@ -150,14 +218,18 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   }
 
   function setFractionAndMove(newFraction: number) {
-    if (!isSharer) return;
+    if (!isSharer || !player) return;
 
-    player?.seekTo(newFraction, 'fraction');
+    player.seekTo(newFraction, 'fraction');
     setFraction(newFraction);
 
     // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
     if (isDraggingSliderRef.current) setIsPlaying(false);
-    else setIsPlaying(prevIsPlayingRef.current);
+    else {
+      const newSec = newFraction * player.getDuration();
+      sendTimelineChange(newSec);
+      setIsPlaying(prevIsPlayingRef.current);
+    }
   }
 
   return (
@@ -197,6 +269,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
           }}
           config={{ youtube: { playerVars: { autoplay: 1 } } }}
         />
+        <SharerDraggingIndicator isSharerDragging={isSharerDragging} />
         {isHovering && player && (
           <div>
             <div

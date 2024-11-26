@@ -10,3 +10,13 @@ export interface KeywordResponse {
   readonly keyword: string;
   readonly status: ResponseStatus;
 }
+
+export type YoutubeRequestType = 'PLAY' | 'STOP' | 'TIMELINE' | 'SPEED' | 'DRAGGING';
+
+export interface InterestYoutubeResponse {
+  requestType: YoutubeRequestType;
+  videoCurrentTime: number;
+  playStatus: string;
+  targetTime: number;
+  playSpeed: number;
+}

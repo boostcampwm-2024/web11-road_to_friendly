@@ -7,6 +7,7 @@ import ArrowLeftIcon from '@/assets/icons/arrow-left-s-line.svg?react';
 import ArrowRightIcon from '@/assets/icons/arrow-right-s-line.svg?react';
 import CheckIcon from '@/assets/icons/check-line.svg?react';
 import ReactPlayer from 'react-player';
+import { useSocketStore } from '@/stores';
 
 type SettingTarget = 'selection' | 'speed';
 
@@ -129,8 +130,23 @@ const SettingSelection = ({ setSettingTarget }: SettingSelectionProps) => {
 
 const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
   const internalPlayer = player.getInternalPlayer();
+  const { socket } = useSocketStore();
 
   const [speed, setSpeed] = useState(internalPlayer.getPlaybackRate());
+
+  function sendSpeedChange(playSpeed: number) {
+    if (!socket) return;
+
+    socket.emit('interest:youtube:speed', { playSpeed });
+  }
+
+  function changeSpeed(e: React.ChangeEvent<HTMLInputElement>) {
+    const newSpeed = Number(e.target.value);
+    setSpeed(newSpeed);
+    internalPlayer.setPlaybackRate(newSpeed);
+
+    sendSpeedChange(newSpeed);
+  }
 
   return (
     <>
@@ -151,11 +167,7 @@ const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
                 css={{ display: 'none' }}
                 value={playbackRate}
                 checked={checked}
-                onChange={(e) => {
-                  const newSpeed = Number(e.target.value);
-                  setSpeed(newSpeed);
-                  internalPlayer.setPlaybackRate(newSpeed);
-                }}
+                onChange={(e) => changeSpeed(e)}
               />
             </label>
           );

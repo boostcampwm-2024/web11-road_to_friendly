@@ -8,6 +8,7 @@ interface KeywordsStore {
   statisticsKeywords: CommonResult;
 
   upsertKeyword: (targetKeyword: KeywordInfo) => void;
+  upsertMultipleKeywords: (questionId: number, newKeywords: Keyword[]) => void;
   deleteKeyword: (targetKeyword: { questionId: number; keyword: string }) => void;
   setStatisticsKeywords: (newStatisticsKeywords: CommonResult) => void;
 }
@@ -92,6 +93,45 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
       if (state.keywords[questionId].some((element) => element.keyword === keyword))
         return modifyKeywordCount(state.keywords, state.prefixSumMap, targetKeyword);
       return appendKeyword(state.keywords, state.prefixSumMap, targetKeyword);
+    });
+  },
+
+  upsertMultipleKeywords: (questionId, newKeywords) => {
+    set((state) => {
+      const existingKeywords = state.keywords[questionId] || [];
+
+      // 병합 및 count 업데이트
+      // newKeywords에 포함된 키워드들은 count를 새로 덮어쓰고, 기존 키워드들은 count를 그대로 유지
+      const keywordMap = new Map<string, number>();
+      // 기존 키워드들은 count를 그대로 유지
+      existingKeywords.forEach(({ keyword, count }) => {
+        keywordMap.set(keyword, count);
+      });
+
+      // 새로운 키워드들은 count를 덮어쓰거나 추가
+      newKeywords.forEach(({ keyword, count }) => {
+        keywordMap.set(keyword, count);
+      });
+
+      // 병합 결과를 배열로 변환 후 정렬
+      const mergedKeywords = Array.from(keywordMap.entries())
+        .map(([keyword, count]) => ({ keyword, count }))
+        .filter(({ count }) => count > 0)
+        .sort((a, b) => b.count - a.count);
+
+      // 새 PrefixSumMap 계산
+      const updatedPrefixSumMap = {
+        ...state.prefixSumMap,
+        [questionId]: getPrefixSumMap(mergedKeywords)
+      };
+
+      return {
+        keywords: {
+          ...state.keywords,
+          [questionId]: mergedKeywords
+        },
+        prefixSumMap: updatedPrefixSumMap
+      };
     });
   },
 

@@ -2,14 +2,14 @@ import { css } from '@emotion/react';
 import { useState } from 'react';
 
 import { useToast } from '@/hooks';
-import { sendPickKeywordMessage } from '@/services';
+import { sendPickKeywordMessage, sendReleaseKeywordMessage } from '@/services';
 import { useSocketStore } from '@/stores';
 import { Variables } from '@/styles';
-import { KeywordResponse } from '@/types';
 
 interface QuestionInputProps {
   currentQuestionIndex: number;
-  onSubmit: (keyword: string, type: 'add') => void;
+  selectedKeywords: Set<string>;
+  onSubmit: (keyword: string, type: 'add' | 'delete') => void;
 }
 
 const inputStyle = css`
@@ -27,7 +27,7 @@ const inputStyle = css`
   opacity: 1;
 `;
 
-const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) => {
+const QuestionInput = ({ currentQuestionIndex, selectedKeywords, onSubmit }: QuestionInputProps) => {
   const [keyword, setKeyword] = useState('');
   const { openToast } = useToast();
   const { socket } = useSocketStore();
@@ -42,13 +42,20 @@ const QuestionInput = ({ currentQuestionIndex, onSubmit }: QuestionInputProps) =
 
     if (socket) {
       try {
-        await sendPickKeywordMessage(socket, currentQuestionIndex + 1, keyword); // 서버에 키워드 추가 요청
-        setKeyword('');
-        onSubmit(keyword, 'add'); // 내가 선택한 키워드에 추가
+        if (!selectedKeywords.has(keyword)) {
+          await sendPickKeywordMessage(socket, currentQuestionIndex + 1, keyword); // 서버에 키워드 추가 요청
+          openToast({ text: '답변을 제출했어요!', type: 'check' });
+          setKeyword('');
+          onSubmit(keyword, 'add'); // 내가 선택한 키워드에 추가
+        } else {
+          await sendReleaseKeywordMessage(socket, currentQuestionIndex + 1, keyword); // 서버에 키워드 공감 취소 요청
+          openToast({ text: '해당 키워드에 대해 공감을 취소했어요', type: 'check' });
+          setKeyword('');
+          onSubmit(keyword, 'delete');
+        }
       } catch (error) {
         if (error instanceof Error) openToast({ text: error.message, type: 'error' });
       }
-
     }
   }
 

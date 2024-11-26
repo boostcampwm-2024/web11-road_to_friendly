@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
 
+import Menu from '@/assets/icons/menu.svg?react';
 import Profile from '@/assets/icons/profile.svg?react';
 import { useParticipantsStore } from '@/stores';
 import { Variables } from '@/styles';
 
 import Modal from './common/Modal';
-
 
 const ListContainerStyle = css`
   display: flex;
@@ -14,18 +14,21 @@ const ListContainerStyle = css`
   gap: 10px;
   padding: 8px;
   width: 200px;
-  height: 95%;
+  min-height: 500px;
 `;
 
-const SidebarTriggerArea = css`
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: ${Variables.spacing.spacing_lg};
-  background-color: transparent;
-  &:hover {
-    cursor: pointer;
+const SidebarButtonStyle = (isSidebarOpen: boolean) => css`
+  position: absolute;
+  left: ${isSidebarOpen ? '250px' : '10px'}; /* 모달 열리면 버튼 이동 */
+  top: 50%;
+  transform: translateY(-50%);
+  transition: left 0.3s ease-in-out; /* 버튼 이동 애니메이션 */
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    transform: ${isSidebarOpen ? 'rotate(180deg)' : 'rotate(0deg)'}; /* 버튼 방향 */
   }
 `;
 
@@ -44,11 +47,9 @@ const ParticipantListSidebar = () => {
 
   return (
     <div>
-      <div
-        css={SidebarTriggerArea}
-        onMouseEnter={() => setIsModalOpen(true)}
-        onMouseLeave={() => setIsModalOpen(false)}
-      />
+      <button css={SidebarButtonStyle(isModalOpen)} onClick={() => setIsModalOpen(!isModalOpen)}>
+        <Menu width={30} height={30} />
+      </button>
       <Modal position={'topLeft'} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div css={ListContainerStyle}>
           <div>참여자 리스트</div>

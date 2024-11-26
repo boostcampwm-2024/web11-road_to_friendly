@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { PHASE } from '../../common/definition/phase';
-
 import { RoomsInMemoryRepository } from './rooms.in-memory.repository';
+import { PHASE } from '../../common/definition/phase';
 
 jest.mock('uuid', () => ({
   v4: jest.fn().mockReturnValue('mocked-uuid'),

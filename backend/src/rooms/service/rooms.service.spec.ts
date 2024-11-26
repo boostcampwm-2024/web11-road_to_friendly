@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
+import { RoomsService } from './rooms.service';
 import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
 import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.in-memory.repository';
-
-import { RoomsService } from './rooms.service';
 
 describe('RoomsService', () => {
   let service: RoomsService;

@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { InterestsInMemoryRepository } from '../repository/interests.in-memory.repository';
-
 import { InterestsService } from './interests.service';
+import { InterestsInMemoryRepository } from '../repository/interests.in-memory.repository';
 
 describe('InterestsService', () => {
   let service: InterestsService;

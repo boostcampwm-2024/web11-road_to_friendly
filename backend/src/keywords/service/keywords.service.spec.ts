@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
-
 import { KeywordsService } from './keywords.service';
+import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
 
 describe('KeywordsService', () => {
   let service: KeywordsService;

@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { Phase, PHASE } from '../definition/phase';
 import { CustomException } from '../exception/custom-exception';

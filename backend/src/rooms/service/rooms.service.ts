@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 import { Topic } from '../entity/Topic';
 import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
 import { PHASE, Phase } from '../../common/definition/phase';
@@ -10,8 +9,9 @@ import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.i
 export class RoomsService {
   constructor(
     private readonly roomsInMemoryRepository: RoomsInMemoryRepository,
-    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository,
-  ) {}
+    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository
+  ) {
+  }
 
   create() {
     return this.roomsInMemoryRepository.create();
@@ -74,11 +74,7 @@ export class RoomsService {
     this.roomsInMemoryRepository.setPhase(roomId, phase);
   }
 
-  generateBroadcastStatisticsEvent(
-    roomId: string,
-    finishTime: string,
-    broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void,
-  ) {
+  generateBroadcastStatisticsEvent(roomId: string, finishTime: string, broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void) {
     const finishTimestamp = new Date(finishTime).getTime();
     const delay = finishTimestamp - Date.now();
 

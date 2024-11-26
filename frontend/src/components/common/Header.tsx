@@ -13,7 +13,8 @@ const headerWrapperStyle = css({
   display: 'flex',
   width: '100%',
   padding: '10px 24px',
-  minHeight: '80px'
+  minHeight: '80px',
+  zIndex: 1000
 });
 
 const headerStyle = (paddingY: number) =>

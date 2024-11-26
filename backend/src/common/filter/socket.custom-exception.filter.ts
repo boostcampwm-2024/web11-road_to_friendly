@@ -1,5 +1,6 @@
 import { ArgumentsHost, Catch } from '@nestjs/common';
 import { BaseWsExceptionFilter } from '@nestjs/websockets';
+
 import { CustomException } from '../exception/custom-exception';
 
 const CALLBACK_INDEX = 2;

@@ -2,6 +2,8 @@ import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import useParticipants from '@/hooks/useParticipants';
+
 import { Header } from '@/components/common';
 import ParticipantListSidebar from '@/components/ParticipantListSidebar';
 import RoomNotFoundError from '@/components/RoomNotFound';
@@ -15,8 +17,7 @@ import { calculatePosition } from '@/utils';
 import LoadingPage from '../LoadingPage';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
-import useParticipants from '@/hooks/useParticipants';
-//test입니다
+
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
   height: 100vh;
@@ -118,7 +119,10 @@ const Room = () => {
                   resultLoading ? (
                     <LoadingPage isAnalyzing={true} />
                   ) : (
-                    <ResultInstruction />
+                    <>
+                      <ResultInstruction />
+                      <ContentShareView />
+                    </>
                   )
                 ) : (
                   <RoomIntroView

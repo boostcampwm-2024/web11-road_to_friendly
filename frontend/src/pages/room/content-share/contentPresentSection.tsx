@@ -28,13 +28,11 @@ interface ContentPresentSectionProps {
 /* 컨텐츠가 실제로 표시되는 영역 */
 const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
   return (
-    <div css={ContentPresentSectionStyle}>
-      <img
-        css={ImageContentStyle}
-        src={'https://i1.sndcdn.com/artworks-nS5zU2ZseiW3oRgT-PjrnSw-t500x500.jpg'}
-        alt={'content'}
-      />
-    </div>
+    content.type === 'IMAGE' && (
+      <div css={ContentPresentSectionStyle}>
+        <img css={ImageContentStyle} src={content.resourceURL} alt={'content'} />
+      </div>
+    )
   );
 };
 

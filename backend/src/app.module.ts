@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 import { RoomsGateway } from './rooms/gateway/rooms.gateway';
 import { RoomsService } from './rooms/service/rooms.service';
 import { RoomsController } from './rooms/controller/rooms.controller';
@@ -16,7 +15,6 @@ import { ExistGuard } from './common/guard/exist.guard';
 import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
-import { ConfigModule } from '@nestjs/config';
 import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -35,9 +33,8 @@ import { join } from 'path';
       serveRoot: '/shareImage',
     }),
   ],
-  controllers: [AppController, RoomsController],
+  controllers: [RoomsController],
   providers: [
-    AppService,
     RoomsGateway,
     RoomsService,
     RoomsInMemoryRepository,

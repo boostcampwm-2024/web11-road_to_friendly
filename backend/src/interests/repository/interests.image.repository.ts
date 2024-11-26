@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
 import { InterestsImageDto } from '../dto/interests.image.dto';
@@ -12,7 +11,6 @@ import { Interest } from '../domain/interest';
 import { CustomException } from 'src/common/exception/custom-exception';
 import { InterestsRepository } from './interests.repository';
 
-@Injectable()
 export class InterestsImageRepository implements InterestsRepository {
   private readonly roomInterest = new Map<string, InterestsManager>();
   private readonly lock = new AsyncLock();
@@ -68,18 +66,30 @@ export class InterestsImageRepository implements InterestsRepository {
 
   async uploadImage(data: InterestsImageDto) {
     const extension = data.fileName.split('.').pop()?.toUpperCase();
+    if (!extension) {
+      throw new CustomException('확장자가 없습니다.');
+    }
+
+    const contentType = ContentTypes[extension];
+    if (!contentType) {
+      throw new CustomException(`지원되지 않는 확장자: ${extension}`);
+    }
+
     const uniqueFileName = `${uuid()}-${data.fileName}`;
 
     const params = {
       Bucket: 'road-to-friendly-bucket',
       Key: `shareImage/${uniqueFileName}`,
       Body: data.buffer,
-      ContentType: ContentTypes[extension],
+      ContentType: contentType,
       ACL: 'public-read',
     };
 
-    const result = await this.s3.upload(params).promise();
-
-    return result.Location;
+    try {
+      const result = await this.s3.upload(params).promise();
+      return result.Location;
+    } catch (error) {
+      throw new CustomException(`파일 업로드 실패: ${error.message}`);
+    }
   }
 }

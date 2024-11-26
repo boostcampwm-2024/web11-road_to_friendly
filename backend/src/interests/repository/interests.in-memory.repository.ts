@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { InterestsManager } from '../operator/Interests.manager';
 import { getOrCreateValue } from '../../common/util/get-or-create-value';
 import { Interest } from '../domain/interest';
@@ -10,8 +9,8 @@ import { v4 as uuid } from 'uuid';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 import { InterestsRepository } from './interests.repository';
+import { ContentTypes } from '../definition/contentType';
 
-@Injectable()
 export class InterestsInMemoryRepository implements InterestsRepository {
   private readonly roomInterest = new Map<string, InterestsManager>();
   private readonly lock = new AsyncLock();
@@ -43,6 +42,15 @@ export class InterestsInMemoryRepository implements InterestsRepository {
   }
 
   async uploadImage(data: InterestsImageDto) {
+    const extension = data.fileName.split('.').pop()?.toUpperCase();
+    if (!extension) {
+      throw new CustomException('확장자가 없습니다.');
+    }
+
+    if (!ContentTypes[extension]) {
+      throw new CustomException(`지원되지 않는 확장자: ${extension}`);
+    }
+
     const uniqueFileName = `${uuid()}-${data.fileName}`;
 
     const dirPath = join(__dirname, '..', 'shareImage');
@@ -55,7 +63,7 @@ export class InterestsInMemoryRepository implements InterestsRepository {
 
       return `http://localhost:8080/shareImage/${uniqueFileName}`;
     } catch (error) {
-      throw new Error(error);
+      throw new CustomException(`파일 업로드 실패: ${error.message}`);
     }
   }
 }

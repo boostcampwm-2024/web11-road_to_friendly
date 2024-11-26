@@ -1,22 +1,45 @@
-import { join } from 'path';
-import { promises as fs } from 'fs';
-
-import * as AsyncLock from 'async-lock';
+import * as AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
+import { ConfigService } from '@nestjs/config';
+import * as AsyncLock from 'async-lock';
+import { getOrCreateValue } from 'src/common/util/get-or-create-value';
+import { CustomException } from 'src/common/exception/custom-exception';
 
-import { InterestsManager } from '../operator/Interests.manager';
-import { getOrCreateValue } from '../../common/util/get-or-create-value';
-import { Interest } from '../domain/interest';
-import { CustomException } from '../../common/exception/custom-exception';
-import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
 import { InterestsImageDto } from '../dto/interests.image.dto';
 import { ContentTypes } from '../definition/contentType';
+import { InterestsManager } from '../operator/Interests.manager';
+import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
+import { Interest } from '../domain/interest';
+
 
 import { InterestsRepository } from './interests.repository';
 
-export class InterestsInMemoryRepository implements InterestsRepository {
+export class InterestsImageRepository implements InterestsRepository {
   private readonly roomInterest = new Map<string, InterestsManager>();
   private readonly lock = new AsyncLock();
+
+  private s3: AWS.S3;
+
+  private endpoint: AWS.Endpoint;
+  private region: string;
+  private access_key: string;
+  private secret_key: string;
+
+  constructor(private configService: ConfigService) {
+    this.endpoint = new AWS.Endpoint(this.configService.get<string>('ENDPOINT'));
+    this.region = this.configService.get<string>('REGION');
+    this.access_key = this.configService.get<string>('ACCESS_KEY');
+    this.secret_key = this.configService.get<string>('SECRET_KEY');
+
+    this.s3 = new AWS.S3({
+      endpoint: this.endpoint.href,
+      region: this.region,
+      credentials: {
+        accessKeyId: this.access_key,
+        secretAccessKey: this.secret_key,
+      },
+    });
+  }
 
   async addInterestIfBroadcasting(roomId: string, interest: Interest) {
     return await this.lock.acquire(`${roomId}:share`, async () => {
@@ -50,21 +73,24 @@ export class InterestsInMemoryRepository implements InterestsRepository {
       throw new CustomException('확장자가 없습니다.');
     }
 
-    if (!ContentTypes[extension]) {
+    const contentType = ContentTypes[extension];
+    if (!contentType) {
       throw new CustomException(`지원되지 않는 확장자: ${extension}`);
     }
 
     const uniqueFileName = `${uuid()}-${data.fileName}`;
 
-    const dirPath = join(__dirname, '..', 'shareImage');
-    const filePath = join(dirPath, uniqueFileName);
+    const params = {
+      Bucket: 'road-to-friendly-bucket',
+      Key: `shareImage/${uniqueFileName}`,
+      Body: data.buffer,
+      ContentType: contentType,
+      ACL: 'public-read',
+    };
 
     try {
-      await fs.mkdir(dirPath, { recursive: true });
-
-      await fs.writeFile(filePath, data.buffer);
-
-      return `http://localhost:8080/shareImage/${uniqueFileName}`;
+      const result = await this.s3.upload(params).promise();
+      return result.Location;
     } catch (error) {
       throw new CustomException(`파일 업로드 실패: ${error.message}`);
     }

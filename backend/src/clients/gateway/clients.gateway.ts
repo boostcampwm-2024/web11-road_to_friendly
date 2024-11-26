@@ -1,6 +1,7 @@
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UseFilters, UseGuards } from '@nestjs/common';
+
 import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { HostGuard } from '../../common/guard/host.guard';
@@ -13,9 +14,7 @@ import { PhaseReadyGuard } from '../../common/guard/phase.guard';
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
 export class ClientsGateway {
-
-  constructor(private readonly roomsService: RoomsService) {
-  }
+  constructor(private readonly roomsService: RoomsService) {}
 
   @WebSocketServer()
   server: Server;
@@ -45,5 +44,5 @@ export class ClientsGateway {
 
   private endToEmpathise(roomId: string, statistics: Record<string, KeywordsAlertDto[]>) {
     this.server.to(roomId).emit('empathy:result', statistics);
-  };
+  }
 }

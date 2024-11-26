@@ -69,7 +69,7 @@ const Room = () => {
   };
 
   const positions = useMemo(
-    () => calculatePosition(Math.min(Object.keys(participants).length, 10), radius[0], radius[1]), //10명으로 제한
+    () => calculatePosition(Math.min(Object.keys(participants).length, 8), radius[0], radius[1]), //10명으로 제한
     [radius, participants]
   );
 

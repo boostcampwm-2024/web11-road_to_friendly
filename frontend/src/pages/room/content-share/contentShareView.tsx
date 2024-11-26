@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import StopIcon from '@/assets/icons/stop.svg?react';
 import { useParticipantsStore, useSocketStore } from '@/stores';
@@ -48,6 +48,18 @@ const ContentShareView = () => {
 
   // const isHostOrSharer = currentContent?.sharerSocketId === socket?.id || socket?.id === hostId;
   const isHostOrSharer = true;
+
+  useEffect(() => {
+    const fetchNumberOfWaiters = () => {
+      if (socket && socket.connected) {
+        socket.on('share:interest:add', (response: { nowQueueSize: number }) => {
+          setNumberOfWaiters(response.nowQueueSize);
+        });
+      }
+    };
+
+    fetchNumberOfWaiters();
+  }, [socket]);
 
   return (
     <section css={ContentShareViewStyle}>

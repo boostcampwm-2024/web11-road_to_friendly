@@ -28,7 +28,7 @@ export class InterestsService {
     return await this.interestsRepository.uploadImage(data);
   }
 
-  async getCorrectedTimeInSeconds(clientTimestamp: number, currentTime: number) {
+  async getCorrectedSeconds(clientTimestamp: number, currentTime: number) {
     const serverTimestamp = Date.now();
     const timeDifference = serverTimestamp - clientTimestamp;
     return currentTime + timeDifference / TIME_UNITS.MILLISECONDS_TO_SECOND;

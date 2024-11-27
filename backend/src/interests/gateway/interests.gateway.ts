@@ -70,7 +70,7 @@ export class InterestsGateway implements OnModuleInit {
   async youtubePlay(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
     const roomId = client.data.roomId;
 
-    const correctedTime = await this.interestsService.getCorrectedTimeInSeconds(data.clientTimestamp, data.videoCurrentTime);
+    const correctedTime = await this.interestsService.getCorrectedSeconds(data.clientTimestamp, data.videoCurrentTime);
 
     const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.PLAY, {
       videoCurrentTime: correctedTime,
@@ -98,7 +98,7 @@ export class InterestsGateway implements OnModuleInit {
 
     const correctedTargetTime =
       data.playStatus === 'play'
-        ? await this.interestsService.getCorrectedTimeInSeconds(data.clientTimestamp, data.targetTime)
+        ? await this.interestsService.getCorrectedSeconds(data.clientTimestamp, data.targetTime)
         : data.targetTime;
 
     const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(

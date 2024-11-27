@@ -2,16 +2,15 @@ import { useSocketStore } from '@/stores';
 import { css, keyframes } from '@emotion/react';
 import { useRef, useState } from 'react';
 import { divideSize, multiplySize } from '@/utils';
-import { Slider } from '@/components/common';
 import { Variables } from '@/styles';
 import ReactPlayer from 'react-player';
-import ControllBar from './ControllBar';
 import PlayIcon from '@/assets/icons/play-fill.svg?react';
 import PauseIcon from '@/assets/icons/pause-line.svg?react';
 import { useFraction, useToast } from '@/hooks';
 import { InterestYoutubeResponse, YoutubeRequestType } from '@/types';
 import { YOUTUBE_ERROR_MESSAGES } from '@/constants';
 import SharerDraggingIndicator from './SharerDraggingIndicator';
+import ControllerSection from './ControllerSection';
 
 type StateChange = 'pause' | 'play';
 
@@ -85,16 +84,13 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   const [fraction, setFraction] = useFraction(0);
   const [isHovering, setIsHovering] = useState(false);
   const [volume, setVolume] = useFraction(0);
-  const [controllbarHeight, setControllbarHeight] = useState(0);
   const [isSharerDragging, setIsSharerDragging] = useState(false);
 
   const prevPlayedSecRef = useRef(0);
-  const prevVolumeRef = useRef(0);
   const prevIsPlayingRef = useRef(false);
   const hasEndedRef = useRef(false);
 
   const isDraggingSliderRef = useRef(false);
-  const hasDragHandledRef = useRef(false);
 
   const { socket } = useSocketStore();
   const { openToast } = useToast();
@@ -213,15 +209,6 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     socket?.emit(eventName, body);
   }
 
-  function sendTimelineChange(targetTime: number) {
-    const playStatus = prevIsPlayingRef.current ? 'play' : 'pause';
-    socket?.emit('interest:youtube:timeline', { targetTime, playStatus, clientTimestamp: Date.now() });
-  }
-
-  function sendDraggingStart() {
-    socket?.emit('interest:youtube:dragging');
-  }
-
   function syncFractionWithProgress({ played }: { played: number }) {
     if (hasEndedRef.current) return;
     setFraction(played);
@@ -244,43 +231,6 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     }
 
     requestAnimationFrame(() => onProgressWithReqeustAnimation(callback));
-  }
-
-  function handleDragStart() {
-    hasDragHandledRef.current = true;
-
-    setIsPlaying(false);
-
-    player?.getInternalPlayer().pauseVideo();
-
-    sendDraggingStart();
-  }
-
-  function setFractionAndMove(newFraction: number) {
-    if (!isSharer || !player) return;
-
-    player.seekTo(newFraction, 'fraction');
-    setFraction(newFraction);
-
-    if (isDraggingSliderRef.current && !hasDragHandledRef.current) {
-      handleDragStart();
-    }
-
-    // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
-    if (!isDraggingSliderRef.current) {
-      const newSec = newFraction * player.getDuration();
-      sendTimelineChange(newSec);
-
-      setIsPlaying(prevIsPlayingRef.current);
-
-      if (prevIsPlayingRef.current) {
-        player.getInternalPlayer().playVideo();
-      } else {
-        player.getInternalPlayer().pauseVideo();
-      }
-
-      hasDragHandledRef.current = false;
-    }
   }
 
   return (
@@ -331,53 +281,26 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
             if (isDraggingSliderRef.current) return;
             syncFractionWithProgress({ played: 1 });
             hasEndedRef.current = true;
-
             pauseVideo();
           }}
           config={{ youtube: { playerVars: { autoplay: 1 } } }}
         />
         <SharerDraggingIndicator isSharerDragging={isSharerDragging} />
-        {isHovering && player && (
-          <div>
-            <div
-              css={{
-                position: 'absolute',
-                bottom: '0',
-                width: '95%',
-                height: '100%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: '997'
-              }}
-            >
-              <Slider
-                showThumb={isSharer}
-                fraction={fraction}
-                setFraction={setFractionAndMove}
-                bottom={controllbarHeight + 6}
-                shouldHoverGrow={true}
-                shouldExtendWhenDrag={true}
-                shouldThumbAnytime={false}
-                onMouseDownStateChange={(isDown: boolean) => {
-                  isDraggingSliderRef.current = isDown;
-                }}
-              />
-            </div>
-            <ControllBar
-              isSharer={isSharer}
-              player={player}
-              currentTime={player.getCurrentTime()}
-              duration={player.getDuration()}
-              setControllbarHeight={setControllbarHeight}
-              volume={volume}
-              setVolume={setVolume}
-              prevVolumeRef={prevVolumeRef}
-              isPlaying={isPlaying}
-              playVideo={playVideo}
-              pauseVideo={pauseVideo}
-            />
-          </div>
-        )}
+        <ControllerSection
+          isHovering={isHovering}
+          player={player}
+          isSharer={isSharer}
+          isPlaying={isPlaying}
+          playVideo={playVideo}
+          pauseVideo={pauseVideo}
+          setFraction={setFraction}
+          setVolume={setVolume}
+          volume={volume}
+          socket={socket}
+          fraction={fraction}
+          setIsPlaying={setIsPlaying}
+          prevIsPlayingRef={prevIsPlayingRef}
+        />
       </div>
     </>
   );

@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { CustomException } from '../exception/custom-exception';
 

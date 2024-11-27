@@ -22,7 +22,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+
+    // vitest의 API를 global하게 사용할 수 있도록 해주는 속성
+    "types": ["vitest/globals"]
   },
   "include": ["src", "**/*.ts", "**/*.tsx"]
 }

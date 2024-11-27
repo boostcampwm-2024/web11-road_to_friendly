@@ -8,14 +8,18 @@
     "build": "tsc -b && vite build",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky install",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "axios": "^1.7.7",
+    "framer-motion": "^11.11.17",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-player": "^2.16.0",
     "react-router-dom": "^6.27.0",
     "socket.io-client": "^4.8.1",
     "zustand": "^5.0.1"
@@ -30,6 +34,7 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "@vitejs/plugin-react-swc": "^3.5.0",
+    "@vitest/coverage-v8": "^2.1.5",
     "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.3",
@@ -38,6 +43,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.12.0",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
     "typescript": "~5.6.2",

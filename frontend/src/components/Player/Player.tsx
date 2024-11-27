@@ -182,15 +182,14 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
 
   function sendStateChange(stateChange: StateChange) {
     const eventName = statusEventNameMap[stateChange];
-    socket?.emit(eventName, {
-      clientTimestamp: Date.now(),
-      videoCurrentTime: player?.getCurrentTime(),
-      playStatus: stateChange
-    });
+    const body: Record<string, any> = { videoCurrentTime: player?.getCurrentTime(), playStatus: stateChange };
+    if (stateChange === 'play') body['clientTimestamp'] = Date.now();
+    socket?.emit(eventName, body);
   }
 
   function sendTimelineChange(targetTime: number) {
-    socket?.emit('interest:youtube:timeline', { targetTime });
+    const playStatus = isPlaying ? 'play' : 'pause';
+    socket?.emit('interest:youtube:timeline', { targetTime, playStatus, clientTimestamp: Date.now() });
   }
 
   function syncFractionWithProgress({ played }: { played: number }) {

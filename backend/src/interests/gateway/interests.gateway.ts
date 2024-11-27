@@ -13,7 +13,7 @@ import { JoinGuard } from '../../common/guard/join.guard';
 import { InterestsImageDto } from '../dto/interests.image.dto';
 import { InterestsYoutubeControlDto } from '../dto/interests.youtube.control.dto';
 import { InterestsYoutubeControlResponseDto } from '../dto/interests.youtube.control.response.dto';
-import { INTERESTS_YOUTUBE_CONTROL } from '../definition/interests.youtube.control';
+import { INTERESTS_YOUTUBE_CONTROL, interestsYoutubeControl } from '../definition/interests.youtube.control';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
@@ -72,24 +72,20 @@ export class InterestsGateway implements OnModuleInit {
 
     const correctedTime = await this.interestsService.getCorrectedSeconds(data.clientTimestamp, data.videoCurrentTime);
 
-    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.PLAY, {
+    this.broadcastYoutubeControl(client, roomId, INTERESTS_YOUTUBE_CONTROL.PLAY, {
       videoCurrentTime: correctedTime,
       playStatus: data.playStatus,
     });
-
-    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
   }
 
   @SubscribeMessage('interest:youtube:stop')
   youtubeStop(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
     const roomId = client.data.roomId;
 
-    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.STOP, {
+    this.broadcastYoutubeControl(client, roomId, INTERESTS_YOUTUBE_CONTROL.STOP, {
       videoCurrentTime: data.videoCurrentTime,
       playStatus: data.playStatus,
     });
-
-    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
   }
 
   @SubscribeMessage('interest:youtube:timeline')
@@ -101,36 +97,35 @@ export class InterestsGateway implements OnModuleInit {
         ? await this.interestsService.getCorrectedSeconds(data.clientTimestamp, data.targetTime)
         : data.targetTime;
 
-    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(
-      INTERESTS_YOUTUBE_CONTROL.TIMELINE,
-      {
-        targetTime: correctedTargetTime,
-      },
-    );
-
-    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
+    this.broadcastYoutubeControl(client, roomId, INTERESTS_YOUTUBE_CONTROL.TIMELINE, {
+      targetTime: correctedTargetTime,
+    });
   }
 
   @SubscribeMessage('interest:youtube:speed')
   youtubeChangespeed(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
     const roomId = client.data.roomId;
 
-    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.SPEED, {
+    this.broadcastYoutubeControl(client, roomId, INTERESTS_YOUTUBE_CONTROL.SPEED, {
       playSpeed: data.playSpeed,
     });
-
-    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
   }
 
   @SubscribeMessage('interest:youtube:dragging')
   youtubeDragging(@ConnectedSocket() client: Socket) {
     const roomId = client.data.roomId;
 
-    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(
-      INTERESTS_YOUTUBE_CONTROL.DRAGGING,
-    );
+    this.broadcastYoutubeControl(client, roomId, INTERESTS_YOUTUBE_CONTROL.DRAGGING);
+  }
 
-    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
+  private broadcastYoutubeControl(
+    client: Socket,
+    roomId: string,
+    requestType: interestsYoutubeControl,
+    options: { videoCurrentTime?: number; playStatus?: string; targetTime?: number; playSpeed?: number } = {},
+  ) {
+    const responseDto = InterestsYoutubeControlResponseDto.of(requestType, options);
+    client.broadcast.to(roomId).emit('share:interest:youtube', responseDto);
   }
 
   @SubscribeMessage('interest:next')

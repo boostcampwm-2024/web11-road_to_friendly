@@ -1,14 +1,14 @@
 import { interestsYoutubeControl } from '../definition/interests.youtube.control';
 
 export class InterestsYoutubeControlResponseDto {
-  requestType: string;
+  requestType: interestsYoutubeControl;
   videoCurrentTime?: number;
   playStatus?: string;
   targetTime?: number;
   playSpeed?: number;
 
   constructor(
-    requestType: string,
+    requestType: interestsYoutubeControl,
     videoCurrentTime?: number,
     playStatus?: string,
     targetTime?: number,

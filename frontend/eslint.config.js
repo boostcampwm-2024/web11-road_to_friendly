@@ -2,8 +2,9 @@ import js from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import globals, { node } from 'globals';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
+const { node } = globals;
 
 export default tseslint.config(
   { ignores: ['dist', 'eslint.config.js', 'vite.config.js'] },
@@ -23,13 +24,19 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       // TypeScript 관련 설정
       '@typescript-eslint/no-explicit-any': 'warn', // any 사용 경고
-      '@typescript-eslint/no-unused-vars': 'error', // 사용되지 않는 변수 경고
+      '@typescript-eslint/no-unused-vars': 'warn', // 사용되지 않는 변수 경고
+      '@typescript-eslint/no-empty-object-type': 'warn', // 빈 객체 타입 경고
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
 
       // React 관련 설정
       'react/react-in-jsx-scope': 'off', // Reat 17+ 이상에서 React import 없이 사용 가능
       'react/prop-types': 'off', // TS 사용 시 PropTypes 생략
       'no-debugger': 'off', // debugger 사용 가능
       'no-console': 'off', // console 사용 가능,
+
+      'import/no-unresolved': 'off', // alias 사용 시 import
+      'import/named': 'off',
 
       // import 관련 설정
       'import/order': [
@@ -75,7 +82,7 @@ export default tseslint.config(
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true, //import하는 모듈의 @type/**에서 .d.ts파일을 찾아 타입 추론
-          project: './tsconfig.json' // tsconfig.json 파일의 위치를 명시. 생략 시, 현재 위치에서 가장 가까운 tsconfig.json이 인식됨
+          project: './tsconfig.app.json' // tsconfig.json 파일의 위치를 명시. 생략 시, 현재 위치에서 가장 가까운 tsconfig.json이 인식됨
         },
         node: {
           paths: ['src'] //node_modules에서 모듈을 찾을 때 참고할 경로

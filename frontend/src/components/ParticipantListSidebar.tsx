@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 import { useState } from 'react';
 
+import Profile from '@/assets/icons/profile.svg?react';
+import { useParticipantsStore } from '@/stores';
 import { Variables } from '@/styles';
 
 import Modal from './common/Modal';
-import { useParticipantsStore } from '@/stores';
 
-import Profile from '@/assets/icons/profile.svg?react';
 
 const ListContainerStyle = css`
   display: flex;
@@ -49,7 +49,7 @@ const ParticipantListSidebar = () => {
         onMouseEnter={() => setIsModalOpen(true)}
         onMouseLeave={() => setIsModalOpen(false)}
       />
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal position={'topLeft'} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div css={ListContainerStyle}>
           <div>참여자 리스트</div>
           {Object.keys(participants).map((participantId) => (

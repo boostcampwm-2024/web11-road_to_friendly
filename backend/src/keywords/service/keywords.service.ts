@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
 import { KeywordsInfoDto } from '../dto/keywords.info.dto';
 
@@ -18,5 +19,9 @@ export class KeywordsService {
 
   getStatistics(roomId: string) {
     return this.keywordsInMemoryRepository.getStatistics(roomId);
+  }
+
+  deleteRoomKeywordsInfo(roomId: string) {
+    this.keywordsInMemoryRepository.deleteRoomKeywordsInfo(roomId);
   }
 }

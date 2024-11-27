@@ -8,6 +8,7 @@ export const Variables = {
     surface_strong: '#434343',
     surface_transparent_darkgrey_75: '#232323BF',
     surface_black: '#000000',
+    surface_weak: '#EFEFEF',
     surface_transparent_black_50: 'rgba(0, 0, 0, 0.5)', //50% 투명도
     surface_point: '#FF8A8A',
     text_default: '#000000',

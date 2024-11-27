@@ -50,7 +50,12 @@ const controllBarStyle = (height: string) =>
 
     width: '100%',
     height: height,
-    zIndex: '998'
+    zIndex: '998',
+
+    button: {
+      display: 'flex',
+      alignItems: 'center'
+    }
   });
 
 const leftSectionStyle = css({
@@ -147,10 +152,20 @@ const ControllBar = ({
         }}
       >
         <div css={leftSectionStyle}>
-          {isSharer && isPlaying && <PauseIcon css={iconStyle} onClick={pauseVideo} />}
-          {isSharer && !isPlaying && <PlayIcon css={iconStyle} onClick={playVideo} />}
+          {isSharer && isPlaying && (
+            <button onClick={pauseVideo} aria-label="pause button">
+              <PauseIcon css={iconStyle} />
+            </button>
+          )}
+          {isSharer && !isPlaying && (
+            <button onClick={playVideo} aria-label="play button">
+              <PlayIcon css={iconStyle} />
+            </button>
+          )}
           <div css={volumeContainerStyle}>
-            <VolumeIcon css={iconStyle} onClick={toggleVolume} />
+            <button onClick={toggleVolume} aria-label="volume toggle button">
+              <VolumeIcon css={iconStyle} />
+            </button>
             <div
               css={{
                 position: 'relative',
@@ -167,7 +182,6 @@ const ControllBar = ({
               />
             </div>
           </div>
-
           <div css={timeSectionStyle}>
             {convertSecToHHMMSS(Math.round(currentTime))} / {convertSecToHHMMSS(Math.round(duration))}
           </div>
@@ -175,7 +189,9 @@ const ControllBar = ({
         <div css={rightSectionStyle}>
           {isSharer && (
             <>
-              <SettingFillIcon css={iconStyle} onClick={() => setOpenSettingPanel(!openSettingPanel)} />
+              <button onClick={() => setOpenSettingPanel(!openSettingPanel)} aria-label="setting toggle button">
+                <SettingFillIcon css={iconStyle} />
+              </button>
               {controllBarRef.current && (
                 <SettingPanel
                   openSettingPanel={openSettingPanel}

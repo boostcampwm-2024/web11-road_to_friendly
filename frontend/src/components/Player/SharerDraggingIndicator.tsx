@@ -21,7 +21,8 @@ const sharerDraggingIndicatorStyle = (isSharerDragging: boolean) =>
     alignItems: 'center',
     justifyContent: 'center',
     opacity: isSharerDragging ? 1 : 0,
-    transition: `opacity 0.5s ease-in`
+    transition: `opacity 0.5s ease-in`,
+    pointerEvents: 'none'
   });
 
 const lottieContainerStyle = css({

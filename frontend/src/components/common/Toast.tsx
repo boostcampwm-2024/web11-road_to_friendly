@@ -1,12 +1,12 @@
 import { css, keyframes } from '@emotion/react';
+import { useContext } from 'react';
 
 import CloseIcon from '@/assets/icons/close.svg?react';
+import { ToastContext } from '@/contexts';
 import { useTimeout } from '@/hooks';
 import { Variables } from '@/styles';
-import { parseNumberAndUnit } from '@/utils';
-import { ToastContext } from '@/contexts';
-import { useContext } from 'react';
 import { Position, ToastProps } from '@/types';
+import { parseNumberAndUnit } from '@/utils';
 
 const slideUp = (position: Position) => {
   const { bottom } = position;

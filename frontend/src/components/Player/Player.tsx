@@ -183,6 +183,9 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   function sendStateChange(stateChange: StateChange) {
     const eventName = statusEventNameMap[stateChange];
     const body: Record<string, any> = { videoCurrentTime: player?.getCurrentTime(), playStatus: stateChange };
+
+    console.log('현재 시간은', player?.getCurrentTime());
+
     if (stateChange === 'play') body['clientTimestamp'] = Date.now();
     socket?.emit(eventName, body);
   }
@@ -233,7 +236,12 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
 
   return (
     <>
-      <div css={wrapperStyle} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+      <div
+        css={wrapperStyle}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        aria-label="player section"
+      >
         <div css={mediaSectionStyle} onClick={toggleVideo}></div>
 
         {isPlaying ? (

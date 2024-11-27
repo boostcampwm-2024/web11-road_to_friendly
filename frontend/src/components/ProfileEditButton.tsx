@@ -1,16 +1,16 @@
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
-import Modal from './common/Modal';
-import { useParticipantsStore, useSocketStore } from '@/stores';
-
-import Profile from '@/assets/icons/profile.svg?react';
 import Edit from '@/assets/icons/edit.svg?react';
+import Profile from '@/assets/icons/profile.svg?react';
+import { useParticipantsStore, useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 
+import Modal from './common/Modal';
+
 const profileImageStyle = css`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
 `;
@@ -112,6 +112,7 @@ const ProfileEditButton = () => {
         <Profile width={'100%'} height={'100%'} />
       </button>
       <Modal
+        position="topRight"
         closeButton={true}
         isOpen={isModalOpen}
         onClose={() => {

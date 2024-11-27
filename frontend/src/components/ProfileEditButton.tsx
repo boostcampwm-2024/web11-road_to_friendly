@@ -1,5 +1,7 @@
+import { connect } from 'http2';
+
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Edit from '@/assets/icons/edit.svg?react';
 import Profile from '@/assets/icons/profile.svg?react';
@@ -10,7 +12,7 @@ import Modal from './common/Modal';
 
 const profileImageStyle = css`
   width: 40px;
-  height: 40px;
+  height: 100%;
   border-radius: 50%;
   cursor: pointer;
 `;
@@ -70,38 +72,41 @@ const wrapperStyle = css`
 
 const spanStyle = css`
   position: absolute;
-  right: 15px;
+  right: 10px;
   bottom: 8px;
   font-size: 12px;
   color: ${Variables.colors.text_alt};
 `;
 
 const ProfileEditButton = () => {
-  const { socket, connect, disconnect } = useSocketStore();
+  const { socket, connect } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
   const { participants, setParticipants } = useParticipantsStore();
   const MAX_LENGTH = 6;
 
-  const handleProfileUpdate = (newProfile: { participantId: string; nickname: string }) => {
-    setParticipants((prev) => ({
-      ...prev,
-      [newProfile.participantId]: {
-        ...prev[newProfile.participantId],
-        nickname: newProfile.nickname
-      }
-    }));
-  };
-
   const handleSaveNickname = () => {
     const participantId = socket?.id || '';
-    if (participantId && nicknameInput) {
-      handleProfileUpdate({ participantId, nickname: nicknameInput });
+    if (participantId !== '' && nicknameInput !== '') {
+      socket.emit('client:update', { nickname: nicknameInput });
     }
-    setIsEditing(false);
-    setIsModalOpen(false);
   };
+
+  const handleProfileUpdate = useCallback(
+    (newProfile: { participantId: string; nickname: string }) => {
+      setParticipants((prev) => ({
+        ...prev,
+        [newProfile.participantId]: {
+          ...prev[newProfile.participantId],
+          nickname: newProfile.nickname
+        }
+      }));
+      setIsEditing(false);
+      setIsModalOpen(false);
+    },
+    [setParticipants]
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -115,22 +120,18 @@ const ProfileEditButton = () => {
   };
 
   useEffect(() => {
-    if (!socket) connect();
+    if (!socket) {
+      connect();
+    }
 
     if (socket) {
-      const currentUserId = socket?.id || '';
-      const currentNickname = participants[currentUserId]?.nickname || '알 수 없음';
-
-      // 사용자 정보 요청 및 프로필 업데이트 이벤트 설정
-      socket.emit('join', { nickname: currentNickname });
       socket.on('participant:info:update', handleProfileUpdate);
 
       return () => {
         socket.off('participant:info:update', handleProfileUpdate);
-        disconnect();
       };
     }
-  }, [socket, setParticipants]);
+  }, [socket, connect, handleProfileUpdate]);
 
   return (
     <div>

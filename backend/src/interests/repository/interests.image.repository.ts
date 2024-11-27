@@ -11,19 +11,17 @@ import { InterestsManager } from '../operator/Interests.manager';
 import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
 import { Interest } from '../domain/interest';
 
-
 import { InterestsRepository } from './interests.repository';
 
 export class InterestsImageRepository implements InterestsRepository {
   private readonly roomInterest = new Map<string, InterestsManager>();
-  private readonly lock = new AsyncLock();
 
   private s3: AWS.S3;
 
   private endpoint: AWS.Endpoint;
-  private region: string;
-  private access_key: string;
-  private secret_key: string;
+  private readonly region: string;
+  private readonly access_key: string;
+  private readonly secret_key: string;
 
   constructor(private configService: ConfigService) {
     this.endpoint = new AWS.Endpoint(this.configService.get<string>('ENDPOINT'));
@@ -41,26 +39,22 @@ export class InterestsImageRepository implements InterestsRepository {
     });
   }
 
-  async addInterestIfBroadcasting(roomId: string, interest: Interest) {
-    return await this.lock.acquire(`${roomId}:share`, async () => {
-      const interestsManager = getOrCreateValue(this.roomInterest, roomId, () => new InterestsManager());
-      const nowQueueSize = interestsManager.addInterestIfBroadcasting(interest);
-      return InterestsBroadcastResponseDto.of(interest, nowQueueSize);
-    });
+  addInterestIfBroadcasting(roomId: string, interest: Interest) {
+    const interestsManager = getOrCreateValue(this.roomInterest, roomId, () => new InterestsManager());
+    const nowQueueSize = interestsManager.addInterestIfBroadcasting(interest);
+    return InterestsBroadcastResponseDto.of(interest, nowQueueSize);
   }
 
-  async next(roomId: string, hostFlag: boolean, clientId: string) {
-    return await this.lock.acquire(`${roomId}:share`, async () => {
-      const interestsManager = this.roomInterest.get(roomId);
+  next(roomId: string, hostFlag: boolean, clientId: string) {
+    const interestsManager = this.roomInterest.get(roomId);
 
-      if (hostFlag || interestsManager.isMyInterest(clientId)) {
-        const nextInterest = interestsManager.getNextInterest();
-        const nowQueueSize = interestsManager.getQueueSize();
-        return InterestsBroadcastResponseDto.of(nextInterest, nowQueueSize);
-      }
+    if (hostFlag || interestsManager.isMyInterest(clientId)) {
+      const nextInterest = interestsManager.getNextInterest();
+      const nowQueueSize = interestsManager.getQueueSize();
+      return InterestsBroadcastResponseDto.of(nextInterest, nowQueueSize);
+    }
 
-      throw new CustomException('권한이 없습니다.');
-    });
+    throw new CustomException('권한이 없습니다.');
   }
 
   deleteRoomInterest(roomId: string) {
@@ -70,12 +64,12 @@ export class InterestsImageRepository implements InterestsRepository {
   async uploadImage(data: InterestsImageDto) {
     const extension = data.fileName.split('.').pop()?.toUpperCase();
     if (!extension) {
-      throw new CustomException('확장자가 없습니다.');
+      throw new CustomException('확장자가 없습니다.'); // TODO: 가드로 변경
     }
 
     const contentType = ContentTypes[extension];
     if (!contentType) {
-      throw new CustomException(`지원되지 않는 확장자: ${extension}`);
+      throw new CustomException(`지원되지 않는 확장자: ${extension}`); // TODO: 가드로 변경
     }
 
     const uniqueFileName = `${uuid()}-${data.fileName}`;

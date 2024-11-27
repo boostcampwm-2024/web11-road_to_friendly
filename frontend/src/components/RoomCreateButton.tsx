@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { config } from '@/config';
+import { useToast } from '@/hooks';
 import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
 import { LoadingSpinner } from './common';
-import { useToast } from '@/hooks';
 
 const startButtonStyle = css(
   {

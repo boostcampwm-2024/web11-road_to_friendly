@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 
-import { Keyword, KeywordInfo, Keywords, PrefixSumMap } from '@/types';
+import { Keyword, KeywordInfo, Keywords, PrefixSumMap, CommonResult } from '@/types';
 
 interface KeywordsStore {
   keywords: Keywords;
   prefixSumMap: PrefixSumMap;
+  statisticsKeywords: CommonResult;
 
   upsertKeyword: (targetKeyword: KeywordInfo) => void;
   deleteKeyword: (targetKeyword: { questionId: number; keyword: string }) => void;
+  setStatisticsKeywords: (newStatisticsKeywords: CommonResult) => void;
 }
 
 function getPrefixSumMap(keywords: Keyword[]) {
@@ -82,6 +84,7 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
     5: []
   },
   prefixSumMap: {},
+  statisticsKeywords: {},
 
   upsertKeyword: (targetKeyword) => {
     set((state) => {
@@ -104,5 +107,10 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
           [targetKeyword.questionId]: updatedKeywords || []
         }
       };
-    })
+    }),
+
+  setStatisticsKeywords: (newStatisticsKeywords) =>
+    set(() => ({
+      statisticsKeywords: newStatisticsKeywords
+    }))
 }));

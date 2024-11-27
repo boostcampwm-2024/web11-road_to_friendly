@@ -16,9 +16,6 @@ export default defineConfig({
     tsconfigPaths()
   ],
   resolve: {
-    alias: [
-      { find: '@components', replacement: '/src/components' },
-      { find: '@', replacement: '/src' }
-    ]
+    alias: [{ find: '@', replacement: '/src' }]
   }
 });

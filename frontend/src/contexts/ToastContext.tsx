@@ -1,9 +1,11 @@
-import { ToastOption, ToastProps } from '@/types';
-import { Toast } from '@components/common';
 import { createContext, useState } from 'react';
+
+import { Toast } from '@/components/common';
+
 import CheckIcon from '@/assets/icons/check.svg?react';
 import WarnIcon from '@/assets/icons/warn.svg?react';
 import { Variables } from '@/styles';
+import { ToastOption, ToastProps } from '@/types';
 
 interface ToastContextType {
   toast: boolean;

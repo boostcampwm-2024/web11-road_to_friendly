@@ -2,6 +2,9 @@ import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import useParticipants from '@/hooks/useParticipants';
+
+import { Header } from '@/components/common';
 import ParticipantListSidebar from '@/components/ParticipantListSidebar';
 import RoomNotFoundError from '@/components/RoomNotFound';
 import UserProfile from '@/components/UserProfile';
@@ -14,7 +17,6 @@ import { calculatePosition } from '@/utils';
 import LoadingPage from '../LoadingPage';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
-import useParticipants from '@/hooks/useParticipants';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -24,6 +26,7 @@ const backgroundStyle = css`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding-top: 100px; /* 헤더 높이를 고려한 여백 추가 */
 `;
 
 const ParticipantsContainer = (shortRadius: number, longRadius: number) => css`
@@ -44,13 +47,26 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
 
 const Room = () => {
   const roomId = useParams<{ roomId: string }>().roomId || null;
-  const [loading, setLoading] = useState<boolean>(true);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const [resultLoading, setResultLoading] = useState<boolean>(false);
 
-  const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setLoading);
+  const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
   const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
-  const [isResultView, setIsResultView] = useState(false); //결과 페이지인지 여부
+  const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
+
+  const startResultPage = () => {
+    setIsResultView(true);
+  };
+
+  const startResultLoading = () => {
+    setResultLoading(true);
+  };
+
+  const finishResultLoading = () => {
+    setResultLoading(false);
+  };
 
   const positions = useMemo(
     () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
@@ -71,7 +87,6 @@ const Room = () => {
   }, [participants]);
 
   useEffect(() => {
-    //isResultview가 true가 되면
     if (isResultView) {
       increaseLongRadius();
     }
@@ -81,8 +96,8 @@ const Room = () => {
 
   return (
     <>
-      {/* <Header /> */}
-      {loading ? (
+      <Header />
+      {initialLoading ? (
         <LoadingPage loadingMessage="관심사를 나누러 가는 중..." />
       ) : (
         <>
@@ -97,12 +112,18 @@ const Room = () => {
                   isHost={hostId === participantId}
                   position={{ x: positions[index][0], y: positions[index][1] }}
                   isResultView={isResultView}
-                  setIsResultView={setIsResultView}
                 />
               ))}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
-                  <ResultInstruction />
+                  resultLoading ? (
+                    <LoadingPage isAnalyzing={true} />
+                  ) : (
+                    <>
+                      <ResultInstruction />
+                      <ContentShareView />
+                    </>
+                  )
                 ) : (
                   <RoomIntroView
                     isIntroViewActive={isIntroViewActive}
@@ -110,6 +131,10 @@ const Room = () => {
                     hostId={hostId}
                     participantCount={Object.keys(participants).length}
                     hideIntroView={hideIntroView}
+                    resultLoading={resultLoading}
+                    onLastQuestionComplete={startResultPage}
+                    startResultLoading={startResultLoading}
+                    finishResultLoading={finishResultLoading}
                   />
                 )}
               </div>

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { KeywordsInMemoryRepository } from './keywords.in-memory.repository';
 
 describe('KeywordsInMemoryRepository', () => {
@@ -29,7 +30,7 @@ describe('KeywordsInMemoryRepository', () => {
     await repository.addKeyword(testRoomId, testQuestionId, testKeyword, testClient);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
+    const statistics = await repository.getStatistics(testRoomId);
     const clientStats = statistics.get(testClient);
 
     expect(clientStats.length).toBe(1);
@@ -53,7 +54,7 @@ describe('KeywordsInMemoryRepository', () => {
     await repository.addKeyword(testRoomId, testQuestionId, testKeyword, client3);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
+    const statistics = await repository.getStatistics(testRoomId);
 
     const client1Stats = statistics.get(client1);
     const client2Stats = statistics.get(client2);
@@ -83,7 +84,7 @@ describe('KeywordsInMemoryRepository', () => {
     await repository.addKeyword(testRoomId, testQuestionId, testKeyword3, testClient);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
+    const statistics = await repository.getStatistics(testRoomId);
     const clientStats = statistics.get(testClient);
 
     expect(clientStats.length).toBe(3);
@@ -108,7 +109,7 @@ describe('KeywordsInMemoryRepository', () => {
     await repository.addKeyword(testRoomId, testQuestionId3, testKeyword, testClient);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
+    const statistics = await repository.getStatistics(testRoomId);
     const clientStats = statistics.get(testClient);
 
     expect(clientStats.length).toBe(3);
@@ -130,7 +131,7 @@ describe('KeywordsInMemoryRepository', () => {
     await repository.removeKeyword(testRoomId, testQuestionId, testKeyword, testClient);
 
     // then
-    const statistics = repository.calculateStatistics(testRoomId);
+    const statistics = await repository.getStatistics(testRoomId);
     expect(Array.from(statistics.keys()).length).toBe(0);
   });
 
@@ -139,14 +140,14 @@ describe('KeywordsInMemoryRepository', () => {
     const testRoomId = 'testRoomId';
     const testClient = 'testClient';
     await repository.addKeyword(testRoomId, 1, 'testKeyword', testClient);
-    repository.calculateStatistics(testRoomId);
+    await repository.getStatistics(testRoomId);
 
     // when
     repository.deleteRoomKeywordsInfo(testRoomId);
 
     // then
 
-    const statistics = repository.calculateStatistics(testRoomId);
+    const statistics = await repository.getStatistics(testRoomId);
     expect(Array.from(statistics.keys()).length).toBe(0);
   });
 });

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 
 import { rotate, Variables } from '@/styles';
-import { parseNumberAndUnit } from '@/utils';
+import { divideSize } from '@/utils';
 
 const spinnerStyle = (roundSize: string, width: string, emptyColor: string, fillColor: string, speed: string) =>
   css({
@@ -12,11 +12,6 @@ const spinnerStyle = (roundSize: string, width: string, emptyColor: string, fill
     borderTop: `solid ${width} ${fillColor}`,
     animation: `${rotate} ${speed} ease-in-out infinite`
   });
-
-function divideSize(size: string, divisor: number) {
-  const [number, unit] = parseNumberAndUnit(size);
-  return `${(number / divisor).toFixed(3)}${unit}`;
-}
 
 const LoadingSpinner = ({
   roundSize = '0.9rem',

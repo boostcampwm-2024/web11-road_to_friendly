@@ -3,8 +3,10 @@ export const Variables = {
     primary: '#fe4902',
     surface_default: '#F8F8F8',
     surface_white: '#FFFFFF',
+    surface_transparent_white_35: 'rgba(255, 255, 255, 0.35)',
     surface_alt: '#C4C4C4',
     surface_strong: '#434343',
+    surface_transparent_darkgrey_75: '#232323BF',
     surface_black: '#000000',
     surface_weak: '#EFEFEF',
     surface_transparent_black_50: 'rgba(0, 0, 0, 0.5)', //50% 투명도
@@ -39,6 +41,7 @@ export const Variables = {
     surface_oragne_weak: '#FFB184'
   },
   typography: {
+    font_light_14: '300 14px "Pretendard", sans-serif',
     font_medium_48: '500 48px "Pretendard", sans-serif',
     font_medium_36: '500 36px "Pretendard", sans-serif',
     font_medium_24: '500 24px "Pretendard", sans-serif',

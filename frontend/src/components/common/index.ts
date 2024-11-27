@@ -4,3 +4,4 @@ export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as LoadingSpinnerWave } from './LoadingSpinnerWave';
 export { default as ModalPortal } from './ModalPortal';
 export { default as ModalWithOverlay } from './ModalWithOverlay';
+export { default as Slider } from './Slider';

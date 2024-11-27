@@ -35,7 +35,6 @@ const RealKeywordsContainer = css`
   width: 100%;
   height: 100%;
   position: absolute;
-  overflow: hidden;
   opacity: 100%;
   z-index: 2;
 `;

@@ -109,6 +109,8 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     if (!isSharer) return;
     prevIsPlayingRef.current = true;
     setIsPlaying(true);
+    player?.getInternalPlayer().playVideo();
+
     sendStateChange('play');
   }
 
@@ -116,6 +118,9 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     if (!isSharer) return;
     prevIsPlayingRef.current = false;
     setIsPlaying(false);
+
+    player?.getInternalPlayer().pauseVideo();
+
     sendStateChange('pause');
   }
 
@@ -134,23 +139,37 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
 
     player.seekTo(videoCurrentTime, 'seconds');
-    if (requestType === 'PLAY') setIsPlaying(true);
-    else setIsPlaying(false);
+    if (requestType === 'PLAY') {
+      setIsPlaying(true);
+      player.getInternalPlayer().playVideo();
+    } else {
+      setIsPlaying(false);
+
+      player.getInternalPlayer().pauseVideo();
+    }
   }
 
-  function syncWithSharerDragEnd() {
-    setIsSharerDragging(false);
-    setIsPlaying(true);
-  }
-
-  function syncWithSharerTimelineChange({ targetTime }: { targetTime: number }) {
+  function syncWithSharerTimelineChange({
+    targetTime,
+    playStatus
+  }: {
+    targetTime: number;
+    playStatus: 'play' | 'pause';
+  }) {
     if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
 
-    if (isSharerDragging) {
-      syncWithSharerDragEnd();
-    }
+    const sharerIsPlaying = playStatus === 'play';
+
+    player.getInternalPlayer().playVideo();
 
     player.seekTo(targetTime, 'seconds');
+    if (sharerIsPlaying) {
+      player.getInternalPlayer().playVideo();
+    } else {
+      player.getInternalPlayer().pauseVideo();
+    }
+    setIsPlaying(sharerIsPlaying);
+    setIsSharerDragging(false);
   }
 
   function syncWithSharerSpeedChange({ playSpeed }: { playSpeed: number }) {
@@ -163,6 +182,9 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     if (!player) throw new Error(YOUTUBE_ERROR_MESSAGES.NO_PLAYER);
 
     setIsPlaying(false);
+
+    player.getInternalPlayer().pauseVideo();
+
     setIsSharerDragging(true);
   }
 
@@ -171,7 +193,6 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
 
     socket.on('share:interest:youtube', (response: InterestYoutubeResponse) => {
       if (isSharer) return;
-
       try {
         requestFunctionMap[response.requestType](response);
       } catch (error) {
@@ -261,7 +282,6 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
             transform: isShorts ? 'none' : 'translateY(-25%)'
           }}
           height={isShorts ? '100%' : PLAYER_HEIGHT_DOUBLE}
-          playing={isPlaying}
           onReady={attachPlayerEvent}
           controls={false}
           volume={volume}

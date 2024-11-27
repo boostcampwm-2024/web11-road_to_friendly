@@ -11,6 +11,9 @@ import { RoomsService } from '../../rooms/service/rooms.service';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { InterestsImageDto } from '../dto/interests.image.dto';
+import { InterestsYoutubeControlDto } from '../dto/interests.youtube.control.dto';
+import { InterestsYoutubeControlResponseDto } from '../dto/interests.youtube.control.response.dto';
+import { INTERESTS_YOUTUBE_CONTROL } from '../definition/interests.youtube.control';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
@@ -61,6 +64,73 @@ export class InterestsGateway implements OnModuleInit {
     }
 
     return { status: 'ok' };
+  }
+
+  @SubscribeMessage('interest:youtube:play')
+  async youtubePlay(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
+    const roomId = client.data.roomId;
+
+    const correctedTime = await this.interestsService.getCorrectedTime(data.clientTimestamp, data.videoCurrentTime);
+
+    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.PLAY, {
+      videoCurrentTime: correctedTime,
+      playStatus: data.playStatus,
+    });
+
+    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
+  }
+
+  @SubscribeMessage('interest:youtube:stop')
+  youtubeStop(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
+    const roomId = client.data.roomId;
+
+    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.STOP, {
+      videoCurrentTime: data.videoCurrentTime,
+      playStatus: data.playStatus,
+    });
+
+    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
+  }
+
+  @SubscribeMessage('interest:youtube:timeline')
+  async youtubeChangeTimeline(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
+    const roomId = client.data.roomId;
+
+    const correctedTargetTime =
+      data.playStatus === 'play'
+        ? await this.interestsService.getCorrectedTime(data.clientTimestamp, data.targetTime)
+        : data.targetTime;
+
+    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(
+      INTERESTS_YOUTUBE_CONTROL.TIMELINE,
+      {
+        targetTime: correctedTargetTime,
+      },
+    );
+
+    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
+  }
+
+  @SubscribeMessage('interest:youtube:speed')
+  youtubeChangespeed(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsYoutubeControlDto) {
+    const roomId = client.data.roomId;
+
+    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(INTERESTS_YOUTUBE_CONTROL.SPEED, {
+      playSpeed: data.playSpeed,
+    });
+
+    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
+  }
+
+  @SubscribeMessage('interest:youtube:dragging')
+  youtubeDragging(@ConnectedSocket() client: Socket) {
+    const roomId = client.data.roomId;
+
+    const interestsYoutubeControlResponseDto = InterestsYoutubeControlResponseDto.of(
+      INTERESTS_YOUTUBE_CONTROL.DRAGGING,
+    );
+
+    client.broadcast.to(roomId).emit('share:interest:youtube', interestsYoutubeControlResponseDto);
   }
 
   @SubscribeMessage('interest:next')

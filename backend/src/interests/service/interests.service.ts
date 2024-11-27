@@ -26,4 +26,10 @@ export class InterestsService {
   async uploadImage(data: InterestsImageDto) {
     return await this.interestsRepository.uploadImage(data);
   }
+
+  async getCorrectedTime(clientTimestamp: number, currentTime: number) {
+    const serverTimestamp = Date.now();
+    const timeDifference = serverTimestamp - clientTimestamp;
+    return currentTime + timeDifference / 1000;
+  }
 }

@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Interest } from '../domain/interest';
 import { InterestsRepository } from '../repository/interests.repository';
 import { InterestsImageDto } from '../dto/interests.image.dto';
+import { TIME_UNITS } from '../definition/time.unit';
 
 @Injectable()
 export class InterestsService {
@@ -27,9 +28,9 @@ export class InterestsService {
     return await this.interestsRepository.uploadImage(data);
   }
 
-  async getCorrectedTime(clientTimestamp: number, currentTime: number) {
+  async getCorrectedTimeInSeconds(clientTimestamp: number, currentTime: number) {
     const serverTimestamp = Date.now();
     const timeDifference = serverTimestamp - clientTimestamp;
-    return currentTime + timeDifference / 1000;
+    return currentTime + timeDifference / TIME_UNITS.MILLISECONDS_TO_SECOND;
   }
 }

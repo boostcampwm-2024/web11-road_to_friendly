@@ -4,4 +4,4 @@ export const ContentTypes = {
   PNG: 'image/png',
 } as const;
 
-export type contentType = (typeof ContentTypes)[keyof typeof ContentTypes];
+export type contentType = typeof ContentTypes[keyof typeof ContentTypes];

@@ -1,8 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UseFilters, UseGuards } from '@nestjs/common';
-
-import { ConnectGuard } from '../../common/guard/connect.guard';
 import { JoinGuard } from '../../common/guard/join.guard';
 import { HostGuard } from '../../common/guard/host.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
@@ -19,7 +17,7 @@ export class ClientsGateway {
   @WebSocketServer()
   server: Server;
 
-  @UseGuards(ConnectGuard)
+  @UseGuards(JoinGuard)
   @SubscribeMessage('client:update')
   updateClientInfo(@ConnectedSocket() client: Socket, @MessageBody() { nickname }): void {
     const roomId = client.data.roomId;

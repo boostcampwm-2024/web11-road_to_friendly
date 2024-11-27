@@ -21,7 +21,7 @@ const inputStyle = css`
   border-radius: 8px;
   border: 1px solid ${Variables.colors.surface_alt};
   padding: 5px;
-  width: 150px;
+  width: 140px;
 `;
 
 const editButtonStyle = css`
@@ -44,6 +44,7 @@ const saveButtonStyle = css`
   border-radius: 8px;
   padding: 4px 5px;
   color: white;
+  white-space: nowrap;
   background-color: ${Variables.colors.surface_strong};
 `;
 
@@ -62,12 +63,26 @@ const profileEditContainerStyle = css`
   height: 200px;
 `;
 
+const wrapperStyle = css`
+  position: relative;
+  width: 100%;
+`;
+
+const spanStyle = css`
+  position: absolute;
+  right: 15px;
+  bottom: 8px;
+  font-size: 12px;
+  color: ${Variables.colors.text_alt};
+`;
+
 const ProfileEditButton = () => {
   const { socket, connect, disconnect } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
   const { participants, setParticipants } = useParticipantsStore();
+  const MAX_LENGTH = 6;
 
   const handleProfileUpdate = (newProfile: { participantId: string; nickname: string }) => {
     setParticipants((prev) => ({
@@ -86,6 +101,17 @@ const ProfileEditButton = () => {
     }
     setIsEditing(false);
     setIsModalOpen(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    // 입력 길이가 최대 길이를 초과하면 자름
+    if (value.length > MAX_LENGTH) {
+      setNicknameInput(value.slice(0, MAX_LENGTH));
+    } else {
+      setNicknameInput(value);
+    }
   };
 
   useEffect(() => {
@@ -134,12 +160,16 @@ const ProfileEditButton = () => {
             <span>닉네임</span>
             {isEditing ? (
               <div css={nicknameContainerStyle}>
-                <input
-                  css={inputStyle}
-                  value={nicknameInput}
-                  onChange={(e) => setNicknameInput(e.target.value)}
-                  placeholder="새 닉네임"
-                />
+                <div css={wrapperStyle}>
+                  <input
+                    css={inputStyle}
+                    value={nicknameInput}
+                    maxLength={MAX_LENGTH}
+                    onChange={handleInputChange}
+                    placeholder="새 닉네임"
+                  />
+                  <span css={spanStyle}>{nicknameInput.length}/6</span>
+                </div>
                 <button css={saveButtonStyle} onClick={handleSaveNickname}>
                   저장
                 </button>

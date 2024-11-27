@@ -184,9 +184,6 @@ const Slider = ({
       <div
         css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime, shouldThumbAnytime)}
         ref={sliderRef}
-        onDrag={(e) => {
-          e.preventDefault();
-        }}
         onClick={moveProgressNow}
         onMouseDown={startDragging}
         onMouseMove={syncProgressWithDrag}

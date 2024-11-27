@@ -240,6 +240,9 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
         css={wrapperStyle}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
+        onDragStartCapture={(e) => {
+          e.preventDefault();
+        }}
         aria-label="player section"
       >
         <div css={mediaSectionStyle} onClick={toggleVideo}></div>

@@ -206,7 +206,11 @@ const QuestionsView = ({
           >{`Q${currentQuestionIndex + 1}. ${questions[currentQuestionIndex].title}`}</h1>
           {showInput && (
             <div css={{ width: '100%', animation: `${fadeIn} 2s ease forwards` }}>
-              <QuestionInput currentQuestionIndex={currentQuestionIndex} onSubmit={updateSelectedKeywords} />
+              <QuestionInput
+                currentQuestionIndex={currentQuestionIndex}
+                selectedKeywords={selectedKeywords}
+                onSubmit={updateSelectedKeywords}
+              />
               <div css={progressWrapperStyle}>
                 <ClockIcon width="35px" height="35px" fill="#000" />
                 <progress

@@ -83,25 +83,13 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
   const [keywordsCoordinates, setKeywordsCoordinates] = useState<KeywordsCoordinates>({});
 
   useEffect(() => {
-    const keywordQueue: KeywordInfo[] = [];
+    const keywordQueue: Map<string, Keyword> = new Map<string, Keyword>();
     let updateTimeout: ReturnType<typeof setTimeout>;
 
     const processQueue = () => {
-      if (keywordQueue.length > 0) {
-        const batchUpdateKeywords = [...keywordQueue];
-        keywordQueue.length = 0;
-
-        // 동일한 키워드가 있는 경우 공감수가 더 큰 값으로 업데이트
-        const groupedKeywords = batchUpdateKeywords.reduce<Record<string, Keyword>>((acc, curr) => {
-          const { keyword, count } = curr;
-          acc[keyword] = {
-            keyword,
-            count: acc[keyword]?.count ? Math.max(acc[keyword].count, count) : count
-          };
-          return acc;
-        }, {});
-
-        upsertMultipleKeywords(questionId, Object.values(groupedKeywords));
+      if (keywordQueue.size > 0) {
+        upsertMultipleKeywords(questionId, Array.from(keywordQueue.values()));
+        keywordQueue.clear();
       }
     };
 
@@ -109,7 +97,8 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
     if (socket) {
       /* socket.off('empathy:keyword:count'); */
       socket.on('empathy:keyword:count', (response: KeywordInfo) => {
-        keywordQueue.push(response);
+        const { keyword, count } = response;
+        keywordQueue.set(keyword, { keyword, count });
         if (!updateTimeout) {
           updateTimeout = setTimeout(() => {
             processQueue();

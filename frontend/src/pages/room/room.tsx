@@ -53,6 +53,7 @@ const Room = () => {
 
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
   const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
+  const { setOutOfBounds } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
@@ -74,7 +75,10 @@ const Room = () => {
     [radius, participants]
   );
 
-  const hideIntroView = () => setIsIntroViewActive(false);
+  const hideIntroView = () => {
+    setIsIntroViewActive(false);
+    setOutOfBounds(true);
+  };
 
   const calculateRadius = (count: number) => {
     if (count > 3) {

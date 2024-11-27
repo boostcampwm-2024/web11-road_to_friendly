@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UseFilters, UseGuards } from '@nestjs/common';
-import { JoinGuard } from '../../common/guard/join.guard';
+import { ParticipantGuard } from '../../common/guard/participant.guard';
 import { HostGuard } from '../../common/guard/host.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
@@ -17,7 +17,7 @@ export class ClientsGateway {
   @WebSocketServer()
   server: Server;
 
-  @UseGuards(JoinGuard)
+  @UseGuards(ParticipantGuard)
   @SubscribeMessage('client:update')
   updateClientInfo(@ConnectedSocket() client: Socket, @MessageBody() { nickname }): void {
     const roomId = client.data.roomId;
@@ -26,7 +26,7 @@ export class ClientsGateway {
     this.server.to(roomId).emit('participant:info:update', { participantId: client.id, nickname });
   }
 
-  @UseGuards(JoinGuard, HostGuard, PhaseReadyGuard)
+  @UseGuards(ParticipantGuard, HostGuard, PhaseReadyGuard)
   @SubscribeMessage('client:host:start')
   startToEmpathise(@ConnectedSocket() client: Socket): void {
     const roomId = client.data.roomId;

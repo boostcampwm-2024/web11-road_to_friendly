@@ -14,7 +14,7 @@ import { ClientsGateway } from './clients/gateway/clients.gateway';
 import { ClientsService } from './clients/service/clients.service';
 import { RoomsInMemoryRepository } from './rooms/repository/rooms.in-memory.repository';
 import { HostGuard } from './common/guard/host.guard';
-import { JoinGuard } from './common/guard/join.guard';
+import { ParticipantGuard } from './common/guard/participant.guard';
 import { ExistGuard } from './common/guard/exist.guard';
 import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
@@ -41,7 +41,7 @@ import { InterestsRepositoryProvider } from './interests/repository/interests.re
     RoomsService,
     RoomsInMemoryRepository,
     HostGuard,
-    JoinGuard,
+    ParticipantGuard,
     ExistGuard,
     ConnectGuard,
     KeywordsGateway,

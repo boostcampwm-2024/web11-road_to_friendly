@@ -9,12 +9,12 @@ import { INTERESTS_RESOURCE } from '../definition/interests.resource';
 import { Interest } from '../domain/interest';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
-import { JoinGuard } from '../../common/guard/join.guard';
+import { ParticipantGuard } from '../../common/guard/participant.guard';
 import { InterestsImageDto } from '../dto/interests.image.dto';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
-@UseGuards(JoinGuard, PhaseInterestGuard)
+@UseGuards(ParticipantGuard, PhaseInterestGuard)
 export class InterestsGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;

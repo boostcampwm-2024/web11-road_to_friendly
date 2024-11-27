@@ -93,6 +93,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   const prevIsPlayingRef = useRef(false);
   const hasEndedRef = useRef(false);
   const isDraggingSliderRef = useRef(false);
+  const hasDragHandledRef = useRef(false);
 
   const { socket } = useSocketStore();
   const { openToast } = useToast();
@@ -212,8 +213,12 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   }
 
   function sendTimelineChange(targetTime: number) {
-    const playStatus = isPlaying ? 'play' : 'pause';
+    const playStatus = prevIsPlayingRef.current ? 'play' : 'pause';
     socket?.emit('interest:youtube:timeline', { targetTime, playStatus, clientTimestamp: Date.now() });
+  }
+
+  function sendDraggingStart() {
+    socket?.emit('interest:youtube:dragging');
   }
 
   function syncFractionWithProgress({ played }: { played: number }) {
@@ -222,7 +227,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   }
 
   function onProgressWithReqeustAnimation(callback: Function) {
-    if (!(isPlaying && player && !hasEndedRef.current)) return;
+    if (!isPlaying || !player || hasEndedRef.current) return;
 
     const playedSec = player.getCurrentTime();
     const duration = player.getDuration();
@@ -240,18 +245,40 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     requestAnimationFrame(() => onProgressWithReqeustAnimation(callback));
   }
 
+  function handleDragStart() {
+    hasDragHandledRef.current = true;
+
+    setIsPlaying(false);
+
+    player?.getInternalPlayer().pauseVideo();
+
+    sendDraggingStart();
+  }
+
   function setFractionAndMove(newFraction: number) {
     if (!isSharer || !player) return;
 
     player.seekTo(newFraction, 'fraction');
     setFraction(newFraction);
 
+    if (isDraggingSliderRef.current && !hasDragHandledRef.current) {
+      handleDragStart();
+    }
+
     // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
-    if (isDraggingSliderRef.current) setIsPlaying(false);
-    else {
+    if (!isDraggingSliderRef.current) {
       const newSec = newFraction * player.getDuration();
       sendTimelineChange(newSec);
+
       setIsPlaying(prevIsPlayingRef.current);
+
+      if (prevIsPlayingRef.current) {
+        player.getInternalPlayer().playVideo();
+      } else {
+        player.getInternalPlayer().pauseVideo();
+      }
+
+      hasDragHandledRef.current = false;
     }
   }
 

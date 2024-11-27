@@ -58,16 +58,16 @@ const hostStyle = css`
 `;
 
 const profileColors = [
-  Variables.colors.player_blue,
-  Variables.colors.player_grey,
-  Variables.colors.player_red,
-  Variables.colors.player_green,
-  Variables.colors.player_orange,
-  Variables.colors.player_purple,
-  Variables.colors.player_yellow,
-  Variables.colors.player_pink,
-  Variables.colors.player_cyan,
-  Variables.colors.player_brown
+  [Variables.colors.player_blue, '🐯'],
+  [Variables.colors.player_grey, '🦊'],
+  [Variables.colors.player_red, '🐱'],
+  [Variables.colors.player_green, '🐼'],
+  [Variables.colors.player_orange, '🐨'],
+  [Variables.colors.player_purple, '🐵'],
+  [Variables.colors.player_yellow, '🐰'],
+  [Variables.colors.player_pink, '🦁'],
+  [Variables.colors.player_cyan, '🐶'],
+  [Variables.colors.player_brown, '🦝']
 ];
 
 interface Positon {
@@ -89,13 +89,13 @@ const UserProfile = ({ participant, index, isCurrentUser, isHost, position, isRe
 
   return (
     <div css={profileStyle(position.x, position.y, radius[0], radius[1], isOutOfBounds)}>
-      <div css={profileImageStyle(profileColors[index % profileColors.length])}>
+      <div css={profileImageStyle(profileColors[index % profileColors.length][0])}>
         {isHost && (
           <div css={hostStyle}>
             <Crown />
           </div>
         )}
-        <div>🐯</div>
+        <div>{profileColors[index % profileColors.length][1]}</div>
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>

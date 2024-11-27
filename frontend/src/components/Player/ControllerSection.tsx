@@ -16,8 +16,8 @@ interface ControllerSectionProps {
   volume: number;
   setVolume: (newVolume: number) => void;
   isPlaying: boolean;
-  playVideo: () => void;
-  pauseVideo: () => void;
+  isDraggingSliderRef: React.MutableRefObject<boolean>;
+  sharerControlFunctions: { playVideoAsSharer: () => void; pauseVideoAsSharer: () => void };
 }
 
 const ControllerSection = ({
@@ -32,12 +32,12 @@ const ControllerSection = ({
   volume,
   setVolume,
   isPlaying,
-  playVideo,
-  pauseVideo
+  sharerControlFunctions,
+  isDraggingSliderRef
 }: ControllerSectionProps) => {
+  const { playVideoAsSharer, pauseVideoAsSharer } = sharerControlFunctions;
   const [controllbarHeight, setControllbarHeight] = useState(0);
 
-  const isDraggingSliderRef = useRef(false);
   const hasDragHandledRef = useRef(false);
   const prevVolumeRef = useRef(0);
 
@@ -88,49 +88,48 @@ const ControllerSection = ({
   }
 
   return (
-    <div>
-      {isHovering && player && (
-        <div>
-          <div
-            css={{
-              position: 'absolute',
-              bottom: '0',
-              width: '95%',
-              height: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: '997'
+    isHovering &&
+    player && (
+      <div>
+        <div
+          css={{
+            position: 'absolute',
+            bottom: '0',
+            width: '95%',
+            height: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: '997'
+          }}
+        >
+          <Slider
+            showThumb={isSharer}
+            fraction={fraction}
+            setFraction={setFractionAndMove}
+            bottom={controllbarHeight + 6}
+            shouldHoverGrow={true}
+            shouldExtendWhenDrag={true}
+            shouldThumbAnytime={false}
+            onMouseDownStateChange={(isDown: boolean) => {
+              isDraggingSliderRef.current = isDown;
             }}
-          >
-            <Slider
-              showThumb={isSharer}
-              fraction={fraction}
-              setFraction={setFractionAndMove}
-              bottom={controllbarHeight + 6}
-              shouldHoverGrow={true}
-              shouldExtendWhenDrag={true}
-              shouldThumbAnytime={false}
-              onMouseDownStateChange={(isDown: boolean) => {
-                isDraggingSliderRef.current = isDown;
-              }}
-            />
-          </div>
-          <ControllBar
-            isSharer={isSharer}
-            player={player}
-            currentTime={player.getCurrentTime()}
-            duration={player.getDuration()}
-            setControllbarHeight={setControllbarHeight}
-            volume={volume}
-            setVolume={setVolume}
-            prevVolumeRef={prevVolumeRef}
-            isPlaying={isPlaying}
-            playVideo={playVideo}
-            pauseVideo={pauseVideo}
           />
         </div>
-      )}
-    </div>
+        <ControllBar
+          isSharer={isSharer}
+          player={player}
+          currentTime={player.getCurrentTime()}
+          duration={player.getDuration()}
+          setControllbarHeight={setControllbarHeight}
+          volume={volume}
+          setVolume={setVolume}
+          prevVolumeRef={prevVolumeRef}
+          isPlaying={isPlaying}
+          playVideo={playVideoAsSharer}
+          pauseVideo={pauseVideoAsSharer}
+        />
+      </div>
+    )
   );
 };
 

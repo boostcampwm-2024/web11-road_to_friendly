@@ -9,6 +9,7 @@ import { YOUTUBE_ERROR_MESSAGES } from '@/constants';
 import SharerDraggingIndicator from './SharerDraggingIndicator';
 import ControllerSection from './ControllerSection';
 import StateChangeIndicator from './StateChangeIndicator';
+import VideoOverlayToggle from './VideoOverlayToggle';
 
 interface PlayerProps {
   url: string;
@@ -31,15 +32,8 @@ const wrapperStyle = css({
   width: PLAYER_WIDTH_DEFAULT,
   height: PLAYER_HEIGHT_DEFAULT,
   overflow: 'hidden',
-  borderRadius: '1rem'
-});
-
-const mediaSectionStyle = css({
-  position: 'absolute',
-  zIndex: '998',
-  top: '0',
-  width: '100%',
-  height: '80%'
+  borderRadius: '1rem',
+  userSelect: 'none'
 });
 
 const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
@@ -58,6 +52,11 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
 
   const { socket } = useSocketStore();
   const { openToast } = useToast();
+
+  const sharerControlFunctions = {
+    playVideoAsSharer,
+    pauseVideoAsSharer
+  };
 
   const requestFunctionMap: Record<YoutubeRequestType, Function> = {
     PLAY: syncWithSharerPlayOrPause,
@@ -82,15 +81,9 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     prevIsPlayingRef.current = false;
 
     setIsPlaying(false);
-
     player?.getInternalPlayer().pauseVideo();
 
     sendPlayerState('pause');
-  }
-
-  function toggleVideo() {
-    if (isPlaying) pauseVideoAsSharer();
-    else playVideoAsSharer();
   }
 
   function syncWithSharerPlayOrPause({
@@ -209,15 +202,11 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
         aria-label="player section"
       >
         {!isDraggingSliderRef.current && (
-          <div
-            css={mediaSectionStyle}
-            onClick={toggleVideo}
-            onDrag={(e) => {
-              e.preventDefault();
-            }}
-          ></div>
+          <VideoOverlayToggle isPlaying={isPlaying} sharerControlFunctions={sharerControlFunctions} />
         )}
-        <StateChangeIndicator isPlaying={isPlaying} prevIsPlayingRef={prevIsPlayingRef} />
+        {!isDraggingSliderRef.current && (
+          <StateChangeIndicator isPlaying={isPlaying} prevIsPlayingRef={prevIsPlayingRef} />
+        )}
         <ReactPlayer
           style={{
             pointerEvents: 'none',
@@ -244,21 +233,23 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
           config={{ youtube: { playerVars: { autoplay: 1 } } }}
         />
         <SharerDraggingIndicator isSharerDragging={isSharerDragging} />
-        <ControllerSection
-          isHovering={isHovering}
-          player={player}
-          isSharer={isSharer}
-          isPlaying={isPlaying}
-          playVideo={playVideoAsSharer}
-          pauseVideo={pauseVideoAsSharer}
-          setFraction={setFraction}
-          setVolume={setVolume}
-          volume={volume}
-          socket={socket}
-          fraction={fraction}
-          setIsPlaying={setIsPlaying}
-          prevIsPlayingRef={prevIsPlayingRef}
-        />
+        {isHovering && player && (
+          <ControllerSection
+            isHovering={isHovering}
+            player={player}
+            isSharer={isSharer}
+            isPlaying={isPlaying}
+            sharerControlFunctions={sharerControlFunctions}
+            setFraction={setFraction}
+            setVolume={setVolume}
+            volume={volume}
+            socket={socket}
+            fraction={fraction}
+            setIsPlaying={setIsPlaying}
+            prevIsPlayingRef={prevIsPlayingRef}
+            isDraggingSliderRef={isDraggingSliderRef}
+          />
+        )}
       </div>
     </>
   );

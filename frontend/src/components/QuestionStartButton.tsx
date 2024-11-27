@@ -13,13 +13,11 @@ const ButtonStyle = css({
 
 const QuestionStartButton = () => {
   const { socket } = useSocketStore();
-  const { setOutOfBounds } = useRadiusStore();
 
   const onClickStart = () => {
     if (socket) {
       socket.emit('client:host:start');
     }
-    setOutOfBounds(true);
   };
 
   return (

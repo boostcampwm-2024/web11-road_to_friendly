@@ -48,7 +48,8 @@ const settingPanelStyle = (openSettingPanel: boolean, controllBarHeight: number)
     },
 
     opacity: openSettingPanel ? '1' : '0',
-    transition: 'opacity 0.1s ease-in'
+    transition: 'opacity 0.1s ease-in',
+    pointerEvents: openSettingPanel ? 'auto' : 'none'
   });
 
 const optionStyle = css({

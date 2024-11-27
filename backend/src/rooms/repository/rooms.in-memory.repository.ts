@@ -55,7 +55,12 @@ export class RoomsInMemoryRepository {
   }
 
   setPhase(roomId: string, phase: Phase) {
-    this.rooms.get(roomId).phase = phase;
+    const room = this.rooms.get(roomId);
+    if (room) {
+      room.phase = phase;
+    }
+
+    return room !== undefined;
   }
 
   deleteRoom(roomId: string) {

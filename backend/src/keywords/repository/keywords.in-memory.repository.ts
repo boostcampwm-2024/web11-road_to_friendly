@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as AsyncLock from 'async-lock';
 
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
@@ -17,49 +16,32 @@ const QUESTION_ID_KEYWORD_SEPARATOR = ':';
 export class KeywordsInMemoryRepository {
   private readonly roomKeywordsTotal = new Map<string, Map<string, Set<string>>>(); // 키워드 집합
   private readonly roomKeywordsStatistics = new Map<string, Record<string, KeywordsAlertDto[]>>(); // 키워드 통계
-  private readonly lock = new AsyncLock();
 
-  async addKeyword(
-    roomId: string,
-    questionId: number,
-    keyword: string,
-    participantId: string,
-  ): Promise<KeywordsInfoDto> {
-    return await this.lock.acquire(`${roomId}:keyword`, async () => {
-      const keywordsTotal = getOrCreateValue(this.roomKeywordsTotal, roomId, () => new Map<string, Set<string>>());
+  addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): KeywordsInfoDto {
+    const keywordsTotal = getOrCreateValue(this.roomKeywordsTotal, roomId, () => new Map<string, Set<string>>());
 
-      const selectors = getOrCreateValue(
-        keywordsTotal,
-        `${questionId}${QUESTION_ID_KEYWORD_SEPARATOR}${keyword}`,
-        () => new Set<string>(),
-      );
+    const selectors = getOrCreateValue(
+      keywordsTotal,
+      `${questionId}${QUESTION_ID_KEYWORD_SEPARATOR}${keyword}`,
+      () => new Set<string>(),
+    );
 
-      selectors.add(participantId);
+    selectors.add(participantId);
 
-      return new KeywordsInfoDto(questionId, keyword, ACTION.PICK, selectors.size);
-    });
+    return new KeywordsInfoDto(questionId, keyword, ACTION.PICK, selectors.size);
   }
 
-  async removeKeyword(
-    roomId: string,
-    questionId: number,
-    keyword: string,
-    participantId: string,
-  ): Promise<KeywordsInfoDto> {
-    return await this.lock.acquire(`${roomId}`, async () => {
-      const selectors = this.roomKeywordsTotal
-        .get(roomId)
-        ?.get(`${questionId}${QUESTION_ID_KEYWORD_SEPARATOR}${keyword}`);
-      selectors?.delete(participantId);
+  removeKeyword(roomId: string, questionId: number, keyword: string, participantId: string): KeywordsInfoDto {
+    const selectors = this.roomKeywordsTotal
+      .get(roomId)
+      ?.get(`${questionId}${QUESTION_ID_KEYWORD_SEPARATOR}${keyword}`);
+    selectors?.delete(participantId);
 
-      return new KeywordsInfoDto(questionId, keyword, ACTION.RELEASE, selectors?.size ?? 0);
-    });
+    return new KeywordsInfoDto(questionId, keyword, ACTION.RELEASE, selectors?.size ?? 0);
   }
 
-  async getStatistics(roomId: string) {
-    return await this.lock.acquire(`${roomId}:statistics`, async () => {
-      return this.roomKeywordsStatistics.get(roomId) ?? this.calculateStatistics(roomId);
-    });
+  getStatistics(roomId: string) {
+    return this.roomKeywordsStatistics.get(roomId) ?? this.calculateStatistics(roomId);
   }
 
   private calculateStatistics(roomId: string): Record<string, KeywordsAlertDto[]> {

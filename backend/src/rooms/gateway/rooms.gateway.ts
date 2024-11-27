@@ -12,10 +12,11 @@ import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
 import { RoomsEnterRequestDto } from '../dto/rooms.enter.request.dto';
 import { RoomsService } from '../service/rooms.service';
 import { ConnectGuard } from '../../common/guard/connect.guard';
-import { JoinGuard } from '../../common/guard/join.guard';
+import { ParticipantGuard } from '../../common/guard/participant.guard';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
 import { ExistGuard } from '../../common/guard/exist.guard';
 import { ClientsService } from '../../clients/service/clients.service';
+import { PhaseReadyGuard } from '../../common/guard/phase.guard';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
@@ -26,8 +27,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
   constructor(
     private readonly roomsService: RoomsService,
     private readonly clientsService: ClientsService,
-  ) {
-  }
+  ) {}
 
   onModuleInit() {
     const adapter = this.server.of('/').adapter;
@@ -37,12 +37,9 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
     });
   }
 
-  @UseGuards(ConnectGuard, ExistGuard)
+  @UseGuards(ConnectGuard, ExistGuard, PhaseReadyGuard)
   @SubscribeMessage('join')
-  join(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() { roomId }: RoomsEnterRequestDto,
-  ) {
+  join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto) {
     client.join(roomId);
     const hostId = this.roomsService.setHostIfHostUndefined(roomId, client.id);
 
@@ -60,7 +57,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
       const socket = this.server.sockets.sockets.get(socketId);
       return {
         id: socketId,
-        nickname: socket?.data?.nickname
+        nickname: socket?.data?.nickname,
       };
     });
 
@@ -69,7 +66,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
     return { status: 'ok', body: roomsJoinDto };
   }
 
-  @UseGuards(JoinGuard)
+  @UseGuards(ParticipantGuard)
   handleDisconnect(client: Socket): void {
     const roomId = client.data.roomId;
 

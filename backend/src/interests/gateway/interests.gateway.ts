@@ -9,7 +9,7 @@ import { INTERESTS_RESOURCE } from '../definition/interests.resource';
 import { Interest } from '../domain/interest';
 import { RoomsService } from '../../rooms/service/rooms.service';
 import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-exception.filter';
-import { JoinGuard } from '../../common/guard/join.guard';
+import { ParticipantGuard } from '../../common/guard/participant.guard';
 import { InterestsImageDto } from '../dto/interests.image.dto';
 import { InterestsYoutubeControlDto } from '../dto/interests.youtube.control.dto';
 import { InterestsYoutubeControlResponseDto } from '../dto/interests.youtube.control.response.dto';
@@ -17,7 +17,7 @@ import { INTERESTS_YOUTUBE_CONTROL, interestsYoutubeControl } from '../definitio
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
-@UseGuards(JoinGuard, PhaseInterestGuard)
+@UseGuards(ParticipantGuard, PhaseInterestGuard)
 export class InterestsGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
@@ -40,22 +40,18 @@ export class InterestsGateway implements OnModuleInit {
     const roomId = client.data.roomId;
     const imgUrl = await this.interestsService.uploadImage(data);
     const interest = new Interest(client.id, INTERESTS_RESOURCE.IMAGE, imgUrl);
-    const interestsBroadcastResponseDto = await this.interestsService.addInterest(roomId, interest);
-
-    if (interestsBroadcastResponseDto.nowQueueSize === 0) {
-      this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
-    } else {
-      this.server.to(roomId).emit('share:interest:add', interestsBroadcastResponseDto.nowQueueSize);
-    }
-
-    return { status: 'ok' };
+    return this.shareInterest(roomId, interest);
   }
 
   @SubscribeMessage('interest:youtube')
   async suggestYoutube(@ConnectedSocket() client: Socket, @MessageBody() { link }: InterestsYoutubeLinkDto) {
     const roomId = client.data.roomId;
     const interest = new Interest(client.id, INTERESTS_RESOURCE.YOUTUBE, link);
-    const interestsBroadcastResponseDto = await this.interestsService.addInterest(roomId, interest);
+    return this.shareInterest(roomId, interest);
+  }
+
+  private shareInterest(roomId: string, interest: Interest) {
+    const interestsBroadcastResponseDto = this.interestsService.addInterest(roomId, interest);
 
     if (interestsBroadcastResponseDto.nowQueueSize === 0) {
       this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
@@ -134,7 +130,7 @@ export class InterestsGateway implements OnModuleInit {
     const clientId = client.id;
     const hostFlag = this.roomsService.isHost(roomId, clientId);
 
-    const interestsBroadcastResponseDto = await this.interestsService.next(roomId, hostFlag, clientId);
+    const interestsBroadcastResponseDto = this.interestsService.next(roomId, hostFlag, clientId);
 
     this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
   }

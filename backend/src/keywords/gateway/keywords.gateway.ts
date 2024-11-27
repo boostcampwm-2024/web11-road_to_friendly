@@ -13,8 +13,7 @@ import { SocketCustomExceptionFilter } from '../../common/filter/socket.custom-e
 @UseGuards(PhaseKeywordGuard)
 @UseFilters(SocketCustomExceptionFilter)
 export class KeywordsGateway implements OnModuleInit {
-  constructor(private readonly keywordsService: KeywordsService) {
-  }
+  constructor(private readonly keywordsService: KeywordsService) {}
 
   @WebSocketServer()
   server: Server;
@@ -28,13 +27,13 @@ export class KeywordsGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('keyword:pick')
-  async pickKeyword(@ConnectedSocket() client: Socket, @MessageBody() {
-    questionId,
-    keyword
-  }: KeywordsRequestDto): Promise<KeywordsResponseDto> {
+  pickKeyword(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { questionId, keyword }: KeywordsRequestDto,
+  ): KeywordsResponseDto {
     const roomId = client.data.roomId;
     const clientId = client.id;
-    const keywordsInfoDto = await this.keywordsService.addKeyword(roomId, questionId, keyword, clientId);
+    const keywordsInfoDto = this.keywordsService.addKeyword(roomId, questionId, keyword, clientId);
 
     this.server.to(roomId).emit('empathy:keyword:count', KeywordsAlertDto.of(keywordsInfoDto));
 
@@ -42,13 +41,13 @@ export class KeywordsGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('keyword:release')
-  async releaseKeyword(@ConnectedSocket() client: Socket, @MessageBody() {
-    questionId,
-    keyword
-  }: KeywordsRequestDto): Promise<KeywordsResponseDto> {
+  releaseKeyword(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() { questionId, keyword }: KeywordsRequestDto,
+  ): KeywordsResponseDto {
     const roomId = client.data.roomId;
     const clientId = client.id;
-    const keywordsInfoDto = await this.keywordsService.removeKeyword(roomId, questionId, keyword, clientId);
+    const keywordsInfoDto = this.keywordsService.removeKeyword(roomId, questionId, keyword, clientId);
 
     this.server.to(roomId).emit('empathy:keyword:count', KeywordsAlertDto.of(keywordsInfoDto));
 

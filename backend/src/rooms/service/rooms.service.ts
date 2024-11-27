@@ -71,7 +71,7 @@ export class RoomsService {
   }
 
   setPhase(roomId: string, phase: Phase) {
-    this.roomsInMemoryRepository.setPhase(roomId, phase);
+    return this.roomsInMemoryRepository.setPhase(roomId, phase);
   }
 
   generateBroadcastStatisticsEvent(
@@ -83,10 +83,12 @@ export class RoomsService {
     const delay = finishTimestamp - Date.now();
 
     setTimeout(async () => {
-      this.setPhase(roomId, PHASE.INTEREST);
-      const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+      const broadcastFlag = this.setPhase(roomId, PHASE.INTEREST);
 
-      broadcastStatistics(roomId, statistics);
+      if (broadcastFlag) {
+        const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+        broadcastStatistics(roomId, statistics);
+      }
     }, delay);
   }
 }

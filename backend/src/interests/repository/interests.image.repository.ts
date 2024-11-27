@@ -1,7 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
 import { ConfigService } from '@nestjs/config';
-import * as AsyncLock from 'async-lock';
 import { getOrCreateValue } from 'src/common/util/get-or-create-value';
 import { CustomException } from 'src/common/exception/custom-exception';
 

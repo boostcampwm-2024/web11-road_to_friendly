@@ -5,16 +5,14 @@ import { KeywordsInfoDto } from '../dto/keywords.info.dto';
 
 @Injectable()
 export class KeywordsService {
+  constructor(private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository) {}
 
-  constructor(private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository) {
+  addKeyword(roomId: string, questionId: number, keyword: string, clientId: string): KeywordsInfoDto {
+    return this.keywordsInMemoryRepository.addKeyword(roomId, questionId, keyword, clientId);
   }
 
-  async addKeyword(roomId: string, questionId: number, keyword: string, clientId: string): Promise<KeywordsInfoDto> {
-    return await this.keywordsInMemoryRepository.addKeyword(roomId, questionId, keyword, clientId);
-  }
-
-  async removeKeyword(roomId: string, questionId: number, keyword: string, clientId: string): Promise<KeywordsInfoDto> {
-    return await this.keywordsInMemoryRepository.removeKeyword(roomId, questionId, keyword, clientId);
+  removeKeyword(roomId: string, questionId: number, keyword: string, clientId: string): KeywordsInfoDto {
+    return this.keywordsInMemoryRepository.removeKeyword(roomId, questionId, keyword, clientId);
   }
 
   getStatistics(roomId: string) {

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as AsyncLock from 'async-lock';
 
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';

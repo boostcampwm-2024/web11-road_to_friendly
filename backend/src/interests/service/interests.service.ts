@@ -11,12 +11,12 @@ export class InterestsService {
     private readonly interestsRepository: InterestsRepository,
   ) {}
 
-  async addInterest(roomId: string, interest: Interest) {
-    return await this.interestsRepository.addInterestIfBroadcasting(roomId, interest);
+  addInterest(roomId: string, interest: Interest) {
+    return this.interestsRepository.addInterestIfBroadcasting(roomId, interest);
   }
 
-  async next(roomId: string, hostFlag: boolean, clientId: string) {
-    return await this.interestsRepository.next(roomId, hostFlag, clientId);
+  next(roomId: string, hostFlag: boolean, clientId: string) {
+    return this.interestsRepository.next(roomId, hostFlag, clientId);
   }
 
   deleteRoomInterest(roomId: string) {

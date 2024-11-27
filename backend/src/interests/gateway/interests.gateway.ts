@@ -37,22 +37,18 @@ export class InterestsGateway implements OnModuleInit {
     const roomId = client.data.roomId;
     const imgUrl = await this.interestsService.uploadImage(data);
     const interest = new Interest(client.id, INTERESTS_RESOURCE.IMAGE, imgUrl);
-    const interestsBroadcastResponseDto = await this.interestsService.addInterest(roomId, interest);
-
-    if (interestsBroadcastResponseDto.nowQueueSize === 0) {
-      this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
-    } else {
-      this.server.to(roomId).emit('share:interest:add', interestsBroadcastResponseDto.nowQueueSize);
-    }
-
-    return { status: 'ok' };
+    return this.shareInterest(roomId, interest);
   }
 
   @SubscribeMessage('interest:youtube')
   async suggestYoutube(@ConnectedSocket() client: Socket, @MessageBody() { link }: InterestsYoutubeLinkDto) {
     const roomId = client.data.roomId;
     const interest = new Interest(client.id, INTERESTS_RESOURCE.YOUTUBE, link);
-    const interestsBroadcastResponseDto = await this.interestsService.addInterest(roomId, interest);
+    return this.shareInterest(roomId, interest);
+  }
+
+  private shareInterest(roomId: string, interest: Interest) {
+    const interestsBroadcastResponseDto = this.interestsService.addInterest(roomId, interest);
 
     if (interestsBroadcastResponseDto.nowQueueSize === 0) {
       this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
@@ -69,7 +65,7 @@ export class InterestsGateway implements OnModuleInit {
     const clientId = client.id;
     const hostFlag = this.roomsService.isHost(roomId, clientId);
 
-    const interestsBroadcastResponseDto = await this.interestsService.next(roomId, hostFlag, clientId);
+    const interestsBroadcastResponseDto = this.interestsService.next(roomId, hostFlag, clientId);
 
     this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
   }

@@ -1,7 +1,6 @@
 import { join } from 'path';
 import { promises as fs } from 'fs';
 
-import * as AsyncLock from 'async-lock';
 import { v4 as uuid } from 'uuid';
 
 import { InterestsManager } from '../operator/Interests.manager';

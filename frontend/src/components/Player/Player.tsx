@@ -92,6 +92,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   const prevVolumeRef = useRef(0);
   const prevIsPlayingRef = useRef(false);
   const hasEndedRef = useRef(false);
+
   const isDraggingSliderRef = useRef(false);
   const hasDragHandledRef = useRef(false);
 
@@ -109,6 +110,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   function playVideo() {
     if (!isSharer) return;
     prevIsPlayingRef.current = true;
+
     setIsPlaying(true);
     player?.getInternalPlayer().playVideo();
 
@@ -118,6 +120,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
   function pauseVideo() {
     if (!isSharer) return;
     prevIsPlayingRef.current = false;
+
     setIsPlaying(false);
 
     player?.getInternalPlayer().pauseVideo();
@@ -206,8 +209,6 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
     const eventName = statusEventNameMap[stateChange];
     const body: Record<string, any> = { videoCurrentTime: player?.getCurrentTime(), playStatus: stateChange };
 
-    console.log('현재 시간은', player?.getCurrentTime());
-
     if (stateChange === 'play') body['clientTimestamp'] = Date.now();
     socket?.emit(eventName, body);
   }
@@ -293,7 +294,15 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
         }}
         aria-label="player section"
       >
-        <div css={mediaSectionStyle} onClick={toggleVideo}></div>
+        {!isDraggingSliderRef.current && (
+          <div
+            css={mediaSectionStyle}
+            onClick={toggleVideo}
+            onDrag={(e) => {
+              e.preventDefault();
+            }}
+          ></div>
+        )}
 
         {isPlaying ? (
           <PlayIcon css={stateChangeIndicatorStyle(prevIsPlayingRef.current === isPlaying)} />
@@ -322,6 +331,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
             if (isDraggingSliderRef.current) return;
             syncFractionWithProgress({ played: 1 });
             hasEndedRef.current = true;
+
             pauseVideo();
           }}
           config={{ youtube: { playerVars: { autoplay: 1 } } }}

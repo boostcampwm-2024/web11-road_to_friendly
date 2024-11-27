@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { useModal } from '@/hooks/useModal';
 
-import { LoadingSpinner } from '@/components/common';
+import { LoadingSpinner, Toast } from '@/components/common';
 
 import DeleteButton from '@/assets/icons/deleteButton.svg?react';
 import Image from '@/assets/icons/image.svg?react';
@@ -132,6 +132,8 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex }) => {
           if (file) {
             handleFileSelect(file);
           }
+        } else {
+          openToast({ type: 'error', text: '이미지 파일만 가능합니다' });
         }
       }
     }

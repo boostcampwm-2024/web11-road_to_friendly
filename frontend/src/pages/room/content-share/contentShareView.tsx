@@ -64,11 +64,18 @@ const ContentShareView = () => {
   useEffect(() => {
     if (socket) {
       socket.on('share:interest:broadcast', (response: NextContentResponse) => {
+        if (!response.resourceUrl) {
+          setCurrentContent(null);
+          setNumberOfWaiters(0);
+          return;
+        }
+
         setCurrentContent({
           sharerSocketId: response.participantId,
           type: response.resourceType,
           resourceURL: response.resourceUrl
         });
+
         setNumberOfWaiters(response.nowQueueSize);
       });
 

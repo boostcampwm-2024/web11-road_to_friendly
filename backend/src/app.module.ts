@@ -25,7 +25,7 @@ import { InterestsRepositoryProvider } from './interests/repository/interests.re
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV || 'dev'}`,
+      envFilePath: `.env.${process.env.NODE_ENV.trim() || 'dev'}`,
       validationOptions: {
         abortEarly: true,
       },

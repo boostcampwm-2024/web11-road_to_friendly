@@ -56,7 +56,7 @@ export class InterestsGateway implements OnModuleInit {
     if (interestsBroadcastResponseDto.nowQueueSize === 0) {
       this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
     } else {
-      this.server.to(roomId).emit('share:interest:add', interestsBroadcastResponseDto.nowQueueSize);
+      this.server.to(roomId).emit('share:interest:add', { nowQueueSize: interestsBroadcastResponseDto.nowQueueSize });
     }
 
     return { status: 'ok' };

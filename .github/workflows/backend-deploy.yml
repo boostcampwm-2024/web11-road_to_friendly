@@ -29,7 +29,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          source: "backend/dist/,backend/package*.json"
+          source: "backend/dist/,backend/package*.json,backend/.env.release"
           target: "~/project"
           strip_components: 1
 

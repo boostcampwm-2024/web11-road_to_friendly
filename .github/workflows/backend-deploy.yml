@@ -44,9 +44,8 @@ jobs:
             source ~/.nvm/nvm.sh
             
             APP_NAME="road-to-friendly"
-            DEPLOY_PATH="~/project"
             
-            cd $DEPLOY_PATH
+            cd project
             npm install --production
             
             if pm2 describe $APP_NAME > /dev/null; then

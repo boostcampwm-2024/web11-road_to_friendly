@@ -44,6 +44,9 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   left: ${longRadius}px;
   transform: translate(-50%, 50%);
   white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Room = () => {

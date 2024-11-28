@@ -15,9 +15,9 @@ import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
 
 import LoadingPage from '../LoadingPage';
+import { ContentShareView } from './content-share';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
-import { ContentShareView } from './content-share';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};

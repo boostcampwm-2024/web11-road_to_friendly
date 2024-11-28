@@ -1,5 +1,5 @@
 import { css, keyframes } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
 import { QuestionInput } from '@/components';
@@ -9,6 +9,7 @@ import { useParticipantsStore, useQuestionsStore, useSocketStore, useKeywordsSto
 import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';
 import { Question, CommonResult } from '@/types';
 import { getRemainingSeconds } from '@/utils';
+import TimerWorker from '@/workers/timerWorker.js?worker';
 
 import KeywordsView from './KeywordsView';
 
@@ -105,6 +106,36 @@ const QuestionsView = ({
   };
   const resetSelectedKeywords = () => setSelectedKeywords(new Set());
 
+  // 웹 워커 생성
+  const timerWorker = useRef(null);
+
+  useEffect(() => {
+    if (!timerWorker.current) {
+      timerWorker.current = new TimerWorker();
+
+      timerWorker.current.onmessage = (e) => {
+        if (e.data === 'tick') {
+          setTimeLeft((prev) => Math.max(prev - 1, 0));
+        }
+      };
+    }
+
+    return () => {
+      if (timerWorker.current) {
+        timerWorker.current.terminate();
+        timerWorker.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentQuestionIndex >= 0 && timeLeft === 0 && initialTimeLeft > 0) {
+      setIsFadeIn(false);
+      setIsQuestionMovedUp(false);
+      setShowInput(false);
+    }
+  }, [timeLeft]);
+
   useEffect(() => {
     if (socket) {
       socket.on('empathy:start', (response: { questions: Question[] }) => {
@@ -119,7 +150,8 @@ const QuestionsView = ({
 
       if (socket && socket.connected) {
         const handleResult = (response: CommonResult) => {
-          //통계결과를 임시로 저장
+          // 통계결과를 임시로 저장
+          console.log('empathy:result received: ', response);
           setResultResponse(response);
         };
         socket.on('empathy:result', handleResult);
@@ -127,8 +159,16 @@ const QuestionsView = ({
     }
   }, [socket, setQuestions, onQuestionStart]);
 
+  const startTimer = (duration: number) => {
+    setTimeLeft(duration);
+    setInitialTimeLeft(duration);
+    timerWorker.current?.postMessage({ action: 'start', interval: 1000 });
+  };
+
   useEffect(() => {
     if (currentQuestionIndex >= questions.length) {
+      timerWorker.current?.postMessage({ action: 'stop' }); // 타이머 중지
+
       if (questions.length > 0) {
         //마지막 질문이 끝나고 로딩 시작
         onLastQuestionComplete();
@@ -153,20 +193,12 @@ const QuestionsView = ({
 
     resetSelectedKeywords(); // 새 질문으로 전환되면 선택된 키워드 초기화
 
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime < 1) {
-          setIsFadeIn(false);
-          setIsQuestionMovedUp(false);
-          setShowInput(false);
-
-          return prevTime;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalId);
+    if (questions.length > 0 && currentQuestionIndex < questions.length) {
+      const nextTimeLeft = getRemainingSeconds(new Date(questions[currentQuestionIndex].expirationTime), new Date());
+      setInitialTimeLeft(nextTimeLeft);
+      setTimeLeft(nextTimeLeft);
+      startTimer(nextTimeLeft - 1);
+    }
   }, [currentQuestionIndex, questions]);
 
   useEffect(() => {
@@ -181,15 +213,17 @@ const QuestionsView = ({
   useEffect(() => {
     if (!isFadeIn) {
       const fadeTimeout = setTimeout(() => {
-        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-        if (questions[currentQuestionIndex + 1]) {
+        /* setCurrentQuestionIndex((prevIndex) => prevIndex + 1); */
+        /* if (questions[currentQuestionIndex]) {
           const nextTimeLeft = getRemainingSeconds(
-            new Date(questions[currentQuestionIndex + 1].expirationTime),
+            new Date(questions[currentQuestionIndex].expirationTime),
             new Date()
           );
           setInitialTimeLeft(nextTimeLeft);
           setTimeLeft(nextTimeLeft);
-        }
+        } */
+
+        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         setIsFadeIn(true);
       }, 500);
 

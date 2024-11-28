@@ -149,7 +149,7 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex }) => {
   }, []);
 
   return (
-    <div css={[flexStyle(15, 'column', 'center', 'center'), { width: '510px' }]}>
+    <div css={[flexStyle(15, 'column', 'center', 'center'), { width: '100%' }]}>
       <label
         css={previewStyle(isActive)}
         onDragOver={(event) => event.preventDefault()}

@@ -52,6 +52,7 @@ const Room = () => {
 
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
   const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
+  const { setOutOfBounds } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
@@ -69,11 +70,14 @@ const Room = () => {
   };
 
   const positions = useMemo(
-    () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
+    () => calculatePosition(Math.min(Object.keys(participants).length, 8), radius[0], radius[1]), //10명으로 제한
     [radius, participants]
   );
 
-  const hideIntroView = () => setIsIntroViewActive(false);
+  const hideIntroView = () => {
+    setIsIntroViewActive(false);
+    setOutOfBounds(true);
+  };
 
   const calculateRadius = (count: number) => {
     if (count > 3) {
@@ -103,17 +107,21 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {Object.keys(participants).map((participantId, index) => (
-                <UserProfile
-                  key={participantId}
-                  participant={participants[participantId]}
-                  index={index}
-                  isCurrentUser={participantId === currentUserId}
-                  isHost={hostId === participantId}
-                  position={{ x: positions[index][0], y: positions[index][1] }}
-                  isResultView={isResultView}
-                />
-              ))}
+              {Object.keys(participants).map((participantId, index) => {
+                const position = positions[index];
+                if (!position) return null;
+                return (
+                  <UserProfile
+                    key={participantId}
+                    participant={participants[participantId]}
+                    index={index}
+                    isCurrentUser={participantId === currentUserId}
+                    isHost={hostId === participantId}
+                    position={{ x: positions[index][0], y: positions[index][1] }}
+                    isResultView={isResultView}
+                  />
+                );
+              })}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
                   resultLoading ? (

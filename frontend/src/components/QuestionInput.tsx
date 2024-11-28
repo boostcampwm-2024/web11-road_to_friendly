@@ -12,6 +12,12 @@ interface QuestionInputProps {
   onSubmit: (keyword: string, type: 'add' | 'delete') => void;
 }
 
+const wrapperStyle = css`
+  position: relative;
+  width: 100%;
+  margin-top: ${Variables.spacing.spacing_sm};
+`;
+
 const inputStyle = css`
   width: 100%;
   height: 30px;
@@ -27,10 +33,19 @@ const inputStyle = css`
   opacity: 1;
 `;
 
+const spanStyle = css`
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  font-size: 12px;
+  color: ${Variables.colors.text_alt};
+`;
+
 const QuestionInput = ({ currentQuestionIndex, selectedKeywords, onSubmit }: QuestionInputProps) => {
   const [keyword, setKeyword] = useState('');
   const { openToast } = useToast();
   const { socket } = useSocketStore();
+  const MAX_LENGTH = 15;
 
   async function handleEnter(e: React.KeyboardEvent) {
     if (e.code !== 'Enter') return;
@@ -59,15 +74,30 @@ const QuestionInput = ({ currentQuestionIndex, selectedKeywords, onSubmit }: Que
     }
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    // 입력 길이가 최대 길이를 초과하면 자름
+    if (value.length > MAX_LENGTH) {
+      setKeyword(value.slice(0, MAX_LENGTH));
+    } else {
+      setKeyword(value);
+    }
+  };
+
   return (
-    <input
-      type="text"
-      value={keyword}
-      placeholder="답변을 입력해주세요"
-      css={inputStyle}
-      onChange={(e) => setKeyword(e.target.value)}
-      onKeyDown={(e) => handleEnter(e)}
-    />
+    <div css={wrapperStyle}>
+      <input
+        type="text"
+        value={keyword}
+        placeholder="답변을 입력해주세요"
+        css={inputStyle}
+        maxLength={MAX_LENGTH}
+        onChange={handleInputChange}
+        onKeyDown={(e) => handleEnter(e)}
+      />
+      <span css={spanStyle}>{keyword.length}/15</span>
+    </div>
   );
 };
 

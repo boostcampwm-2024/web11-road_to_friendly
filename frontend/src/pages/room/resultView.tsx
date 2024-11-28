@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { Variables, StatisticsStyleMap } from '@/styles';
-import { useSocketStore } from '@/stores';
 import { useCallback, useEffect, useState } from 'react';
-import { Participant } from '@/types';
+
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
+import { Variables, StatisticsStyleMap } from '@/styles';
+import { Participant } from '@/types';
 
 const KeywordsContainer = css`
   width: 100%;

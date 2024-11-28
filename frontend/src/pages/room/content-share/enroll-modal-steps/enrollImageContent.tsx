@@ -13,7 +13,7 @@ import { flexStyle, Variables } from '@/styles';
 
 import { StepComponentType } from '../contentEnrollModal';
 
-const previewStyle = (isActive: boolean) => css`  
+const previewStyle = (isActive: boolean) => css`
   width: 100%;
   height: 280px;
   margin: auto;
@@ -22,8 +22,8 @@ const previewStyle = (isActive: boolean) => css`
   border: 3px dashed ${isActive ? Variables.colors.surface_black : Variables.colors.surface_alt};
   ${flexStyle(15, 'column', 'center', 'center')};
   cursor: pointer;
-  font: ${Variables.typography.font_medium_16}
-}`;
+  font: ${Variables.typography.font_medium_16};
+`;
 
 const selectButtonStyle = css`
   background-color: ${Variables.colors.surface_white};

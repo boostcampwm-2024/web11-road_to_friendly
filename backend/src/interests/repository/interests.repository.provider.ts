@@ -7,7 +7,7 @@ import { InterestsInMemoryRepository } from './interests.in-memory.repository';
 export const InterestsRepositoryProvider: Provider = {
   provide: 'INTERESTS_REPOSITORY',
   useFactory: (configService: ConfigService) => {
-    const environment = configService.get<string>('NODE_ENV', 'dev');
+    const environment = configService.get<string>('NODE_ENV', 'dev').trim();
 
     if (environment === 'release') {
       return new InterestsImageRepository(configService);

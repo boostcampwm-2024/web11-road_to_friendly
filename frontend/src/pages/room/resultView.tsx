@@ -79,7 +79,7 @@ const ResultView = ({ participant }: ResultViewProps) => {
     }, {});
 
     setAllKeywords(ratioData);
-  }, []);
+  }, [statisticsKeywords]);
 
   return (
     <ul css={KeywordsContainer}>

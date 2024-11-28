@@ -51,10 +51,9 @@ const deleteButtonStyle = () => css`
   cursor: pointer;
 `;
 
-const EnrollImageContent: StepComponentType = ({ changeStepIndex }) => {
+const EnrollImageContent: StepComponentType = ({ changeStepIndex, closeModal  }) => {
   const { socket } = useSocketStore();
   const { openToast } = useToast();
-  const { closeModal } = useModal();
 
   const [isActive, setActive] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -122,19 +121,21 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex }) => {
     const timeout = setTimeout(() => {
       setLoading(false);
       openToast({ type: 'error', text: '사진 공유에 실패했습니다.' });
-    }, 5000); // 5초 타임아웃
+    }, 5000);
 
     socket.emit(
       'interest:image',
       { fileName: fileData.filename, buffer: fileData.buffer },
       (response: { status: string }) => {
         clearTimeout(timeout); // 응답이 왔을 때 타임아웃 제거
+        setLoading(false);
+        console.log(response);
         if (response.status === 'ok') {
+          resetImagePreview();
           closeModal();
         } else {
           openToast({ type: 'error', text: '사진 공유에 실패했습니다.' });
         }
-        setLoading(false);
       }
     );
   };

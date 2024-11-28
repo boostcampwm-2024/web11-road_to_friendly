@@ -2,7 +2,7 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { Server, ServerOptions } from 'socket.io';
 import * as process from 'node:process';
 import Redis from 'ioredis';
-import { createAdapter } from '@socket.io/redis-adapter';
+import { createShardedAdapter } from '@socket.io/redis-adapter';
 
 export class CustomWebSocketAdapter extends IoAdapter {
   create(port: number, options?: ServerOptions & { namespace?: string; server?: any }): Server {
@@ -19,7 +19,9 @@ export class CustomWebSocketAdapter extends IoAdapter {
       cors: {
         origin: process.env.ORIGIN,
       },
-      adapter: createAdapter(pubClient, subClient),
+      adapter: createShardedAdapter(pubClient, subClient, {
+        subscriptionMode: 'dynamic-private',
+      }),
     });
   }
 }

@@ -89,6 +89,11 @@ const Room = () => {
     }
   };
 
+  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = '';
+  };
+
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
     calculateRadius(Object.keys(participants).length);
@@ -99,6 +104,15 @@ const Room = () => {
       increaseLongRadius();
     }
   }, [isResultView]);
+
+  useEffect(() => {
+    if (!isIntroViewActive) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isIntroViewActive]);
 
   if (!roomExists) return <RoomNotFoundError />;
 

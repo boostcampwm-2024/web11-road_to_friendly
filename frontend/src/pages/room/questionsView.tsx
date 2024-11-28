@@ -213,16 +213,6 @@ const QuestionsView = ({
   useEffect(() => {
     if (!isFadeIn) {
       const fadeTimeout = setTimeout(() => {
-        /* setCurrentQuestionIndex((prevIndex) => prevIndex + 1); */
-        /* if (questions[currentQuestionIndex]) {
-          const nextTimeLeft = getRemainingSeconds(
-            new Date(questions[currentQuestionIndex].expirationTime),
-            new Date()
-          );
-          setInitialTimeLeft(nextTimeLeft);
-          setTimeLeft(nextTimeLeft);
-        } */
-
         setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         setIsFadeIn(true);
       }, 500);

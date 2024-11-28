@@ -20,6 +20,7 @@ import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
 import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
+import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { InterestsRepositoryProvider } from './interests/repository/interests.re
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'backend', 'interests', 'shareImage'),
+      rootPath: join(process.cwd(), 'src', 'interests', 'shareImage'),
       serveRoot: '/shareImage',
     }),
   ],
@@ -51,8 +52,9 @@ import { InterestsRepositoryProvider } from './interests/repository/interests.re
     ClientsService,
     InterestsGateway,
     InterestsService,
+    InterestsInMemoryRepository,
     InterestsRepositoryProvider,
   ],
-  exports: ['INTERESTS_REPOSITORY'],
+  exports: ['INTERESTS_IMAGE_REPOSITORY'],
 })
 export class AppModule {}

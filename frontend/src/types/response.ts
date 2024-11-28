@@ -21,3 +21,13 @@ export interface NextContentResponse {
   resourceUrl: string;
   nowQueueSize: number;
 }
+
+export type YoutubeRequestType = 'PLAY' | 'STOP' | 'TIMELINE' | 'SPEED' | 'DRAGGING';
+
+export interface InterestYoutubeResponse {
+  requestType: YoutubeRequestType;
+  videoCurrentTime: number;
+  playStatus: string;
+  targetTime: number;
+  playSpeed: number;
+}

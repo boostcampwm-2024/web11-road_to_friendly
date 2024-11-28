@@ -11,10 +11,11 @@ import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 import { useEffect, useRef, useState } from 'react';
 import { Slider } from '@/components/common';
 import SettingPanel from './SettingPanel';
-import YouTubePlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player';
 
 interface ControllBarProps {
-  player: YouTubePlayer;
+  isSharer: boolean;
+  player: ReactPlayer;
   setControllbarHeight: React.Dispatch<React.SetStateAction<number>>;
   currentTime: number;
   duration: number;
@@ -49,7 +50,12 @@ const controllBarStyle = (height: string) =>
 
     width: '100%',
     height: height,
-    zIndex: '998'
+    zIndex: '998',
+
+    button: {
+      display: 'flex',
+      alignItems: 'center'
+    }
   });
 
 const leftSectionStyle = css({
@@ -99,6 +105,7 @@ function convertSecToHHMMSS(sec: number, minParts: number = 2) {
 }
 
 const ControllBar = ({
+  isSharer,
   player,
   currentTime,
   duration,
@@ -145,13 +152,20 @@ const ControllBar = ({
         }}
       >
         <div css={leftSectionStyle}>
-          {isPlaying ? (
-            <PauseIcon css={iconStyle} onClick={pauseVideo} />
-          ) : (
-            <PlayIcon css={iconStyle} onClick={playVideo} />
+          {isSharer && isPlaying && (
+            <button onClick={pauseVideo} aria-label="pause button">
+              <PauseIcon css={iconStyle} />
+            </button>
+          )}
+          {isSharer && !isPlaying && (
+            <button onClick={playVideo} aria-label="play button">
+              <PlayIcon css={iconStyle} />
+            </button>
           )}
           <div css={volumeContainerStyle}>
-            <VolumeIcon css={iconStyle} onClick={toggleVolume} />
+            <button onClick={toggleVolume} aria-label="volume toggle button">
+              <VolumeIcon css={iconStyle} />
+            </button>
             <div
               css={{
                 position: 'relative',
@@ -168,19 +182,24 @@ const ControllBar = ({
               />
             </div>
           </div>
-
           <div css={timeSectionStyle}>
             {convertSecToHHMMSS(Math.round(currentTime))} / {convertSecToHHMMSS(Math.round(duration))}
           </div>
         </div>
         <div css={rightSectionStyle}>
-          <SettingFillIcon css={iconStyle} onClick={() => setOpenSettingPanel(!openSettingPanel)} />
-          {controllBarRef.current && (
-            <SettingPanel
-              openSettingPanel={openSettingPanel}
-              player={player}
-              controllBarHeight={controllBarRef.current.offsetHeight}
-            />
+          {isSharer && (
+            <>
+              <button onClick={() => setOpenSettingPanel(!openSettingPanel)} aria-label="setting toggle button">
+                <SettingFillIcon css={iconStyle} />
+              </button>
+              {controllBarRef.current && (
+                <SettingPanel
+                  openSettingPanel={openSettingPanel}
+                  player={player}
+                  controllBarHeight={controllBarRef.current.offsetHeight}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

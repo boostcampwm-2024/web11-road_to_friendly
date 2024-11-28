@@ -9,6 +9,7 @@ interface Color {
 }
 
 interface SliderProps {
+  showThumb?: boolean;
   fraction: number;
   setFraction: (newFraction: number) => void;
   bottom: number;
@@ -128,6 +129,7 @@ const defaultColor = {
 };
 
 const Slider = ({
+  showThumb = true,
   fraction,
   setFraction,
   bottom,
@@ -168,9 +170,20 @@ const Slider = ({
     setFraction(clickedX / width);
   }
 
-  function endDragging() {
+  function endDragging(e) {
     isMouseDownRef.current = false;
     onMouseDownStateChange(false);
+    moveProgressNow(e);
+  }
+
+  function handleClick(e) {
+    isMouseDownRef.current = false;
+    moveProgressNow(e);
+  }
+
+  function handleMouseLeave(e) {
+    if (!isMouseDownRef.current) return;
+    endDragging(e);
   }
 
   useEffect(() => {
@@ -182,18 +195,15 @@ const Slider = ({
       <div
         css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime, shouldThumbAnytime)}
         ref={sliderRef}
-        onDrag={(e) => {
-          e.preventDefault();
-        }}
-        onClick={moveProgressNow}
+        onClick={handleClick}
         onMouseDown={startDragging}
         onMouseMove={syncProgressWithDrag}
         onMouseUp={endDragging}
-        onMouseLeave={endDragging}
+        onMouseLeave={handleMouseLeave}
       >
         <div css={sliderEmptyStyle(bottom, mergedColor.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, bottom, shouldHoverGrow)}></div>
-        <div className="thumb" css={thumbStyle(fraction, mergedColor.thumb, bottom, width)}></div>
+        {showThumb && <div className="thumb" css={thumbStyle(fraction, mergedColor.thumb, bottom, width)}></div>}
       </div>
     </>
   );

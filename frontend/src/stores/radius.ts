@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { MIN_SHORT_RADIUS, MIN_LONG_RADIUS, MAX_SHORT_RADIUS, MAX_LONG_RADIUS } from '@/constants';
+import { MIN_SHORT_RADIUS, MIN_LONG_RADIUS, MAX_SHORT_RADIUS, MAX_LONG_RADIUS } from '@/constants/radius';
 
 interface RadiusStore {
   radius: [number, number];

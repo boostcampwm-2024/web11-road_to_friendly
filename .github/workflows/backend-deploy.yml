@@ -50,7 +50,7 @@ jobs:
             
             if pm2 describe $APP_NAME > /dev/null; then
               echo "[$APP_NAME] 배포중, reload 수행"
-              if pm2 reload $APP_NAME --time; then
+              if NODE_ENV=release pm2 reload $APP_NAME --time; then
                 echo "[$APP_NAME] reload 확인"
               else
                 echo "Reload 실패"
@@ -58,5 +58,5 @@ jobs:
               fi
             else
               echo "[$APP_NAME] 배포중이 아님. 배포 시도"
-              pm2 start dist/main.js --name $APP_NAME --time
+              NODE_ENV=release pm2 start dist/main.js --name $APP_NAME --time
             fi

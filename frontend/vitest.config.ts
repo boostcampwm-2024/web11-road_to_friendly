@@ -1,6 +1,7 @@
-import { defineConfig } from 'vitest/config';
+// import path from 'path';
+
 import svgr from 'vite-plugin-svgr';
-import path from 'path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -8,10 +9,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/tests/setup.ts'
   },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  },
+  // resolve: {
+  //   alias: {
+  //     '@': path.resolve(__dirname, './src')
+  //   }
+  // },
   plugins: [svgr()]
 });

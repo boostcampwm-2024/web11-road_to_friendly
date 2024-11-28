@@ -14,6 +14,7 @@ import { InterestsImageDto } from '../dto/interests.image.dto';
 import { InterestsYoutubeControlDto } from '../dto/interests.youtube.control.dto';
 import { InterestsYoutubeControlResponseDto } from '../dto/interests.youtube.control.response.dto';
 import { INTERESTS_YOUTUBE_CONTROL, interestsYoutubeControl } from '../definition/interests.youtube.control';
+import { ValidateImageExtensionGuard } from '../guard/validate.image.extention.guard';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
@@ -35,6 +36,7 @@ export class InterestsGateway implements OnModuleInit {
     });
   }
 
+  @UseGuards(ValidateImageExtensionGuard)
   @SubscribeMessage('interest:image')
   async suggestImage(@ConnectedSocket() client: Socket, @MessageBody() data: InterestsImageDto) {
     const roomId = client.data.roomId;
@@ -95,6 +97,7 @@ export class InterestsGateway implements OnModuleInit {
 
     this.broadcastYoutubeControl(client, roomId, INTERESTS_YOUTUBE_CONTROL.TIMELINE, {
       targetTime: correctedTargetTime,
+      playStatus: data.playStatus,
     });
   }
 

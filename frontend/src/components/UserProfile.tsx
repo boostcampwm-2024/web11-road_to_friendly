@@ -19,8 +19,8 @@ const profileStyle = (x: number, y: number, shortRadius: number, longRadius: num
 
 const profileImageStyle = (bgColor: string) => css`
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 100px;
   background-color: ${bgColor};
   border-radius: 50%;
   display: flex;
@@ -32,7 +32,7 @@ const profileImageStyle = (bgColor: string) => css`
 `;
 
 const participantNicknameStyle = css`
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   color: ${Variables.colors.text_default};
 `;

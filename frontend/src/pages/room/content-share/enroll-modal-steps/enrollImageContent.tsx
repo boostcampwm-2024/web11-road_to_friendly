@@ -129,7 +129,7 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex, closeModal  })
       (response: { status: string }) => {
         clearTimeout(timeout); // 응답이 왔을 때 타임아웃 제거
         setLoading(false);
-        console.log(response);
+
         if (response.status === 'ok') {
           resetImagePreview();
           closeModal();

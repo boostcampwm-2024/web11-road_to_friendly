@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants/radius';
 import { useToast } from '@/hooks';
 import { sendPickKeywordMessage, sendReleaseKeywordMessage } from '@/services';
 import { useSocketStore } from '@/stores';

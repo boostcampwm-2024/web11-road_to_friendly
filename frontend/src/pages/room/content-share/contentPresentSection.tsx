@@ -1,6 +1,9 @@
 import { css } from '@emotion/react';
 
 import { Content } from '@/types';
+import { Player } from '@/components';
+import { isShorts } from '@/utils';
+import { useSocketStore } from '@/stores';
 
 const ContentPresentSectionStyle = css({
   flexGrow: 1,
@@ -27,14 +30,22 @@ interface ContentPresentSectionProps {
 
 /* 컨텐츠가 실제로 표시되는 영역 */
 const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
+  const { socket } = useSocketStore();
+  const isSharer = content.sharerSocketId === socket.id;
+
   return (
-    <div css={ContentPresentSectionStyle}>
-      <img
-        css={ImageContentStyle}
-        src={'https://i1.sndcdn.com/artworks-nS5zU2ZseiW3oRgT-PjrnSw-t500x500.jpg'}
-        alt={'content'}
-      />
-    </div>
+    <>
+      {content.type === 'IMAGE' && (
+        <div css={ContentPresentSectionStyle}>
+          <img css={ImageContentStyle} src={content.resourceURL} alt={'content'} />
+        </div>
+      )}
+      {content.type === 'YOUTUBE' && (
+        <div css={ContentPresentSectionStyle}>
+          <Player url={content.resourceURL} isSharer={isSharer} isShorts={isShorts(content.resourceURL)} />
+        </div>
+      )}
+    </>
   );
 };
 

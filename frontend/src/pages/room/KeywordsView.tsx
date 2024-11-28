@@ -7,12 +7,12 @@ import { sendPickKeywordMessage, sendReleaseKeywordMessage } from '@/services';
 import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
 import { keywordStyleMap, scaleIn, Variables } from '@/styles';
-import { Group, Keyword, KeywordsCoordinates, PrefixSum } from '@/types';
+import { Group, Keyword, KeywordInfo, KeywordsCoordinates, PrefixSum } from '@/types';
 
 const KeywordsViewContainer = css`
-  width: 100%;
+  width: 150%;
   height: 400px;
-  margin-top: 50px;
+  margin-top: 20px;
   position: relative;
 `;
 
@@ -35,7 +35,6 @@ const RealKeywordsContainer = css`
   width: 100%;
   height: 100%;
   position: absolute;
-  overflow: hidden;
   opacity: 100%;
   z-index: 2;
 `;
@@ -78,23 +77,41 @@ function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: P
 const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: KeywordsViewProps) => {
   const { socket } = useSocketStore();
   const { openToast } = useToast();
-  const { keywords, prefixSumMap, upsertKeyword } = useKeywordsStore();
+  const { keywords, prefixSumMap, upsertMultipleKeywords } = useKeywordsStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [keywordsCoordinates, setKeywordsCoordinates] = useState<KeywordsCoordinates>({});
 
   useEffect(() => {
-    if (socket) {
-      socket.off('empathy:keyword:count');
+    const keywordQueue: Map<string, Keyword> = new Map<string, Keyword>();
+    let updateTimeout: ReturnType<typeof setTimeout>;
 
-      socket.on('empathy:keyword:count', (response: { questionId: number; keyword: string; count: number }) => {
-        upsertKeyword(response);
+    const processQueue = () => {
+      if (keywordQueue.size > 0) {
+        upsertMultipleKeywords(questionId, Array.from(keywordQueue.values()));
+        keywordQueue.clear();
+      }
+    };
+
+    // 추가되었거나 공감수가 변경된 키워드들을 받아서 큐에 쌓아두고 일정 시간마다 한번씩 처리
+    if (socket) {
+      /* socket.off('empathy:keyword:count'); */
+      socket.on('empathy:keyword:count', (response: KeywordInfo) => {
+        const { keyword, count } = response;
+        keywordQueue.set(keyword, { keyword, count });
+        if (!updateTimeout) {
+          updateTimeout = setTimeout(() => {
+            processQueue();
+            updateTimeout = undefined;
+          }, 1500);
+        }
       });
     }
 
     return () => {
       socket?.off('empathy:keyword:count');
+      clearTimeout(updateTimeout);
     };
-  }, [socket]);
+  }, [socket, questionId, upsertMultipleKeywords]);
 
   // 키워드 배열 업데이트될 때마다 워드 클라우드 그리기
   useEffect(() => {
@@ -213,6 +230,7 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
       }));
     };
 
+    setKeywordsCoordinates({}); // 이전 워드클라우드 좌표정보 초기화
     wordArray.forEach((word, index) => {
       drawOneWord(index, word);
     });
@@ -253,14 +271,14 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
                 KeywordStyle,
                 keywordStyleMap(selectedKeywords.has(keyword))[
                   getKeywordGroup(keywordObject, Object.keys(keywordsCoordinates).length, prefixSumMap[questionId])
-                ],
-                {
-                  left: keywordsCoordinates[keyword].x,
-                  top: keywordsCoordinates[keyword].y
-                }
+                ]
               ]}
               onClick={() => {
                 selectedKeywords.has(keyword) ? unpickKeyword(keyword) : pickKeyword(keyword);
+              }}
+              style={{
+                left: keywordsCoordinates[keyword].x,
+                top: keywordsCoordinates[keyword].y
               }}
             >
               {keywordObject.keyword}

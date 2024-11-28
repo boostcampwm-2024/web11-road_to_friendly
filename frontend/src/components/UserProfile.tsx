@@ -3,15 +3,17 @@ import { css } from '@emotion/react';
 import Crown from '@/assets/icons/crown.svg?react';
 import ResultView from '@/pages/room/resultView';
 import { useRadiusStore } from '@/stores';
-import { Variables , flexStyle } from '@/styles';
+import { Variables, flexStyle } from '@/styles';
 import { Participant } from '@/types';
 
-const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number) => css`
+const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number, isOutOfBounds: boolean) => css`
   position: absolute;
   left: ${longRadius + x}px;
   bottom: ${shortRadius + y}px;
   transform: translate(-50%, 50%);
   transition: 1s ease-in-out;
+  opacity: ${isOutOfBounds ? 0 : 1};
+  transition: opacity 0.5s ease-in-out;
   ${flexStyle(10, 'column', 'center', 'center')}
 `;
 
@@ -56,16 +58,16 @@ const hostStyle = css`
 `;
 
 const profileColors = [
-  Variables.colors.player_blue,
-  Variables.colors.player_grey,
-  Variables.colors.player_red,
-  Variables.colors.player_green,
-  Variables.colors.player_orange,
-  Variables.colors.player_purple,
-  Variables.colors.player_yellow,
-  Variables.colors.player_pink,
-  Variables.colors.player_cyan,
-  Variables.colors.player_brown
+  [Variables.colors.player_blue, '🐯'],
+  [Variables.colors.player_grey, '🦊'],
+  [Variables.colors.player_red, '🐱'],
+  [Variables.colors.player_green, '🐼'],
+  [Variables.colors.player_orange, '🐨'],
+  [Variables.colors.player_purple, '🐵'],
+  [Variables.colors.player_yellow, '🐰'],
+  [Variables.colors.player_pink, '🦁'],
+  [Variables.colors.player_cyan, '🐶'],
+  [Variables.colors.player_brown, '🦝']
 ];
 
 interface Positon {
@@ -82,33 +84,22 @@ interface UserProfileProps {
   isResultView: boolean;
 }
 
-const UserProfile = ({
-  participant,
-  index,
-  isCurrentUser,
-  isHost,
-  position,
-  isResultView,
-}: UserProfileProps) => {
-  const { radius } = useRadiusStore();
+const UserProfile = ({ participant, index, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
+  const { radius, isOutOfBounds } = useRadiusStore();
 
   return (
-    <div css={profileStyle(position.x, position.y, radius[0], radius[1])}>
-      <div css={profileImageStyle(profileColors[index % profileColors.length])}>
+    <div css={profileStyle(position.x, position.y, radius[0], radius[1], isOutOfBounds)}>
+      <div css={profileImageStyle(profileColors[index % profileColors.length][0])}>
         {isHost && (
           <div css={hostStyle}>
             <Crown />
           </div>
         )}
-        <div>🐯</div>
+        <div>{profileColors[index % profileColors.length][1]}</div>
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>
-      {isResultView && (
-        <ResultView
-          participant={participant}
-        />
-      )}
+      {isResultView && <ResultView participant={participant} />}
     </div>
   );
 };

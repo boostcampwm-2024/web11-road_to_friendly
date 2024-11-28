@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { Topic } from '../entity/Topic';
 import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
 import { PHASE, Phase } from '../../common/definition/phase';
@@ -9,9 +10,8 @@ import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.i
 export class RoomsService {
   constructor(
     private readonly roomsInMemoryRepository: RoomsInMemoryRepository,
-    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository
-  ) {
-  }
+    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository,
+  ) {}
 
   create() {
     return this.roomsInMemoryRepository.create();
@@ -40,22 +40,29 @@ export class RoomsService {
     '좋아하는 아티스트는?',
     '좋아하는 동물은?',
     '좋아하는 게임은?',
+    '좋아하는 유튜버는?',
+    '좋아하는 영화는?',
+    '좋아하는 드라마는?',
+    '가고 싶은 여행지는?',
+    '좋아하는, 혹은 배워 보고 싶은 취미는?',
+    '좋아하는 운동은?',
+    '좋아하는 책은?',
   ];
 
-  getEmpathyTopics(count = 5, topicSecond = 60, topicTermSecond = 1) {
+  getEmpathyTopics(count = 5, topicSecond = 60, topicTermSecond = 1): Topic[] {
     count = Math.min(this.topicTitles.length, count);
 
-    const randomTopicTitles = [...this.topicTitles];
+    const uniqueNumbers = new Set<number>();
 
-    for (let i = randomTopicTitles.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-
-      [randomTopicTitles[i], randomTopicTitles[j]] = [randomTopicTitles[j], randomTopicTitles[i]];
+    while (uniqueNumbers.size < count) {
+      const randomNum = Math.floor(Math.random() * (count + 1));
+      uniqueNumbers.add(randomNum);
     }
 
-    return randomTopicTitles
-      .slice(0, count)
-      .map((title, index) => new Topic(index + 1, title, (index + 1) * (topicSecond + topicTermSecond)));
+    return Array.from(uniqueNumbers).map(
+      (randomNumber, index) =>
+        new Topic(index + 1, this.topicTitles[randomNumber], (index + 1) * (topicSecond + topicTermSecond)),
+    );
   }
 
   deleteRoom(roomId: string) {
@@ -71,18 +78,24 @@ export class RoomsService {
   }
 
   setPhase(roomId: string, phase: Phase) {
-    this.roomsInMemoryRepository.setPhase(roomId, phase);
+    return this.roomsInMemoryRepository.setPhase(roomId, phase);
   }
 
-  generateBroadcastStatisticsEvent(roomId: string, finishTime: string, broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void) {
+  generateBroadcastStatisticsEvent(
+    roomId: string,
+    finishTime: string,
+    broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void,
+  ) {
     const finishTimestamp = new Date(finishTime).getTime();
     const delay = finishTimestamp - Date.now();
 
     setTimeout(async () => {
-      this.setPhase(roomId, PHASE.INTEREST);
-      const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+      const broadcastFlag = this.setPhase(roomId, PHASE.INTEREST);
 
-      broadcastStatistics(roomId, statistics);
+      if (broadcastFlag) {
+        const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+        broadcastStatistics(roomId, statistics);
+      }
     }, delay);
   }
 }

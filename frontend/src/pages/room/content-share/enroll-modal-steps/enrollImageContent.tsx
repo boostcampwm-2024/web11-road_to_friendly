@@ -108,15 +108,32 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex }) => {
   const resetImagePreview = () => {
     setPreviewUrl(null);
     handleDragEnd();
+    setLoading(false);
   };
 
   const shareImage = () => {
+    if (!fileData || !fileData.filename || !fileData.buffer) {
+      openToast({ type: 'error', text: '유효한 이미지 파일이 아닙니다. 다시 시도해 주세요.' });
+      return;
+    }
+
     setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+      openToast({ type: 'error', text: '사진 공유에 실패했습니다.' });
+    }, 5000); // 5초 타임아웃
+
     socket.emit(
       'interest:image',
-      { filename: fileData.filename, buffer: fileData.buffer },
+      { fileName: fileData.filename, buffer: fileData.buffer },
       (response: { status: string }) => {
-        response.status === 'ok' ? closeModal() : openToast({ type: 'error', text: '사진 공유에 실패했습니다.' });
+        clearTimeout(timeout); // 응답이 왔을 때 타임아웃 제거
+        if (response.status === 'ok') {
+          closeModal();
+        } else {
+          openToast({ type: 'error', text: '사진 공유에 실패했습니다.' });
+        }
         setLoading(false);
       }
     );
@@ -149,7 +166,7 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex }) => {
   }, []);
 
   return (
-    <div css={[flexStyle(15, 'column', 'center', 'center'), { width: '510px' }]}>
+    <div css={[flexStyle(15, 'column', 'center', 'center'), { width: '100%' }]}>
       <label
         css={previewStyle(isActive)}
         onDragOver={(event) => event.preventDefault()}

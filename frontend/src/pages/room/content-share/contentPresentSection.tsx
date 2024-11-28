@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 
 import { Content } from '@/types';
 import { Player } from '@/components';
-import { isShorts } from '@/utils';
+import { getYoutubeEmbedURL, isShorts } from '@/utils';
 import { useSocketStore } from '@/stores';
 
 const ContentPresentSectionStyle = css({
@@ -42,7 +42,11 @@ const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
       )}
       {content.type === 'YOUTUBE' && (
         <div css={ContentPresentSectionStyle}>
-          <Player url={content.resourceURL} isSharer={isSharer} isShorts={isShorts(content.resourceURL)} />
+          <Player
+            url={getYoutubeEmbedURL(content.resourceURL)}
+            isSharer={isSharer}
+            isShorts={isShorts(content.resourceURL)}
+          />
         </div>
       )}
     </>

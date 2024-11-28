@@ -21,6 +21,8 @@ import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
 import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
 import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
+import { CustomValidationPipe } from './interests/pipe/custom-validation.pipe';
+import { IsYoutubeLinkConstraint } from './interests/decorator/is-youtube-link.decorator';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { InterestsInMemoryRepository } from './interests/repository/interests.in
     InterestsService,
     InterestsInMemoryRepository,
     InterestsRepositoryProvider,
+    CustomValidationPipe,
+    IsYoutubeLinkConstraint,
   ],
   exports: ['INTERESTS_IMAGE_REPOSITORY'],
 })

@@ -1,6 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { OnModuleInit, UseFilters, UseGuards } from '@nestjs/common';
+import { OnModuleInit, UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 
 import { InterestsYoutubeLinkDto } from '../dto/interests.youtube.link.dto';
 import { PhaseInterestGuard } from '../../common/guard/phase.guard';
@@ -15,6 +15,7 @@ import { InterestsYoutubeControlDto } from '../dto/interests.youtube.control.dto
 import { InterestsYoutubeControlResponseDto } from '../dto/interests.youtube.control.response.dto';
 import { INTERESTS_YOUTUBE_CONTROL, interestsYoutubeControl } from '../definition/interests.youtube.control';
 import { ValidateImageExtensionGuard } from '../guard/validate.image.extention.guard';
+import { CustomValidationPipe } from '../pipe/custom-validation.pipe';
 
 @WebSocketGateway()
 @UseFilters(SocketCustomExceptionFilter)
@@ -45,6 +46,7 @@ export class InterestsGateway implements OnModuleInit {
     return this.shareInterest(roomId, interest);
   }
 
+  @UsePipes(CustomValidationPipe)
   @SubscribeMessage('interest:youtube')
   async suggestYoutube(@ConnectedSocket() client: Socket, @MessageBody() { link }: InterestsYoutubeLinkDto) {
     const roomId = client.data.roomId;

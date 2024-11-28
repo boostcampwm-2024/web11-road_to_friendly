@@ -78,7 +78,7 @@ const QuestionsView = ({
   finishResultLoading,
   startResultLoading
 }: QuestionViewProps) => {
-  const { socket } = useSocketStore();
+  const { socket, connect } = useSocketStore();
   const { questions, setQuestions } = useQuestionsStore();
   const { setStatisticsKeywords } = useKeywordsStore();
   const { setParticipants } = useParticipantsStore();
@@ -91,7 +91,7 @@ const QuestionsView = ({
   const [isFadeIn, setIsFadeIn] = useState(true);
   const [isQuestionMovedUp, setIsQuestionMovedUp] = useState(false);
   const [showInput, setShowInput] = useState(false);
-  const [resultResponse, setResultResponse] = useState<CommonResult | null>(null);
+  const resultResponseRef = useRef<CommonResult | null>(null);
 
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
   const updateSelectedKeywords = (keyword: string, type: 'add' | 'delete') => {
@@ -104,6 +104,12 @@ const QuestionsView = ({
       });
     }
   };
+
+  const handleResult = (response: CommonResult) => {
+    // 통계결과를 임시로 저장
+    resultResponseRef.current = response;
+  };
+
   const resetSelectedKeywords = () => setSelectedKeywords(new Set());
 
   // 웹 워커 생성
@@ -137,6 +143,10 @@ const QuestionsView = ({
   }, [timeLeft]);
 
   useEffect(() => {
+    if (!socket) {
+      connect();
+    }
+
     if (socket) {
       socket.on('empathy:start', (response: { questions: Question[] }) => {
         setQuestions(response.questions);
@@ -148,14 +158,7 @@ const QuestionsView = ({
         }
       });
 
-      if (socket && socket.connected) {
-        const handleResult = (response: CommonResult) => {
-          // 통계결과를 임시로 저장
-          console.log('empathy:result received: ', response);
-          setResultResponse(response);
-        };
-        socket.on('empathy:result', handleResult);
-      }
+      socket.on('empathy:result', handleResult);
     }
   }, [socket, setQuestions, onQuestionStart]);
 
@@ -174,18 +177,21 @@ const QuestionsView = ({
         onLastQuestionComplete();
         startResultLoading();
 
-        if (resultResponse) {
-          // 통계 데이터 처리
-          setStatisticsKeywords(resultResponse);
-          Object.entries(resultResponse).forEach(([userId, array]) => {
-            setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
-          });
-        } else {
-          openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
-        }
+        setTimeout(() => {
+          if (resultResponseRef.current) {
+            // 통계 데이터 처리
+            setStatisticsKeywords(resultResponseRef.current);
+            Object.entries(resultResponseRef.current).forEach(([userId, array]) => {
+              setParticipants((prev) => ({ ...prev, [userId]: { ...prev[userId], keywords: array } }));
+            });
+          } else {
+            openToast({ type: 'error', text: '통계 분석 중 오류가 발생했습니다. 다시 시도해주세요' });
+          }
 
-        finishResultLoading();
-        setOutOfBounds(false); //사용자 ui 원위치로
+          finishResultLoading();
+          setOutOfBounds(false); //사용자 ui 원위치로
+          socket?.off('empathy:result', handleResult);
+        }, 3000);
       }
 
       return;
@@ -213,16 +219,6 @@ const QuestionsView = ({
   useEffect(() => {
     if (!isFadeIn) {
       const fadeTimeout = setTimeout(() => {
-        /* setCurrentQuestionIndex((prevIndex) => prevIndex + 1); */
-        /* if (questions[currentQuestionIndex]) {
-          const nextTimeLeft = getRemainingSeconds(
-            new Date(questions[currentQuestionIndex].expirationTime),
-            new Date()
-          );
-          setInitialTimeLeft(nextTimeLeft);
-          setTimeLeft(nextTimeLeft);
-        } */
-
         setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         setIsFadeIn(true);
       }, 500);

@@ -81,12 +81,6 @@ const ResultView = ({ participant }: ResultViewProps) => {
     setAllKeywords(ratioData);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      socket?.off('empathy:result');
-    };
-  }, [socket]);
-
   return (
     <ul css={KeywordsContainer}>
       {(participant.keywords ?? []).slice(0, 3).map(({ keyword }, index: number) => (

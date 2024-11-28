@@ -132,11 +132,11 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
       const overlapTest = (a: HTMLElement, b: HTMLElement, gap: number) => {
         if (
           Math.abs(a.offsetLeft + a.offsetWidth / 2 - b.offsetLeft - b.offsetWidth / 2) <
-          a.offsetWidth / 2 + b.offsetWidth / 2 + gap
+          a.offsetWidth / 2 + b.offsetWidth / 2 + gap * 4
         ) {
           if (
             Math.abs(a.offsetTop + a.offsetHeight / 2 - b.offsetTop - b.offsetHeight / 2) <
-            a.offsetHeight / 2 + b.offsetHeight / 2 + gap
+            a.offsetHeight / 2 + b.offsetHeight / 2 + gap * 4
           ) {
             return true;
           }

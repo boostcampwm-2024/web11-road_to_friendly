@@ -101,7 +101,6 @@ const ProfileEditButton = () => {
         }
       }));
       setIsEditing(false);
-      setIsModalOpen(false);
     },
     [setParticipants]
   );

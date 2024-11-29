@@ -17,3 +17,7 @@ export const YOUTUBE_SHORTS_URL_REGEX =
 
 // 쇼츠 우클릭 후 복사한 URL: https://www.youtube.com/shorts/n2DcpqDK8C0
 export const YOUTUBE_SHORTS_URL_SIMPLE_REGEX = /^(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/;
+
+export const YOUTUBE_ERROR_MESSAGES = {
+  NO_PLAYER: '플레이어 구성 중 문제가 발생해서 공유자와 화면을 동기화할 수 없어요!'
+} as const;

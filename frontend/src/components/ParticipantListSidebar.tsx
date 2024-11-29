@@ -52,7 +52,7 @@ const ParticipantListSidebar = () => {
       </button>
       <Modal position={'topLeft'} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div css={ListContainerStyle}>
-          <div>참여자 리스트</div>
+          <div>{`참여자 리스트(${Object.keys(participants).length})`}</div>
           {Object.keys(participants).map((participantId) => (
             <div key={participantId} css={ParticipantItemStyle}>
               <Profile />

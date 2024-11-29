@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
 import { QuestionInput } from '@/components';
-import { MAX_LONG_RADIUS } from '@/constants';
+import { MAX_LONG_RADIUS } from '@/constants/radius';
 import { useToast } from '@/hooks';
 import { useParticipantsStore, useQuestionsStore, useSocketStore, useKeywordsStore, useRadiusStore } from '@/stores/';
 import { flexStyle, Variables, fadeIn, fadeOut } from '@/styles';

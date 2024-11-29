@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -60,6 +60,31 @@ const Room = () => {
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
+  const [isResultInstructionVisible, setIsResultInstructionVisible] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false); // 페이드아웃 상태
+  const [isContentShareVisible, setIsContentShareVisible] = useState(false);
+
+  useEffect(() => {
+    if (isResultView) {
+      setIsResultInstructionVisible(true);
+      // 5초 후 페이드아웃 시작
+      // 로딩이 3초
+      const fadeOutTimer = setTimeout(() => {
+        setIsFadingOut(true);
+      }, 5000);
+
+      // 페이드아웃 1초 후 ContentShareView 표시
+      const showContentTimer = setTimeout(() => {
+        setIsResultInstructionVisible(false);
+        setIsContentShareVisible(true);
+      }, 6000);
+
+      return () => {
+        clearTimeout(fadeOutTimer);
+        clearTimeout(showContentTimer);
+      };
+    }
+  }, [isResultView]);
 
   const startResultPage = () => {
     setIsResultView(true);
@@ -146,8 +171,8 @@ const Room = () => {
                     <LoadingPage isAnalyzing={true} />
                   ) : (
                     <>
-                      <ResultInstruction />
-                      <ContentShareView />
+                      {isResultInstructionVisible && <ResultInstruction isFadingOut={isFadingOut} />}
+                      {isContentShareVisible && <ContentShareView />}
                     </>
                   )
                 ) : (

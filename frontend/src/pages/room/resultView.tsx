@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants/radius';
 import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
 import { Variables, StatisticsStyleMap } from '@/styles';
@@ -79,7 +79,7 @@ const ResultView = ({ participant }: ResultViewProps) => {
     }, {});
 
     setAllKeywords(ratioData);
-  }, []);
+  }, [statisticsKeywords]);
 
   return (
     <ul css={KeywordsContainer}>

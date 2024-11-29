@@ -55,7 +55,7 @@ export class RoomsService {
     const uniqueNumbers = new Set<number>();
 
     while (uniqueNumbers.size < count) {
-      const randomNum = Math.floor(Math.random() * (count + 1));
+      const randomNum = Math.floor(Math.random() * this.topicTitles.length);
       uniqueNumbers.add(randomNum);
     }
 

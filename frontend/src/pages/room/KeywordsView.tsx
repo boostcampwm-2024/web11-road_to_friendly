@@ -94,8 +94,9 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
 
     // 추가되었거나 공감수가 변경된 키워드들을 받아서 큐에 쌓아두고 일정 시간마다 한번씩 처리
     if (socket) {
-      /* socket.off('empathy:keyword:count'); */
       socket.on('empathy:keyword:count', (response: KeywordInfo) => {
+        if (response.questionId !== questionId) return;
+
         const { keyword, count } = response;
         keywordQueue.set(keyword, { keyword, count });
         if (!updateTimeout) {

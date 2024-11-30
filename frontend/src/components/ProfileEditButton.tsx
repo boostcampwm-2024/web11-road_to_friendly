@@ -113,6 +113,12 @@ const ProfileEditButton = () => {
     }
   };
 
+  const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSaveNickname();
+    }
+  };
+
   useEffect(() => {
     if (!socket) {
       connect();
@@ -163,6 +169,7 @@ const ProfileEditButton = () => {
                     value={nicknameInput}
                     maxLength={MAX_LENGTH}
                     onChange={handleInputChange}
+                    onKeyDown={handleEnterKeyDown}
                     placeholder="새 닉네임"
                     ref={nickNameInputRef}
                   />

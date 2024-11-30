@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Edit from '@/assets/icons/edit.svg?react';
 import Profile from '@/assets/icons/profile.svg?react';
@@ -16,26 +16,22 @@ const profileImageStyle = css`
 `;
 
 const inputStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font: ${Variables.typography.font_medium_16};
   text-align: start;
   border-radius: 8px;
   border: 1px solid ${Variables.colors.surface_alt};
   padding: 5px;
-  width: 140px;
+  width: 130px;
 `;
 
 const editButtonStyle = css`
-  position: absolute;
-  width: 27px;
-  height: 27px;
   display: flex;
   justify-content: center;
   align-items: center;
-  right: 5px;
-  bottom: 5px;
   border: none;
-  border-radius: 50%;
-  background-color: ${Variables.colors.surface_black};
   cursor: pointer;
 `;
 
@@ -82,6 +78,7 @@ const ProfileEditButton = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [nicknameInput, setNicknameInput] = useState('');
   const { participants, setParticipants } = useParticipantsStore();
+  const nickNameInputRef = useRef<HTMLInputElement>(null);
   const MAX_LENGTH = 6;
 
   const handleSaveNickname = () => {
@@ -130,6 +127,13 @@ const ProfileEditButton = () => {
     }
   }, [socket, connect, handleProfileUpdate]);
 
+  useEffect(() => {
+    if (isEditing && nickNameInputRef.current) {
+      setNicknameInput('');
+      nickNameInputRef.current.focus();
+    }
+  }, [isEditing]);
+
   return (
     <div>
       <button css={profileImageStyle} onClick={() => setIsModalOpen(true)}>
@@ -148,14 +152,9 @@ const ProfileEditButton = () => {
           <h3>내 프로필</h3>
           <div css={{ position: 'relative', width: '100px', height: '100px' }}>
             <Profile width={'100%'} height={'100%'} />
-            {!isEditing && (
-              <button css={editButtonStyle} onClick={() => setIsEditing(true)}>
-                <Edit width={'22px'} height={'22px'} />
-              </button>
-            )}
           </div>
           <div css={flexStyle(10)}>
-            <span>닉네임</span>
+            <span style={{ font: Variables.typography.font_medium_14 }}>닉네임</span>
             {isEditing ? (
               <div css={nicknameContainerStyle}>
                 <div css={wrapperStyle}>
@@ -165,6 +164,7 @@ const ProfileEditButton = () => {
                     maxLength={MAX_LENGTH}
                     onChange={handleInputChange}
                     placeholder="새 닉네임"
+                    ref={nickNameInputRef}
                   />
                   <span css={spanStyle}>{nicknameInput.length}/6</span>
                 </div>
@@ -174,7 +174,16 @@ const ProfileEditButton = () => {
               </div>
             ) : (
               <div css={nicknameContainerStyle}>
-                <div css={inputStyle}>{participants[socket?.id || '']?.nickname || '알 수 없음'}</div>
+                <div css={inputStyle}>
+                  {!isEditing && (
+                    <>
+                      <span>{participants[socket?.id || '']?.nickname || '알 수 없음'}</span>
+                      <button css={editButtonStyle} onClick={() => setIsEditing(true)}>
+                        <Edit width={'22px'} height={'22px'} fill={'#ff5b5b'} />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             )}
           </div>

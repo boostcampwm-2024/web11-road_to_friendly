@@ -1,6 +1,6 @@
 import { css, keyframes } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useBeforeUnload, useParams } from 'react-router-dom';
 
 import useParticipants from '@/hooks/useParticipants';
 
@@ -64,6 +64,13 @@ const Room = () => {
   const [isFadingOut, setIsFadingOut] = useState(false); // 페이드아웃 상태
   const [isContentShareVisible, setIsContentShareVisible] = useState(false);
 
+  useBeforeUnload((e) => {
+    if (!isIntroViewActive) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
   useEffect(() => {
     if (isResultView) {
       setIsResultInstructionVisible(true);
@@ -114,11 +121,6 @@ const Room = () => {
     }
   };
 
-  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-    e.preventDefault();
-    e.returnValue = '';
-  };
-
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
     calculateRadius(Object.keys(participants).length);
@@ -129,15 +131,6 @@ const Room = () => {
       increaseLongRadius();
     }
   }, [isResultView]);
-
-  useEffect(() => {
-    if (!isIntroViewActive) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
-    }
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isIntroViewActive]);
 
   if (!roomExists) return <RoomNotFoundError />;
 

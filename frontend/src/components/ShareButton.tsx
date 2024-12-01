@@ -6,10 +6,10 @@ import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
 const shareButtonStyle = css({
   display: 'flex',
-  justifyContent: 'space-around',
+  justifyContent: 'space-evenly',
   alignItems: 'center',
 
-  width: '12rem',
+  width: '180px',
   borderRadius: '1.75rem',
   padding: '1rem',
 

@@ -235,7 +235,7 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
           config={{ youtube: { playerVars: { autoplay: 1 } } }}
         />
         <SharerDraggingIndicator isSharerDragging={isSharerDragging} />
-        {isHovering && player && (
+        {player && (
           <ControllerSection
             isHovering={isHovering}
             player={player}

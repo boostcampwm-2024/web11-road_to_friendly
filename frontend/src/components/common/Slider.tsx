@@ -1,6 +1,7 @@
-import { Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'react';
+
+import { Variables } from '@/styles';
 
 interface Color {
   empty?: string;
@@ -151,7 +152,6 @@ const Slider = ({
 
     const barLeft = sliderRef.current.getBoundingClientRect().left;
     const clickedX = e.clientX - barLeft;
-
     setFraction(clickedX / width);
   }
 
@@ -187,7 +187,7 @@ const Slider = ({
   }
 
   useEffect(() => {
-    if (sliderRef.current) setWidth(sliderRef.current.offsetWidth);
+    if (sliderRef.current) setWidth(sliderRef.current.getBoundingClientRect().width);
   }, []);
 
   return (
@@ -203,7 +203,12 @@ const Slider = ({
       >
         <div css={sliderEmptyStyle(bottom, mergedColor.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, bottom, shouldHoverGrow)}></div>
-        {showThumb && <div className="thumb" css={thumbStyle(fraction, mergedColor.thumb, bottom, width)}></div>}
+        {showThumb && (
+          <div
+            className="thumb"
+            css={thumbStyle(fraction, mergedColor.thumb, bottom, sliderRef.current.offsetWidth)}
+          ></div>
+        )}
       </div>
     </>
   );

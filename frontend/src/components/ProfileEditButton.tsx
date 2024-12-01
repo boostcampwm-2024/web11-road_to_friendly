@@ -57,6 +57,7 @@ const profileEditContainerStyle = css`
   gap: 10px;
   min-width: 250px;
   height: 200px;
+  padding-top: 10px;
 `;
 
 const wrapperStyle = css`

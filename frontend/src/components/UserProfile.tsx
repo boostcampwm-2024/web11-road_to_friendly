@@ -10,11 +10,15 @@ const profileStyle = (x: number, y: number, shortRadius: number, longRadius: num
   position: absolute;
   left: ${longRadius + x}px;
   bottom: ${shortRadius + y}px;
-  transform: translate(-50%, 50%);
+  transform: translate(-50%, 50%) scale(1);
   transition: 1s ease-in-out;
   opacity: ${isOutOfBounds ? 0 : 1};
   transition: opacity 0.5s ease-in-out;
-  ${flexStyle(10, 'column', 'center', 'center')}
+  ${flexStyle(10, 'column', 'center', 'center')};
+
+  @media (min-height: 768px) and (max-height: 1200px) {
+    transform: translate(-50%, 50%) scale(0.8);
+  }
 `;
 
 const profileImageStyle = (bgColor: string) => css`

@@ -17,7 +17,12 @@ const ContentShareViewStyle = css([
     height: '28.5625rem',
     backgroundColor: Variables.colors.surface_white,
     backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23B5B7BFFF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='3' stroke-linecap='square'/%3e%3c/svg%3e")`,
-    borderRadius: 24
+    borderRadius: 24,
+    transform: 'scale(1)',
+
+    '@media (min-height: 768px) and (max-height: 1200px)': {
+      transform: 'scale(0.7)'
+    }
   },
   flexStyle(16, 'column')
 ]);

@@ -203,7 +203,7 @@ const Slider = ({
       >
         <div css={sliderEmptyStyle(bottom, mergedColor.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, bottom, shouldHoverGrow)}></div>
-        {showThumb && (
+        {sliderRef.current && showThumb && (
           <div
             className="thumb"
             css={thumbStyle(fraction, mergedColor.thumb, bottom, sliderRef.current.offsetWidth)}

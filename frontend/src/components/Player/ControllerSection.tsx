@@ -89,6 +89,7 @@ const ControllerSection = ({
   }
 
   return (
+    isHovering &&
     player && (
       <div>
         <div

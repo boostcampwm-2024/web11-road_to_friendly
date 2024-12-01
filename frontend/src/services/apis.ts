@@ -1,10 +1,14 @@
 import { Socket } from 'socket.io-client';
 
-import { KeywordResponse } from '@/types';
+import { KeywordResponse, SocketWithWorker } from '@/types';
 
 import { SERVICE_ERROR_MESSAGES } from './errorMessages';
 
-export const sendPickKeywordMessage = (socket: Socket, questionId: number, keyword: string): Promise<boolean> => {
+export const sendPickKeywordMessage = (
+  socket: Socket | SocketWithWorker,
+  questionId: number,
+  keyword: string
+): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     if (socket && socket.connected) {
       socket.emit('keyword:pick', { questionId, keyword }, (response: KeywordResponse) => {
@@ -23,7 +27,11 @@ export const sendPickKeywordMessage = (socket: Socket, questionId: number, keywo
   });
 };
 
-export const sendReleaseKeywordMessage = (socket: Socket, questionId: number, keyword: string): Promise<boolean> => {
+export const sendReleaseKeywordMessage = (
+  socket: Socket | SocketWithWorker,
+  questionId: number,
+  keyword: string
+): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     if (socket && socket.connected) {
       socket.emit('keyword:release', { questionId, keyword }, (response: KeywordResponse) => {
@@ -42,7 +50,7 @@ export const sendReleaseKeywordMessage = (socket: Socket, questionId: number, ke
   });
 };
 
-export const sendYoutubeEnrollRequest = (socket: Socket, youtubeURL: string): Promise<boolean> => {
+export const sendYoutubeEnrollRequest = (socket: Socket | SocketWithWorker, youtubeURL: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     if (socket && socket.connected) {
       socket.emit('interest:youtube', { link: youtubeURL });
@@ -53,7 +61,7 @@ export const sendYoutubeEnrollRequest = (socket: Socket, youtubeURL: string): Pr
   });
 };
 
-export const sendShareStopRequest = (socket: Socket): Promise<boolean> => {
+export const sendShareStopRequest = (socket: Socket | SocketWithWorker): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     if (socket && socket.connected) {
       socket.emit('interest:next');

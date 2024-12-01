@@ -3,6 +3,7 @@ import { Slider } from '../common';
 import { useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import ControllBar from './ControllBar';
+import { SocketWithWorker } from '@/types';
 
 interface ControllerSectionProps {
   isHovering: boolean;
@@ -11,7 +12,7 @@ interface ControllerSectionProps {
   fraction: number;
   setFraction: (newFraction: number) => void;
   setIsPlaying: (isPlaying: boolean) => void;
-  socket: Socket;
+  socket: Socket | SocketWithWorker;
   prevIsPlayingRef: React.MutableRefObject<boolean>;
   volume: number;
   setVolume: (newVolume: number) => void;

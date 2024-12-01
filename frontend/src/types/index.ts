@@ -13,3 +13,4 @@ export type {
 export type { CommonResult } from './commonResult';
 export type { Content } from './content';
 export type { PlayerState } from './videoPlayer';
+export type { SocketWithWorker } from './socket';

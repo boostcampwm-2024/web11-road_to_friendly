@@ -188,7 +188,7 @@ const Room = () => {
                 )}
               </div>
             </div>
-            <ShareButton />
+            {isIntroViewActive && <ShareButton />}
           </div>
           <ParticipantListSidebar />
         </>

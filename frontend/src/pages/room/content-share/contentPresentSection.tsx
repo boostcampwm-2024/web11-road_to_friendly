@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
 
-import { Content } from '@/types';
 import { Player } from '@/components';
-import { getYoutubeEmbedURL, isShorts } from '@/utils';
 import { useSocketStore } from '@/stores';
+import { Content } from '@/types';
+import { isShorts } from '@/utils';
 
 const ContentPresentSectionStyle = css({
   flexGrow: 1,
@@ -33,6 +33,11 @@ const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
   const { socket } = useSocketStore();
   const isSharer = content.sharerSocketId === socket.id;
 
+  const parseIfPlaylistURL = (url: string) => {
+    const playlistPattern = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]+&list=[\w-]+/;
+    return playlistPattern.test(url) ? url.slice(0, url.indexOf('&list=')) : url;
+  };
+
   return (
     <>
       {content.type === 'IMAGE' && (
@@ -43,7 +48,7 @@ const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
       {content.type === 'YOUTUBE' && (
         <div css={ContentPresentSectionStyle}>
           <Player
-            url={getYoutubeEmbedURL(content.resourceURL)}
+            url={parseIfPlaylistURL(content.resourceURL)}
             isSharer={isSharer}
             isShorts={isShorts(content.resourceURL)}
           />

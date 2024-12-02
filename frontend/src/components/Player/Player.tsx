@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
 import { YOUTUBE_ERROR_MESSAGES } from '@/constants/youtube';
@@ -103,7 +103,6 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
       player.getInternalPlayer().playVideo();
     } else {
       setIsPlaying(false);
-
       player.getInternalPlayer().pauseVideo();
     }
   }
@@ -191,6 +190,12 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
 
     requestAnimationFrame(() => onProgressWithReqeustAnimation(callback));
   }
+
+  useEffect(() => {
+    return () => {
+      socket?.off('share:interest:youtube');
+    };
+  }, []);
 
   return (
     <>

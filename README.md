@@ -181,7 +181,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
             </td>
             <td>
                 <img src="https://img.shields.io/badge/nginx-014532?logo=Nginx&logoColor=009639&">
-                <img src="https://img.shields.io/badge/pm2-2B037A?logo=pm2&logoColor=ffffff&">
+                <img src="https://img.shields.io/badge/PM2-2B037A?logo=pm2&logoColor=ffffff&">
                 <img src="https://img.shields.io/badge/Naver Cloud Platform-03C75A?logo=naver&logoColor=ffffff">
             </td>
         </tr>

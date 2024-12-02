@@ -1,30 +1,37 @@
 import RoomAccessWorker from '@/workers/roomAccessWorker.js?sharedworker';
+import TimerWorker from '@/workers/timerWorker.js?worker';
 import { create } from 'zustand';
 
 type HandleRoomAccess = () => Promise<SharedWorker | null>;
 
 interface RoomAccess {
   roomAccessWorker: SharedWorker | null;
+  timerWorker: Worker | null;
   canAccess: boolean | null;
   connect: () => void;
   disconnect: () => void;
 }
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const TIMEOUT = 1000;
+const TIMEOUT = 3000;
 let isConnecting = false;
 
 const postAliveSignal = (roomAccessWorker: SharedWorker | null) => {
   if (!roomAccessWorker) return;
 
   roomAccessWorker.port.postMessage({ message: 'alive' });
-  setTimeout(() => postAliveSignal(roomAccessWorker), TIMEOUT);
 };
 
-const clearWorker = (roomAccessWorker: SharedWorker | null) => {
-  if (!roomAccessWorker) return;
-  roomAccessWorker.port.onmessage = null;
-  roomAccessWorker.port.close();
+const clearWorker = (roomAccessWorker: SharedWorker | null, timerWorker?: Worker | null) => {
+  if (roomAccessWorker) {
+    roomAccessWorker.port.onmessage = null;
+    roomAccessWorker.port.close();
+  }
+  if (timerWorker) {
+    timerWorker.postMessage({ action: 'stop' });
+    timerWorker.onmessage = null;
+    timerWorker.terminate();
+  }
 };
 
 const handleRoomAccess: HandleRoomAccess = () => {
@@ -32,17 +39,15 @@ const handleRoomAccess: HandleRoomAccess = () => {
     if (IS_PRODUCTION) {
       const workerInstance = new RoomAccessWorker();
 
-      workerInstance.port.start();
       isConnecting = true;
+      workerInstance.port.start();
 
       workerInstance.port.onmessage = (e) => {
         const { message } = e.data;
         if (message === 'reject') {
-          isConnecting = false;
           clearWorker(workerInstance);
           reject();
         } else if (message === 'accept') {
-          isConnecting = false;
           resolve(workerInstance);
         }
       };
@@ -52,7 +57,7 @@ const handleRoomAccess: HandleRoomAccess = () => {
   });
 };
 
-const handleRoomLeave = (roomAccessWorker: SharedWorker | null) => {
+const handleRoomLeave = (roomAccessWorker: SharedWorker | null, timerWorker: Worker | null) => {
   if (IS_PRODUCTION) {
     clearWorker(roomAccessWorker);
   }
@@ -60,6 +65,7 @@ const handleRoomLeave = (roomAccessWorker: SharedWorker | null) => {
 
 export const useRoomAccessStore = create<RoomAccess>((set) => ({
   roomAccessWorker: null,
+  timerWorker: null,
   canAccess: null,
 
   connect: async () => {
@@ -70,17 +76,27 @@ export const useRoomAccessStore = create<RoomAccess>((set) => ({
 
       set({ roomAccessWorker: workerInstance, canAccess: true });
       set((state) => {
-        postAliveSignal(state.roomAccessWorker);
-        return state;
+        const timerWorkerInstance = new TimerWorker();
+        timerWorkerInstance.postMessage({ action: 'start', interval: TIMEOUT });
+        timerWorkerInstance.onmessage = (e) => {
+          if (e.data === 'tick') {
+            postAliveSignal(state.roomAccessWorker);
+          }
+        };
+
+        return { ...state, timerWorker: timerWorkerInstance };
       });
     } catch (e) {
       set({ roomAccessWorker: null, canAccess: false });
+    } finally {
+      isConnecting = false;
     }
   },
 
   disconnect: () => {
     set((state) => {
-      handleRoomLeave(state.roomAccessWorker);
+      state.roomAccessWorker?.port.postMessage({ message: 'disconnect' });
+      handleRoomLeave(state.roomAccessWorker, state.timerWorker);
       return { roomAccessWorker: null, canAccess: null };
     });
   }

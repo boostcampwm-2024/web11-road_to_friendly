@@ -1,9 +1,10 @@
-const TIMEOUT = 2500;
+const TIMEOUT = 3500;
 
 let port = null;
 let alive = false;
 
 function clearPort() {
+  port.onmessage = null;
   port.close();
   port = null;
 }
@@ -26,6 +27,8 @@ addEventListener('connect', (e) => {
 
   if (port !== null) {
     newPort.postMessage({ message: 'reject' });
+    newPort.close();
+    newPort.onmessage = null;
     return;
   }
 
@@ -39,6 +42,10 @@ addEventListener('connect', (e) => {
 
     if (message === 'alive') {
       alive = true;
+      port.postMessage({ message: 'alive check' });
+    }
+    if (message === 'disconnect') {
+      clearPort();
     }
   };
 });

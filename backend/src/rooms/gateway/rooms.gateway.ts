@@ -39,7 +39,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
 
   @UseGuards(ConnectGuard, ExistGuard, PhaseReadyGuard)
   @SubscribeMessage('join')
-  join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto) {
+  async join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto) {
     client.join(roomId);
     const hostId = this.roomsService.setHostIfHostUndefined(roomId, client.id);
 
@@ -51,12 +51,11 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
       nickname: client.data.nickname,
     });
 
-    const socketIds = this.server.sockets.adapter.rooms.get(roomId);
+    const sockets = await this.server.in(roomId).fetchSockets();
 
-    const participants = Array.from(socketIds).map((socketId) => {
-      const socket = this.server.sockets.sockets.get(socketId);
+    const participants = sockets.map((socket) => {
       return {
-        id: socketId,
+        id: socket.id,
         nickname: socket?.data?.nickname,
       };
     });
@@ -67,12 +66,12 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
   }
 
   @UseGuards(ParticipantGuard)
-  handleDisconnect(client: Socket): void {
+  async handleDisconnect(client: Socket) {
     const roomId = client.data.roomId;
 
-    const clients = this.server.sockets.adapter.rooms.get(roomId);
+    const clients = await this.server.in(roomId).fetchSockets();
 
-    if (clients === undefined || clients.size === 0) {
+    if (clients === undefined || clients.length === 0) {
       return;
     }
 
@@ -88,14 +87,14 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
       return;
     }
 
-    const nextHostId = Array.from(clients)[0];
-    const socket = this.server.sockets.sockets.get(nextHostId);
+    const hostSocket = clients[0];
+    const nextHostId = hostSocket.id;
 
     this.roomsService.setHost(roomId, nextHostId);
 
     this.server.to(roomId).emit('participant:host:change', {
-      participantId: socket.id,
-      nickname: socket.data?.nickname,
+      participantId: nextHostId,
+      nickname: hostSocket.data?.nickname,
     });
   }
 }

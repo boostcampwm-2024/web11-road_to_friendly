@@ -58,9 +58,17 @@
 ![컨텐츠 공유](https://github.com/user-attachments/assets/b3c6fc64-a950-49e6-aef7-9b691e2ce3b1)
 ![컨텐츠 공유 2](https://github.com/user-attachments/assets/6dc6a82d-7c0a-4fea-bf17-8f2060605113)
 
+## 🌈 프로젝트 플로우
 
+![image](https://github.com/user-attachments/assets/958b87aa-5f37-4d6e-8032-79b3e5811172)
 
-## 🧩 시스템 아키텍처 및 기술 스택
+## 🧩 시스템 아키텍처
+
+<div align=center>
+  <img width="670" alt="image" src="https://github.com/user-attachments/assets/e15ec6fa-efaa-4a04-92e3-c2d840f6dc82">
+</div>
+
+## ⚙️ 기술 스택
 
 <table align=center>
     <thead>

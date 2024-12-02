@@ -149,6 +149,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
             </td>
             <td>
                 <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=ffffff">
                 <img src="https://img.shields.io/badge/Socket.io-010101?logo=socketdotio">
                 <img src="https://img.shields.io/badge/.ENV-ECD53F?logo=.ENV&logoColor=ffffff">
             </td>
@@ -159,7 +160,6 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
             </td>
             <td>
                 <img src="https://img.shields.io/badge/Vite-646CFF?logo=Vite&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=ffffff">
                 <img src="https://img.shields.io/badge/React-61DAFB?logo=React&logoColor=ffffff">
                 <img src="https://img.shields.io/badge/Emotion-D36AC2?logo=react&logoColor=ffffff">
                 <img src="https://img.shields.io/badge/Zustand-443E38?logo=react&logoColor=ffffff">
@@ -172,6 +172,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
             <td>
                 <img src="https://img.shields.io/badge/Node.js-114411?logo=node.js">
                 <img src="https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=ffffff">
+              <img src="https://img.shields.io/badge/Redis-FF4438?logo=redis&logoColor=ffffff">
             </td>
         </tr>
         <tr>

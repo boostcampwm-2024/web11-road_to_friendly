@@ -1,7 +1,8 @@
-import ReactPlayer from 'react-player';
-import { Slider } from '../common';
 import { useRef, useState } from 'react';
+import ReactPlayer from 'react-player';
 import { Socket } from 'socket.io-client';
+
+import { Slider } from '../common';
 import ControllBar from './ControllBar';
 
 interface ControllerSectionProps {

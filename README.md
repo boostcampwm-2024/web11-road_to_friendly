@@ -8,6 +8,8 @@
 
 <p>서먹서먹한 팀의 분위기를 타파하기 위해 공감 포인트를 수집하고,<br>이야기를 나누며 자연스레 아이스 브레이킹을 진행해봅시다!</p>
 
+https://road-to-friendly.kro.kr/
+
 <br>
 
 <p align=center>
@@ -126,6 +128,7 @@
                 <img src="https://img.shields.io/badge/Notion-000000?logo=Notion">
                 <img src="https://img.shields.io/badge/Figma-F24E1E?logo=Figma&logoColor=ffffff">
                 <img src="https://img.shields.io/badge/Slack-4A154B?logo=Slack&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Gather-4358D8?logo&logoColor=ffffff">
             </td>
         </tr>
     </tbody>

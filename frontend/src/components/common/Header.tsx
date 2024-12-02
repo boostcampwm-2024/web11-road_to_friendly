@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import ProfileEditButton from '@/components/ProfileEditButton';
 
@@ -42,12 +42,13 @@ interface HeaderProps {
 
 const Header = ({ paddingY = 12 }: HeaderProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>
-        <a css={flexStyle(0)} href="/">
+        <button css={flexStyle(0)} onClick={() => navigate('/')}>
           <img src="/logo.png" alt="logo" height={'40px'} />
-        </a>
+        </button>
         <nav css={navStyle}>
           <button>튜토리얼</button>
           <button>라이트/다크</button>

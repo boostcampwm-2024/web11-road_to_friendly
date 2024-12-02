@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ProfileEditButton from '@/components/ProfileEditButton';
 
 import { flexStyle, Variables } from '@/styles';
+import { useModal } from '@/hooks/useModal';
+import TutorialModal from '../TutorialModal';
 
 const headerWrapperStyle = css({
   position: 'fixed',
@@ -41,21 +43,28 @@ interface HeaderProps {
 }
 
 const Header = ({ paddingY = 12 }: HeaderProps) => {
+  const { ModalWithOverlay: Modal, isOpen, openModal, closeModal } = useModal();
   const location = useLocation();
   const navigate = useNavigate();
+
   return (
-    <header css={headerWrapperStyle}>
-      <div css={headerStyle(paddingY)}>
-        <button css={flexStyle(0)} onClick={() => navigate('/')}>
-          <img src="/logo.png" alt="logo" height={'40px'} />
-        </button>
-        <nav css={navStyle}>
-          <button>튜토리얼</button>
-          <button>라이트/다크</button>
-          {location.pathname !== '/' && <ProfileEditButton />}
-        </nav>
-      </div>
-    </header>
+    <>
+      <header css={headerWrapperStyle}>
+        <div css={headerStyle(paddingY)}>
+          <button css={flexStyle(0)} onClick={() => navigate('/')}>
+            <img src="/logo.png" alt="logo" height={'40px'} />
+          </button>
+          <nav css={navStyle}>
+            <button onClick={openModal}>튜토리얼</button>
+            <button>라이트/다크</button>
+            {location.pathname !== '/' && <ProfileEditButton />}
+          </nav>
+        </div>
+      </header>
+      <Modal isOpen={isOpen} closeModal={closeModal}>
+        <TutorialModal closeModal={closeModal} />
+      </Modal>
+    </>
   );
 };
 

@@ -6,7 +6,6 @@ import useParticipants from '@/hooks/useParticipants';
 
 import { Header } from '@/components/common';
 import ParticipantListSidebar from '@/components/ParticipantListSidebar';
-import RoomNotFoundError from '@/components/RoomNotFound';
 import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
@@ -18,6 +17,10 @@ import LoadingPage from '../LoadingPage';
 import { ContentShareView } from './content-share';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
+import { useRoomAccess } from '@/hooks';
+import RoomCatchWrapper from './RoomCatchWrapper';
+import { roomError } from '@/constants/roomError';
+import { useErrorBoundary } from 'react-error-boundary';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -50,10 +53,12 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
 `;
 
 const Room = () => {
+  const { showBoundary } = useErrorBoundary();
   const roomId = useParams<{ roomId: string }>().roomId || null;
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [resultLoading, setResultLoading] = useState<boolean>(false);
 
+  const {} = useRoomAccess();
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
   const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
   const { setOutOfBounds } = useRadiusStore();
@@ -132,7 +137,7 @@ const Room = () => {
     }
   }, [isResultView]);
 
-  if (!roomExists) return <RoomNotFoundError />;
+  if (!roomExists) showBoundary(new Error(roomError.RoomNotFound));
 
   return (
     <>
@@ -192,4 +197,12 @@ const Room = () => {
   );
 };
 
-export default Room;
+const RoomWithCatch = () => {
+  return (
+    <RoomCatchWrapper>
+      <Room />
+    </RoomCatchWrapper>
+  );
+};
+
+export default RoomWithCatch;

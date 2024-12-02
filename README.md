@@ -12,6 +12,7 @@ https://road-to-friendly.kro.kr/
 
 <br>
 
+
 <p align=center>
   <a href="https://lime-mall-d34.notion.site/Road-to-friendly-2d8db233c6da4aaf8c3696a80ec83555?pvs=4">팀 노션</a>
   &nbsp; | &nbsp; 
@@ -28,6 +29,32 @@ https://road-to-friendly.kro.kr/
 </div>
 <br>
 
+## 📄 목차
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [✨ 프로젝트 소개](#-)
+- [🚀 주요 기능](#--1)
+   * [🙋‍♀️ 가벼운 아이스브레이킹 질문들에 실시간으로 답변하며 서로의 관심사를 파악해 보세요](#--2)
+   * [💫 우리 팀에서 이야기 나누면 좋을만한 공통 관심사를 확인할 수 있어요](#--3)
+   * [🔃 서로의 관심사를 파악했다면 다함께 다양한 컨텐츠들을 실시간으로 공유하며 친해져봐요!](#--4)
+- [🗺️ 프로젝트 플로우](#--5)
+- [🌈 기술적 도전 및 문제 해결 과정](#--6)
+   * [[FE] 워드 클라우드 UI 구현](#fe-ui-)
+   * [[FE] 참여자들이 방을 입장할때 UI배치는 어떻게 이루어질까요?](#fe-ui--1)
+   * [[FE] 통계 결과 소켓 알림 타이밍 제어 및 웹워커를 사용한 타이머 동기화](#fe-)
+   * [[FE] 유튜브 영상을 어떻게 동기화할 수 있을까요?](#fe--1)
+   * [[FE] 사용자가 한 번에 하나의 방에만 입장하게 하고 싶어요!](#fe--2)
+   * [[BE] Socket.IO의 ‘Room’과 프로젝트의 ‘Room’ 개념을 어떻게 일치시킬 수 있었을까?](#be-socketio-room-room-)
+   * [[BE] 공유를 위한 상태 관리는 어떻게 관리할 것인가?](#be-)
+- [🧩 시스템 아키텍처](#--7)
+- [⚙️ 기술 스택](#--8)
+- [🫶🏻 팀 소개](#--9)
+
+<!-- TOC end -->
+
+<br>
+
+<!-- TOC --><a name="-"></a>
 ## ✨ 프로젝트 소개
 
 <p>
@@ -38,14 +65,17 @@ https://road-to-friendly.kro.kr/
 
 <br>
  
+<!-- TOC --><a name="--1"></a>
 ## 🚀 주요 기능
 
+<!-- TOC --><a name="--2"></a>
 ### 🙋‍♀️ 가벼운 아이스브레이킹 질문들에 실시간으로 답변하며 서로의 관심사를 파악해 보세요
 
 > 여러 명이 입력했거나, 많은 공감을 받은 답변들을 한눈에 파악할 수 있는 워드 클라우드 UI를 제공해요
 
 ![키워드표시](https://github.com/user-attachments/assets/cfce2002-a8c4-4392-9260-00c2da37402f)
 
+<!-- TOC --><a name="--3"></a>
 ### 💫 우리 팀에서 이야기 나누면 좋을만한 공통 관심사를 확인할 수 있어요
 
 > 모든 아이스브레이킹 질문이 끝나면, 개개인의 답변들 중 공감을 많이 받은 항목들을 표시하고, 팀에서 함께 나누면 좋을만한 공통 관심사를 분석해서 제안해 드려요
@@ -53,6 +83,7 @@ https://road-to-friendly.kro.kr/
 ![통계](https://github.com/user-attachments/assets/ef008e74-3a98-4e39-93c7-3f71136d9932)
 
 
+<!-- TOC --><a name="--4"></a>
 ### 🔃 서로의 관심사를 파악했다면 다함께 다양한 컨텐츠들을 실시간으로 공유하며 친해져봐요!
 
 > 우리 팀이 다같이 즐길 수 있는 것도, 내가 추천하고 싶은 것도 좋아요. 이미지 또는 유튜브 컨텐츠를 공유할 수 있어요.
@@ -62,13 +93,16 @@ https://road-to-friendly.kro.kr/
 
 <br>
 
+<!-- TOC --><a name="--5"></a>
 ## 🗺️ 프로젝트 플로우
 
 ![image](https://github.com/user-attachments/assets/958b87aa-5f37-4d6e-8032-79b3e5811172)
 
 <br>
 
+<!-- TOC --><a name="--6"></a>
 ## 🌈 기술적 도전 및 문제 해결 과정
+<!-- TOC --><a name="fe-ui-"></a>
 ### [FE] 워드 클라우드 UI 구현
 
 > 참가자들의 실시간 답변과 공감 빈도를 동적인 UI로 표현하고 싶었습니다 <br>
@@ -78,11 +112,13 @@ https://road-to-friendly.kro.kr/
 [👉 jQCloud 라이브러리의 워드클라우드 UI 구현 로직 분석](https://www.notion.so/jQCloud-1-0-4-UI-1fe9ace4c951414a8fd9a519f0db051a?pvs=21) <br>
 [👉 오픈소스를 참고하여 React에서 워드 클라우드 UI 구현하기](https://www.notion.so/React-UI-d37bce31d70448e1bbda70d882a7df53?pvs=21)
 
+<!-- TOC --><a name="fe-ui--1"></a>
 ### [FE] 참여자들이 방을 입장할때 UI배치는 어떻게 이루어질까요?
 
 > 실시간으로 입장하는 참여자들을 타원형으로 배치하고 싶어요! <br><br>
 [👉사용자 배치 로직 구현하기](https://www.notion.so/4f6c1ed8d1d04938808add6f0009a2de?pvs=21)
 
+<!-- TOC --><a name="fe-"></a>
 ### [FE] 통계 결과 소켓 알림 타이밍 제어 및 웹워커를 사용한 타이머 동기화
 
 > 실시간 통계결과를 처리할 때, 소켓알림 이벤트 등록과 해제는 어디서 이루어질까요? <br>
@@ -90,6 +126,7 @@ https://road-to-friendly.kro.kr/
 웹워커의 도입 이유와 타이머 동기화문제, 그리고 소켓이벤트 리스너 등록 타이밍 문제를 해결하는 방법입니다 <br><br>
 [👉소켓이벤트 알림 타이밍 제어](https://www.notion.so/c987e9af0b414550a2bccf6820fbc450?pvs=21) 
 
+<!-- TOC --><a name="fe--1"></a>
 ### [FE] 유튜브 영상을 어떻게 동기화할 수 있을까요?
 
 > 유튜브 영상을 각 사용자 화면에서 동기화하려면, 영상 흐름 조작 권한을 특정 인원에게만 줘야 해요. <br>
@@ -100,6 +137,7 @@ https://road-to-friendly.kro.kr/
 [👉 유튜브 클라이언트끼리 동기화 개발하기 일지](https://www.notion.so/5aa21774a2df485e8d61f6469dcdd884?pvs=21) <br>
 [👉 커스텀 비디오 컨트롤러 개발하기](https://www.notion.so/80ea82a941834fe6a8452f612600f89d?pvs=21)
 
+<!-- TOC --><a name="fe--2"></a>
 ### [FE] 사용자가 한 번에 하나의 방에만 입장하게 하고 싶어요!
 
 > 사용자가 중복 입장할 수 있다면 어떤 문제가 발생할까요? <br>
@@ -108,6 +146,7 @@ Shared Worker라는 개념이 있다는데… Shared Worker를 이용하면 사�
 Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <br><br>
 [👉 방 중복 입장 막기 우당탕탕 개발 과정](https://www.notion.so/dcb514d3a83c4266bd28e6ad641c712d?pvs=21)
 
+<!-- TOC --><a name="be-socketio-room-room-"></a>
 ### [BE] Socket.IO의 ‘Room’과 프로젝트의 ‘Room’ 개념을 어떻게 일치시킬 수 있었을까?
 
 > Socket.IO의 ‘Room’은 간단한 string 타입입니다. <br>
@@ -116,6 +155,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
 [👉 Socket.IO의 Room과 프로젝트 방 개념의 통합](https://www.notion.so/Socket-IO-Room-1504a6a7b6f880da9028d6fed40ff094?pvs=21)
 
 
+<!-- TOC --><a name="be-"></a>
 ### [BE] 공유를 위한 상태 관리는 어떻게 관리할 것인가?
 
 > 모든 키워드 입력이 끝나고 나면, 사용자들은 이미지나 유튜브 영상을 공유할 수 있습니다. <br>
@@ -125,6 +165,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
 
 <br>
 
+<!-- TOC --><a name="--7"></a>
 ## 🧩 시스템 아키텍처
 
 <div align=center>
@@ -133,6 +174,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
 
 <br>
 
+<!-- TOC --><a name="--8"></a>
 ## ⚙️ 기술 스택
 
 <table align=center>
@@ -202,6 +244,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
 
 <br>
 
+<!-- TOC --><a name="--9"></a>
 ## 🫶🏻 팀 소개
 
 <table align="center">

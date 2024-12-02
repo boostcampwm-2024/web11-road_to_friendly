@@ -59,7 +59,7 @@ const handleRoomAccess: HandleRoomAccess = () => {
 
 const handleRoomLeave = (roomAccessWorker: SharedWorker | null, timerWorker: Worker | null) => {
   if (IS_PRODUCTION) {
-    clearWorker(roomAccessWorker);
+    clearWorker(roomAccessWorker, timerWorker);
   }
 };
 
@@ -97,7 +97,7 @@ export const useRoomAccessStore = create<RoomAccess>((set) => ({
     set((state) => {
       state.roomAccessWorker?.port.postMessage({ message: 'disconnect' });
       handleRoomLeave(state.roomAccessWorker, state.timerWorker);
-      return { roomAccessWorker: null, canAccess: null };
+      return { roomAccessWorker: null, canAccess: null, timerWorker: null };
     });
   }
 }));

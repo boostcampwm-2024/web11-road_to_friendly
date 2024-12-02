@@ -7,12 +7,14 @@ import { TextSeparate } from '../common';
 interface RoomErrorProps {
   title: string;
   description: string;
+  AnimationElement?: JSX.Element;
 }
 
-const RoomError = ({ title, description }: RoomErrorProps) => {
+const RoomError = ({ title, description, AnimationElement }: RoomErrorProps) => {
   const navigate = useNavigate();
   return (
     <div css={backgroundStyle}>
+      {AnimationElement && AnimationElement}
       <h1>{title}</h1>
       <TextSeparate text={description} />
       <button css={backToHomeButton} onClick={() => navigate('/')}>

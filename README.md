@@ -1,6 +1,8 @@
-<h1 align=center style="text-align: center; font-size: 1.5em">친해지길: Road to Friendly</h3>
+<div align=center>
+  <img width="636" alt="image" src="https://github.com/user-attachments/assets/0af48bc6-0594-492f-b030-e44ee2654a0f">
+</div>
 
-<br>
+<h1 align=center style="text-align: center; font-size: 1.5em">친해지길: Road to Friendly</h3>
 
 <div align=center>
 

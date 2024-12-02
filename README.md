@@ -152,7 +152,7 @@ Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요? <
 > Socket.IO의 ‘Room’은 간단한 string 타입입니다. <br>
 그러나 프로젝트의 ‘Room’에는 필요한 메타데이터가 굉장히 많았습니다. <br>
 이러한 차이를 어떻게 해결했을까요? <br><br>
-[👉 Socket.IO의 Room과 프로젝트 방 개념의 통합](https://www.notion.so/Socket-IO-Room-1504a6a7b6f880da9028d6fed40ff094?pvs=21)
+[👉 Socket.IO의 Room과 프로젝트 방 개념의 통합](https://lime-mall-d34.notion.site/Nest-js-Gateway-socket-io-1424a6a7b6f88071b27bee15b6f62ae2?pvs=4)
 
 
 <!-- TOC --><a name="be-"></a>

@@ -56,7 +56,6 @@ const Header = ({ paddingY = 12 }: HeaderProps) => {
           </button>
           <nav css={navStyle}>
             <button onClick={openModal}>튜토리얼</button>
-            <button>라이트/다크</button>
             {location.pathname !== '/' && <ProfileEditButton />}
           </nav>
         </div>

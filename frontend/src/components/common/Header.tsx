@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 import ProfileEditButton from '@/components/ProfileEditButton';
 
-import { Variables } from '@/styles';
+import { flexStyle, Variables } from '@/styles';
 
 const headerWrapperStyle = css({
   position: 'fixed',
@@ -45,8 +45,8 @@ const Header = ({ paddingY = 12 }: HeaderProps) => {
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>
-        <a css={{ font: Variables.typography.font_bold_24 }} href="/">
-          친해지길
+        <a css={flexStyle(0)} href="/">
+          <img src="/logo.png" alt="logo" height={'40px'} />
         </a>
         <nav css={navStyle}>
           <button>튜토리얼</button>

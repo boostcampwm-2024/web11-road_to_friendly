@@ -40,7 +40,8 @@
 
 > 여러 명이 입력했거나, 많은 공감을 받은 답변들을 한눈에 파악할 수 있는 워드 클라우드 UI를 제공해요
 
-![키워드표시_자른버전](https://github.com/user-attachments/assets/5fa287fa-c609-41f2-b7e0-7dd5741ec517)
+![키워드표시_자른버전](https://github.com/user-attachments/assets/ca02118a-d53e-465c-8445-39771d50bf82)
+
 
 <br />
 
@@ -48,7 +49,8 @@
 
 > 모든 아이스브레이킹 질문이 끝나면, 개개인의 답변들 중 공감을 많이 받은 항목들을 표시하고, 팀에서 함께 나누면 좋을만한 공통 관심사를 분석해서 제안해 드려요
 
-![통계 2](https://github.com/user-attachments/assets/ca79d852-11fd-411a-a3c2-164581bfee6f)
+![통계 2](https://github.com/user-attachments/assets/c3c018bd-a382-4f2f-9083-80c7cedd6761)
+
 
 <br />
 
@@ -56,9 +58,11 @@
 
 > 우리 팀이 다같이 즐길 수 있는 것도, 내가 추천하고 싶은 것도 좋아요. 이미지, 유튜브, 웹사이트 등 다양한 컨텐츠를 공유할 수 있어요.
 
-![콘텐츠 공유_동영상 크기로 자르기2](https://github.com/user-attachments/assets/2944dd57-8ca2-4d13-972d-4b2e031a14a3)
+![콘텐츠 공유_동영상 크기로 자르기2](https://github.com/user-attachments/assets/f8ba8ca0-d1cc-402e-9cb4-aa6ad0e9e2fd)
 
-![이미지 공유](https://github.com/user-attachments/assets/33c445e9-f71a-4c2c-a828-dd627f82c8e2)
+![이미지 공유](https://github.com/user-attachments/assets/ea627c7f-cea4-4fbc-9e63-d15c4de73e15)
+
+
 
 <br />
 

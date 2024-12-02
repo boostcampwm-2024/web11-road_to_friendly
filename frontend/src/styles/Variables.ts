@@ -15,6 +15,7 @@ export const Variables = {
     text_alt: '#656565',
     text_weak: '#777777',
     text_white: '#FFFFFF',
+    text_transparent_white_70: 'rgba(255, 255, 255, 0.7)',
     text_point: '#0051FF',
     player_blue: '#61B8FF',
     player_grey: '#E3E3E3',
@@ -46,7 +47,7 @@ export const Variables = {
     font_medium_36: '500 36px "Pretendard", sans-serif',
     font_medium_24: '500 24px "Pretendard", sans-serif',
     font_medium_20: '500 20px "Pretendard", sans-serif',
-    font_medium_18: '500 20px "Pretendard", sans-serif',
+    font_medium_18: '500 18px "Pretendard", sans-serif',
     font_medium_16: '500 16px "Pretendard", sans-serif',
     font_medium_14: '500 14px "Pretendard", sans-serif',
     font_bold_72: '700 72px "Pretendard", sans-serif',
@@ -54,8 +55,10 @@ export const Variables = {
     font_bold_48: '700 48px "Pretendard", sans-serif',
     font_bold_36: '700 36px "Pretendard", sans-serif',
     font_bold_32: '700 32px "Pretendard", sans-serif',
+    font_bold_28: '700 28px "Pretendard", sans-serif',
     font_bold_24: '700 24px "Pretendard", sans-serif',
     font_bold_20: '700 20px "Pretendard", sans-serif',
+    font_bold_18: '700 18px "Pretendard", sans-serif',
     font_bold_16: '700 16px "Pretendard", sans-serif'
   },
   shadow: {

@@ -1,3 +1,4 @@
+export { default as TextSeparate } from './TextSeparate';
 export { default as Header } from './Header';
 export { default as Toast } from './Toast';
 export { default as LoadingSpinner } from './LoadingSpinner';

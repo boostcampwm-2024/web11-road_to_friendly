@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { InterestsInMemoryRepository } from '../repository/interests.in-memory.repository';
-
 import { InterestsService } from './interests.service';
+import { InterestsRepositoryProvider } from '../repository/interests.repository.provider';
+import { ConfigService } from '@nestjs/config';
 
 describe('InterestsService', () => {
   let service: InterestsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [InterestsService, InterestsInMemoryRepository],
+      providers: [InterestsService, InterestsRepositoryProvider, ConfigService],
     }).compile();
 
     service = module.get<InterestsService>(InterestsService);

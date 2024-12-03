@@ -27,13 +27,10 @@ export class KeywordsGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('keyword:pick')
-  pickKeyword(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() { questionId, keyword }: KeywordsRequestDto,
-  ): KeywordsResponseDto {
+  async pickKeyword(@ConnectedSocket() client: Socket, @MessageBody() { questionId, keyword }: KeywordsRequestDto) {
     const roomId = client.data.roomId;
     const clientId = client.id;
-    const keywordsInfoDto = this.keywordsService.addKeyword(roomId, questionId, keyword, clientId);
+    const keywordsInfoDto = await this.keywordsService.addKeyword(roomId, questionId, keyword, clientId);
 
     this.server.to(roomId).emit('empathy:keyword:count', KeywordsAlertDto.of(keywordsInfoDto));
 
@@ -41,13 +38,10 @@ export class KeywordsGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('keyword:release')
-  releaseKeyword(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() { questionId, keyword }: KeywordsRequestDto,
-  ): KeywordsResponseDto {
+  async releaseKeyword(@ConnectedSocket() client: Socket, @MessageBody() { questionId, keyword }: KeywordsRequestDto) {
     const roomId = client.data.roomId;
     const clientId = client.id;
-    const keywordsInfoDto = this.keywordsService.removeKeyword(roomId, questionId, keyword, clientId);
+    const keywordsInfoDto = await this.keywordsService.removeKeyword(roomId, questionId, keyword, clientId);
 
     this.server.to(roomId).emit('empathy:keyword:count', KeywordsAlertDto.of(keywordsInfoDto));
 

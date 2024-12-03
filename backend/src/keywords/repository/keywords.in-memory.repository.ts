@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
-
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 import { getOrCreateValue } from '../../common/util/get-or-create-value';
+import { KeywordsRepository } from './keywords.repository';
 
 type SerializedKeywordInfo = {
   questionId: number;
@@ -12,12 +11,11 @@ type SerializedKeywordInfo = {
 
 const QUESTION_ID_KEYWORD_SEPARATOR = ':';
 
-@Injectable()
-export class KeywordsInMemoryRepository {
+export class KeywordsInMemoryRepository implements KeywordsRepository {
   private readonly roomKeywordsTotal = new Map<string, Map<string, Set<string>>>(); // 키워드 집합
   private readonly roomKeywordsStatistics = new Map<string, Record<string, KeywordsAlertDto[]>>(); // 키워드 통계
 
-  addKeyword(roomId: string, questionId: number, keyword: string, participantId: string): KeywordsInfoDto {
+  async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string) {
     const keywordsTotal = getOrCreateValue(this.roomKeywordsTotal, roomId, () => new Map<string, Set<string>>());
 
     const selectors = getOrCreateValue(
@@ -31,7 +29,7 @@ export class KeywordsInMemoryRepository {
     return new KeywordsInfoDto(questionId, keyword, ACTION.PICK, selectors.size);
   }
 
-  removeKeyword(roomId: string, questionId: number, keyword: string, participantId: string): KeywordsInfoDto {
+  async removeKeyword(roomId: string, questionId: number, keyword: string, participantId: string) {
     const selectors = this.roomKeywordsTotal
       .get(roomId)
       ?.get(`${questionId}${QUESTION_ID_KEYWORD_SEPARATOR}${keyword}`);
@@ -40,7 +38,7 @@ export class KeywordsInMemoryRepository {
     return new KeywordsInfoDto(questionId, keyword, ACTION.RELEASE, selectors?.size ?? 0);
   }
 
-  getStatistics(roomId: string) {
+  async getStatistics(roomId: string) {
     return this.roomKeywordsStatistics.get(roomId) ?? this.calculateStatistics(roomId);
   }
 

@@ -1,25 +1,26 @@
-import { Injectable } from '@nestjs/common';
-
-import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
-import { KeywordsInfoDto } from '../dto/keywords.info.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { KeywordsRepository } from '../repository/keywords.repository';
 
 @Injectable()
 export class KeywordsService {
-  constructor(private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository) {}
+  constructor(
+    @Inject('KEYWORDS_REPOSITORY')
+    private readonly keywordsRepository: KeywordsRepository,
+  ) {}
 
-  addKeyword(roomId: string, questionId: number, keyword: string, clientId: string): KeywordsInfoDto {
-    return this.keywordsInMemoryRepository.addKeyword(roomId, questionId, keyword, clientId);
+  addKeyword(roomId: string, questionId: number, keyword: string, clientId: string) {
+    return this.keywordsRepository.addKeyword(roomId, questionId, keyword, clientId);
   }
 
-  removeKeyword(roomId: string, questionId: number, keyword: string, clientId: string): KeywordsInfoDto {
-    return this.keywordsInMemoryRepository.removeKeyword(roomId, questionId, keyword, clientId);
+  removeKeyword(roomId: string, questionId: number, keyword: string, clientId: string) {
+    return this.keywordsRepository.removeKeyword(roomId, questionId, keyword, clientId);
   }
 
   getStatistics(roomId: string) {
-    return this.keywordsInMemoryRepository.getStatistics(roomId);
+    return this.keywordsRepository.getStatistics(roomId);
   }
 
   deleteRoomKeywordsInfo(roomId: string) {
-    this.keywordsInMemoryRepository.deleteRoomKeywordsInfo(roomId);
+    this.keywordsRepository.deleteRoomKeywordsInfo(roomId);
   }
 }

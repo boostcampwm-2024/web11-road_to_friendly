@@ -21,6 +21,7 @@ import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
 import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
 import { RedisProvider } from './common/provider/redis-provider';
+import { KeywordsRepositoryProvider } from './keywords/repository/keywords.repository.provider';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { RedisProvider } from './common/provider/redis-provider';
     InterestsService,
     InterestsRepositoryProvider,
     RedisProvider,
+    KeywordsRepositoryProvider,
   ],
   exports: ['INTERESTS_REPOSITORY'],
 })

@@ -7,9 +7,9 @@ import Redis from 'ioredis';
 export const RoomsRepositoryProvider: Provider = {
   provide: 'ROOMS_REPOSITORY',
   useFactory: (redis: Redis, configService: ConfigService) => {
-    const environment = configService.get<string>('NODE_ENV', 'dev');
+    const environment = configService.get<string>('NODE_ENV', 'sample');
 
-    if (environment === 'dev') {
+    if (environment === 'sample') {
       return new RoomsInMemoryRepository();
     }
 

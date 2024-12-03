@@ -191,7 +191,7 @@ const Room = () => {
             </div>
             {isIntroViewActive && <ShareButton />}
           </div>
-          <ParticipantListSidebar />
+          <ParticipantListSidebar currentUserId={currentUserId}/>
         </>
       )}
     </>

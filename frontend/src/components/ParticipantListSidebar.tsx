@@ -54,7 +54,23 @@ const ParticipantItemStyle = css`
   }
 `;
 
-const ParticipantListSidebar = () => {
+const selfTagStyle = css`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: ${Variables.colors.surface_black};
+  color: ${Variables.colors.text_white};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+`;
+
+interface ParticipantListSidebarProps {
+  currentUserId: string;
+}
+
+const ParticipantListSidebar = ({ currentUserId }: ParticipantListSidebarProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { participants } = useParticipantsStore();
 
@@ -76,6 +92,7 @@ const ParticipantListSidebar = () => {
                 <div>{PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][1]}</div>
               </div>
               <span>{participants[participantId].nickname}</span>
+              {participantId === currentUserId && <div css={selfTagStyle}>나</div>}
             </div>
           ))}
         </div>

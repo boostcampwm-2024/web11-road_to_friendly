@@ -31,7 +31,7 @@ describe('KeywordsInMemoryRepository', () => {
 
     // then
     const statistics = await repository.getStatistics(testRoomId);
-    const clientStats = statistics.get(testClient);
+    const clientStats = statistics[testClient];
 
     expect(clientStats.length).toBe(1);
     expect(clientStats[0].count).toBe(1);
@@ -56,13 +56,13 @@ describe('KeywordsInMemoryRepository', () => {
     // then
     const statistics = await repository.getStatistics(testRoomId);
 
-    const client1Stats = statistics.get(client1);
-    const client2Stats = statistics.get(client2);
-    const client3Stats = statistics.get(client3);
+    const client1Stats = statistics[client1];
+    const client2Stats = statistics[client2];
+    const client3Stats = statistics[client3];
 
     const allClientStats = [client1Stats, client2Stats, client3Stats];
 
-    allClientStats.forEach(clientStats => {
+    allClientStats.forEach((clientStats) => {
       expect(clientStats.length).toBe(1);
       expect(clientStats[0].keyword).toBe(testKeyword);
       expect(clientStats[0].count).toBe(allClientStats.length);
@@ -85,13 +85,13 @@ describe('KeywordsInMemoryRepository', () => {
 
     // then
     const statistics = await repository.getStatistics(testRoomId);
-    const clientStats = statistics.get(testClient);
+    const clientStats = statistics[testClient];
 
     expect(clientStats.length).toBe(3);
-    expect(clientStats.every(clientStat => clientStat.questionId === testQuestionId))
-      .toBe(true);
-    expect(clientStats.map(clientStat => clientStat.keyword)).toEqual(
-      expect.arrayContaining([testKeyword1, testKeyword2, testKeyword3]));
+    expect(clientStats.every((clientStat) => clientStat.questionId === testQuestionId)).toBe(true);
+    expect(clientStats.map((clientStat) => clientStat.keyword)).toEqual(
+      expect.arrayContaining([testKeyword1, testKeyword2, testKeyword3]),
+    );
   });
 
   test('다른 주제에 대해 같은 키워드를 입력한다', async () => {
@@ -110,13 +110,13 @@ describe('KeywordsInMemoryRepository', () => {
 
     // then
     const statistics = await repository.getStatistics(testRoomId);
-    const clientStats = statistics.get(testClient);
+    const clientStats = statistics[testClient];
 
     expect(clientStats.length).toBe(3);
-    expect(clientStats.every(clientStat => clientStat.keyword === testKeyword))
-      .toBe(true);
-    expect(clientStats.map(clientStat => clientStat.questionId)).toEqual(
-      expect.arrayContaining([testQuestionId1, testQuestionId2, testQuestionId3]));
+    expect(clientStats.every((clientStat) => clientStat.keyword === testKeyword)).toBe(true);
+    expect(clientStats.map((clientStat) => clientStat.questionId)).toEqual(
+      expect.arrayContaining([testQuestionId1, testQuestionId2, testQuestionId3]),
+    );
   });
 
   test('키워드를 제거한다', async () => {
@@ -132,7 +132,7 @@ describe('KeywordsInMemoryRepository', () => {
 
     // then
     const statistics = await repository.getStatistics(testRoomId);
-    expect(Array.from(statistics.keys()).length).toBe(0);
+    expect(statistics[testClient]).toBeUndefined();
   });
 
   test('방 키워드 정보 삭제 요청', async () => {
@@ -148,6 +148,6 @@ describe('KeywordsInMemoryRepository', () => {
     // then
 
     const statistics = await repository.getStatistics(testRoomId);
-    expect(Array.from(statistics.keys()).length).toBe(0);
+    expect(statistics[testClient]).toBeUndefined();
   });
 });

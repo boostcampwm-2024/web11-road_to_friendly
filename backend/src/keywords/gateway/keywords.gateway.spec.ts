@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { KeywordsService } from '../service/keywords.service';
-import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
-import { PhaseKeywordGuard } from '../../common/guard/phase.guard';
 import { RoomsService } from '../../rooms/service/rooms.service';
-import { RoomsInMemoryRepository } from '../../rooms/repository/rooms.in-memory.repository';
 
 import { KeywordsGateway } from './keywords.gateway';
+import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
+import { RoomsInMemoryRepository } from '../../rooms/repository/rooms.in-memory.repository';
 
 describe('KeywordsGateway', () => {
   let gateway: KeywordsGateway;
@@ -16,10 +15,15 @@ describe('KeywordsGateway', () => {
       providers: [
         KeywordsGateway,
         KeywordsService,
-        KeywordsInMemoryRepository,
-        PhaseKeywordGuard,
+        {
+          provide: 'KEYWORDS_REPOSITORY',
+          useFactory: () => new KeywordsInMemoryRepository(),
+        },
         RoomsService,
-        RoomsInMemoryRepository,
+        {
+          provide: 'ROOMS_REPOSITORY',
+          useFactory: () => new RoomsInMemoryRepository(),
+        },
       ],
     }).compile();
 

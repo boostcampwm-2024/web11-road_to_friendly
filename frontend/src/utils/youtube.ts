@@ -57,3 +57,11 @@ export const getYoutubeEmbedURL = (URL: string) => {
   // 매칭되지 않으면 빈 문자열 반환
   return '';
 };
+
+export const isShorts = (URL: string) => {
+  const shortsUrlMatch = URL.match(YOUTUBE_SHORTS_URL_REGEX);
+  const shortsUrlSimpleMatch = URL.match(YOUTUBE_SHORTS_URL_SIMPLE_REGEX);
+
+  if (shortsUrlMatch || shortsUrlSimpleMatch) return true;
+  return false;
+};

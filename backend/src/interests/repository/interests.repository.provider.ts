@@ -1,18 +1,18 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { InterestsImageRepository } from './interests.image.repository';
-import { InterestsInMemoryRepository } from './interests.in-memory.repository';
+import { InterestsOSImageRepository } from './interests.os.image.repository';
+import { InterestsInMemoryImageRepository } from './interests.in-memory.image.repository';
 
 export const InterestsRepositoryProvider: Provider = {
-  provide: 'INTERESTS_REPOSITORY',
+  provide: 'INTERESTS_IMAGE_REPOSITORY',
   useFactory: (configService: ConfigService) => {
-    const environment = configService.get<string>('NODE_ENV', 'sample');
+    const environment = configService.get<string>('NODE_ENV', 'sample').trim();
 
     if (environment === 'release') {
-      return new InterestsImageRepository(configService);
+      return new InterestsOSImageRepository(configService);
     }
-    return new InterestsInMemoryRepository();
+    return new InterestsInMemoryImageRepository();
   },
   inject: [ConfigService],
 };

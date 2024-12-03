@@ -1,12 +1,11 @@
 import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useBeforeUnload, useParams } from 'react-router-dom';
 
 import useParticipants from '@/hooks/useParticipants';
 
 import { Header } from '@/components/common';
 import ParticipantListSidebar from '@/components/ParticipantListSidebar';
-import RoomNotFoundError from '@/components/RoomNotFound';
 import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
@@ -15,8 +14,13 @@ import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
 
 import LoadingPage from '../LoadingPage';
+import { ContentShareView } from './content-share';
 import ResultInstruction from './resultInstruction';
 import RoomIntroView from './roomIntroView';
+import { useRoomAccess } from '@/hooks';
+import RoomCatchWrapper from './RoomCatchWrapper';
+import { roomError } from '@/constants/roomError';
+import { useErrorBoundary } from 'react-error-boundary';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -43,18 +47,55 @@ const SubjectContainer = (shortRadius: number, longRadius: number) => css`
   left: ${longRadius}px;
   transform: translate(-50%, 50%);
   white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Room = () => {
+  const { showBoundary } = useErrorBoundary();
   const roomId = useParams<{ roomId: string }>().roomId || null;
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [resultLoading, setResultLoading] = useState<boolean>(false);
 
+  const {} = useRoomAccess();
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
-  const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
+  const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
+  const [isResultInstructionVisible, setIsResultInstructionVisible] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false); // 페이드아웃 상태
+  const [isContentShareVisible, setIsContentShareVisible] = useState(false);
+
+  useBeforeUnload((e) => {
+    if (!isIntroViewActive) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  useEffect(() => {
+    if (isResultView) {
+      setIsResultInstructionVisible(true);
+      // 5초 후 페이드아웃 시작
+      // 로딩이 3초
+      const fadeOutTimer = setTimeout(() => {
+        setIsFadingOut(true);
+      }, 5000);
+
+      // 페이드아웃 1초 후 ContentShareView 표시
+      const showContentTimer = setTimeout(() => {
+        setIsResultInstructionVisible(false);
+        setIsContentShareVisible(true);
+      }, 6000);
+
+      return () => {
+        clearTimeout(fadeOutTimer);
+        clearTimeout(showContentTimer);
+      };
+    }
+  }, [isResultView]);
 
   const startResultPage = () => {
     setIsResultView(true);
@@ -69,11 +110,14 @@ const Room = () => {
   };
 
   const positions = useMemo(
-    () => calculatePosition(Object.keys(participants).length, radius[0], radius[1]),
+    () => calculatePosition(Math.min(Object.keys(participants).length, 8), radius[0], radius[1]), //10명으로 제한
     [radius, participants]
   );
 
-  const hideIntroView = () => setIsIntroViewActive(false);
+  const hideIntroView = () => {
+    setIsIntroViewActive(false);
+    setOutOfBounds(true);
+  };
 
   const calculateRadius = (count: number) => {
     if (count > 3) {
@@ -92,7 +136,7 @@ const Room = () => {
     }
   }, [isResultView]);
 
-  if (!roomExists) return <RoomNotFoundError />;
+  if (!roomExists) showBoundary(new Error(roomError.RoomNotFound));
 
   return (
     <>
@@ -103,25 +147,29 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {Object.keys(participants).map((participantId, index) => (
-                <UserProfile
-                  key={participantId}
-                  participant={participants[participantId]}
-                  index={index}
-                  isCurrentUser={participantId === currentUserId}
-                  isHost={hostId === participantId}
-                  position={{ x: positions[index][0], y: positions[index][1] }}
-                  isResultView={isResultView}
-                />
-              ))}
+              {Object.keys(participants).map((participantId) => {
+                const index = participants[participantId]?.index || 0;
+                const position = positions[index];
+                if (!position) return null;
+                return (
+                  <UserProfile
+                    key={participantId}
+                    participant={participants[participantId]}
+                    isCurrentUser={participantId === currentUserId}
+                    isHost={hostId === participantId}
+                    position={{ x: positions[index][0], y: positions[index][1] }}
+                    isResultView={isResultView}
+                  />
+                );
+              })}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
                   resultLoading ? (
                     <LoadingPage isAnalyzing={true} />
                   ) : (
                     <>
-                      <ResultInstruction />
-                      <ContentShareView />
+                      {isResultInstructionVisible && <ResultInstruction isFadingOut={isFadingOut} />}
+                      {isContentShareVisible && <ContentShareView />}
                     </>
                   )
                 ) : (
@@ -139,13 +187,21 @@ const Room = () => {
                 )}
               </div>
             </div>
-            <ShareButton />
+            {isIntroViewActive && <ShareButton />}
           </div>
-          <ParticipantListSidebar />
+          <ParticipantListSidebar currentUserId={currentUserId}/>
         </>
       )}
     </>
   );
 };
 
-export default Room;
+const RoomWithCatch = () => {
+  return (
+    <RoomCatchWrapper>
+      <Room />
+    </RoomCatchWrapper>
+  );
+};
+
+export default RoomWithCatch;

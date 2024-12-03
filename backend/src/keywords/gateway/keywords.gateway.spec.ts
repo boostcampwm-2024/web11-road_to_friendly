@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { KeywordsService } from '../service/keywords.service';
 import { RoomsService } from '../../rooms/service/rooms.service';
-
-import { KeywordsGateway } from './keywords.gateway';
 import { KeywordsInMemoryRepository } from '../repository/keywords.in-memory.repository';
 import { RoomsInMemoryRepository } from '../../rooms/repository/rooms.in-memory.repository';
+
+import { KeywordsGateway } from './keywords.gateway';
 
 describe('KeywordsGateway', () => {
   let gateway: KeywordsGateway;

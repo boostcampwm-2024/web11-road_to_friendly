@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import StopIcon from '@/assets/icons/stop.svg?react';
 import { useToast } from '@/hooks';
@@ -13,12 +13,16 @@ import { ContentPresentSection, WaitingListEmpty, WaitingListInfo } from './inde
 const ContentShareViewStyle = css([
   {
     position: 'relative',
-    width: '50vw',
-    height: '60vh',
-    padding: '24px',
+    width: '40rem',
+    height: '28.5625rem',
     backgroundColor: Variables.colors.surface_white,
     backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23B5B7BFFF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='3' stroke-linecap='square'/%3e%3c/svg%3e")`,
-    borderRadius: 24
+    borderRadius: 24,
+    transform: 'scale(1)',
+
+    '@media (min-height: 768px) and (max-height: 1200px)': {
+      transform: 'scale(0.7)'
+    }
   },
   flexStyle(16, 'column')
 ]);
@@ -49,6 +53,8 @@ const ContentShareView = () => {
   const [currentContent, setCurrentContent] = useState<Content | null>(null);
   const [numberOfWaiters, setNumberOfWaiters] = useState(0);
 
+  const prevVolumeRef = useRef<number | null>(null);
+
   const stopSharing = async () => {
     try {
       await sendShareStopRequest(socket);
@@ -61,15 +67,21 @@ const ContentShareView = () => {
   const isHostOrSharer =
     currentContent && socket ? currentContent.sharerSocketId === socket.id || socket.id === hostId : false;
 
-  console.log('공유중인 컨텐츠', currentContent);
   useEffect(() => {
     if (socket) {
       socket.on('share:interest:broadcast', (response: NextContentResponse) => {
+        if (!response.resourceUrl) {
+          setCurrentContent(null);
+          setNumberOfWaiters(0);
+          return;
+        }
+
         setCurrentContent({
           sharerSocketId: response.participantId,
           type: response.resourceType,
           resourceURL: response.resourceUrl
         });
+
         setNumberOfWaiters(response.nowQueueSize);
       });
 
@@ -87,13 +99,13 @@ const ContentShareView = () => {
   }, [socket, connect]);
 
   return (
-    <section css={ContentShareViewStyle}>
+    <section css={ContentShareViewStyle} style={{ padding: currentContent === null ? '4.5rem 3.75rem' : '1.5rem' }}>
       {currentContent === null ? (
         <WaitingListEmpty />
       ) : (
         <>
           <WaitingListInfo numWaiting={numberOfWaiters} />
-          <ContentPresentSection content={currentContent} />
+          <ContentPresentSection content={currentContent} prevVolumeRef={prevVolumeRef} />
           {isHostOrSharer && (
             <button css={StopShareButtonStyle} onClick={stopSharing}>
               <StopIcon fill={Variables.colors.text_white} />

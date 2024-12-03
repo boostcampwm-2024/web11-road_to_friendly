@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+
+import { InterestsRepositoryProvider } from '../repository/interests.repository.provider';
 
 import { InterestsService } from './interests.service';
-import { InterestsRepositoryProvider } from '../repository/interests.repository.provider';
-import { ConfigService } from '@nestjs/config';
 
 describe('InterestsService', () => {
   let service: InterestsService;

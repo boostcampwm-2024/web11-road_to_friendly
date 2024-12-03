@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 
-import { KeywordsService } from './keywords.service';
 import { KeywordsRepositoryProvider } from '../repository/keywords.repository.provider';
 import { RedisProvider } from '../../common/provider/redis-provider';
-import { ConfigService } from '@nestjs/config';
+
+import { KeywordsService } from './keywords.service';
+
 
 describe('KeywordsService', () => {
   let service: KeywordsService;

@@ -42,22 +42,29 @@ export class RoomsService {
     '좋아하는 아티스트는?',
     '좋아하는 동물은?',
     '좋아하는 게임은?',
+    '좋아하는 유튜버는?',
+    '좋아하는 영화는?',
+    '좋아하는 드라마는?',
+    '가고 싶은 여행지는?',
+    '좋아하는, 혹은 배워 보고 싶은 취미는?',
+    '좋아하는 운동은?',
+    '좋아하는 책은?',
   ];
 
-  getEmpathyTopics(count = 5, topicSecond = 1, topicTermSecond = 1) {
+  getEmpathyTopics(count = 5, topicSecond = 60, topicTermSecond = 1): Topic[] {
     count = Math.min(this.topicTitles.length, count);
 
-    const randomTopicTitles = [...this.topicTitles];
+    const uniqueNumbers = new Set<number>();
 
-    for (let i = randomTopicTitles.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-
-      [randomTopicTitles[i], randomTopicTitles[j]] = [randomTopicTitles[j], randomTopicTitles[i]];
+    while (uniqueNumbers.size < count) {
+      const randomNum = Math.floor(Math.random() * this.topicTitles.length);
+      uniqueNumbers.add(randomNum);
     }
 
-    return randomTopicTitles
-      .slice(0, count)
-      .map((title, index) => new Topic(index + 1, title, (index + 1) * (topicSecond + topicTermSecond)));
+    return Array.from(uniqueNumbers).map(
+      (randomNumber, index) =>
+        new Topic(index + 1, this.topicTitles[randomNumber], (index + 1) * (topicSecond + topicTermSecond)),
+    );
   }
 
   deleteRoom(roomId: string) {

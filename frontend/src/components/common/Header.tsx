@@ -1,9 +1,12 @@
 import { css } from '@emotion/react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import ProfileEditButton from '@/components/ProfileEditButton';
 
-import { Variables } from '@/styles';
+import { useSocketStore } from '@/stores';
+import { flexStyle, Variables } from '@/styles';
+import { useModal } from '@/hooks/useModal';
+import TutorialModal from '../TutorialModal';
 
 const headerWrapperStyle = css({
   position: 'fixed',
@@ -13,7 +16,8 @@ const headerWrapperStyle = css({
   display: 'flex',
   width: '100%',
   padding: '10px 24px',
-  minHeight: '80px'
+  minHeight: '80px',
+  zIndex: 1000
 });
 
 const headerStyle = (paddingY: number) =>
@@ -40,20 +44,28 @@ interface HeaderProps {
 }
 
 const Header = ({ paddingY = 12 }: HeaderProps) => {
+  const { ModalWithOverlay: Modal, isOpen, openModal, closeModal } = useModal();
   const location = useLocation();
+  const navigate = useNavigate();
+
+
   return (
-    <header css={headerWrapperStyle}>
-      <div css={headerStyle(paddingY)}>
-        <a css={{ font: Variables.typography.font_bold_24 }} href="/">
-          친해지길
-        </a>
-        <nav css={navStyle}>
-          <button>튜토리얼</button>
-          <button>라이트/다크</button>
-          {location.pathname !== '/' && <ProfileEditButton />}
-        </nav>
-      </div>
-    </header>
+    <>
+      <header css={headerWrapperStyle}>
+        <div css={headerStyle(paddingY)}>
+          <button css={flexStyle(0)} onClick={() => navigate('/')}>
+            <img src="/logo.png" alt="logo" height={'40px'} />
+          </button>
+          <nav css={navStyle}>
+            <button onClick={openModal}>튜토리얼</button>
+            {location.pathname !== '/' && <ProfileEditButton />}
+          </nav>
+        </div>
+      </header>
+      <Modal isOpen={isOpen} closeModal={closeModal}>
+        <TutorialModal closeModal={closeModal} />
+      </Modal>
+    </>
   );
 };
 

@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { Variables, StatisticsStyleMap } from '@/styles';
-import { useSocketStore } from '@/stores';
 import { useCallback, useEffect, useState } from 'react';
-import { Participant } from '@/types';
-import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants';
+
+import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants/radius';
+import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
+import { Variables, StatisticsStyleMap } from '@/styles';
+import { Participant } from '@/types';
 
 const KeywordsContainer = css`
   width: 100%;
@@ -78,17 +79,11 @@ const ResultView = ({ participant }: ResultViewProps) => {
     }, {});
 
     setAllKeywords(ratioData);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      socket?.off('empathy:result');
-    };
-  }, [socket]);
+  }, [statisticsKeywords]);
 
   return (
     <ul css={KeywordsContainer}>
-      {participant.keywords.slice(0, 3)?.map(({ keyword }, index: number) => (
+      {(participant.keywords ?? []).slice(0, 3).map(({ keyword }, index: number) => (
         <li key={index} css={[KeywordStyle, StatisticsStyleMap()[getKeywordStyle(keyword)]]}>
           {keyword}
         </li>

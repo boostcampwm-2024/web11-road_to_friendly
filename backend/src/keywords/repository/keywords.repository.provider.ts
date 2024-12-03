@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
+
 import { KeywordsInMemoryRepository } from './keywords.in-memory.repository';
 import { KeywordsRedisRepository } from './keywords.redis.repository';
 

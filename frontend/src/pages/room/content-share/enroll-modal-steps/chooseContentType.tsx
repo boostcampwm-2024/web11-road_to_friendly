@@ -50,7 +50,7 @@ const ChooseContentType: StepComponentType = ({ changeStepIndex }) => {
           onClick={() => changeStepIndex(1)}
         />
         <Option
-          icon={<ImageIcon width={60} height={40} />}
+          icon={<ImageIcon width={60} height={40} fill={'#006FFF'} />}
           label="이미지 공유하기"
           backgroundColor={Variables.colors.surface_file_weak}
           onClick={() => changeStepIndex(2)}

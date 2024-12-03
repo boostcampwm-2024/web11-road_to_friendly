@@ -73,3 +73,23 @@ export const scaleIn = keyframes({
     transform: 'scale(1)' // 애니메이션 끝날 때 크기 1
   }
 });
+
+export const growAndDiplay = (baseTransform: string) =>
+  keyframes({
+    '0%': {
+      opacity: '0',
+      transform: `${baseTransform} scale(0)`
+    },
+    '48%': {
+      opacity: '1',
+      transform: `${baseTransform} scale(1)`
+    },
+    '60%': {
+      opacity: '0.3',
+      transform: `${baseTransform} scale(1.4)`
+    },
+    '100%': {
+      opacity: '0',
+      transform: `${baseTransform} scale(2)`
+    }
+  });

@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 
-import { RoomsService } from './rooms.service';
 import { RoomsRepositoryProvider } from '../repository/rooms.repository.provider';
 import { KeywordsRepositoryProvider } from '../../keywords/repository/keywords.repository.provider';
 import { RedisProvider } from '../../common/provider/redis-provider';
-import { ConfigService } from '@nestjs/config';
+
+import { RoomsService } from './rooms.service';
+
 
 describe('RoomsService', () => {
   let service: RoomsService;

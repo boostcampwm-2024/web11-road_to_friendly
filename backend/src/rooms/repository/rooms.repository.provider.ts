@@ -1,8 +1,9 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
+
 import { RoomsInMemoryRepository } from './rooms.in-memory.repository';
 import { RoomsRedisRepository } from './rooms.redis.repository';
-import Redis from 'ioredis';
 
 export const RoomsRepositoryProvider: Provider = {
   provide: 'ROOMS_REPOSITORY',

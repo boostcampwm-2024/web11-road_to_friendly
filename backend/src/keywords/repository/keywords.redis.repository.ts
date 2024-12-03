@@ -1,9 +1,13 @@
-import { KeywordsRepository } from './keywords.repository';
+import { readFile } from 'node:fs/promises';
+
+import Redis from 'ioredis';
+import { OnModuleInit } from '@nestjs/common';
+
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
-import Redis from 'ioredis';
-import { readFile } from 'node:fs/promises';
-import { OnModuleInit } from '@nestjs/common';
+
+
+import { KeywordsRepository } from './keywords.repository';
 
 export class KeywordsRedisRepository implements KeywordsRepository, OnModuleInit {
   private addKeywordEval: string;

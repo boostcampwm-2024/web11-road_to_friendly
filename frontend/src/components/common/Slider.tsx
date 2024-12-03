@@ -1,6 +1,7 @@
-import { Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { useEffect, useRef, useState } from 'react';
+
+import { Variables } from '@/styles';
 
 interface Color {
   empty?: string;
@@ -9,6 +10,7 @@ interface Color {
 }
 
 interface SliderProps {
+  showThumb?: boolean;
   fraction: number;
   setFraction: (newFraction: number) => void;
   bottom: number;
@@ -128,6 +130,7 @@ const defaultColor = {
 };
 
 const Slider = ({
+  showThumb = true,
   fraction,
   setFraction,
   bottom,
@@ -149,7 +152,6 @@ const Slider = ({
 
     const barLeft = sliderRef.current.getBoundingClientRect().left;
     const clickedX = e.clientX - barLeft;
-
     setFraction(clickedX / width);
   }
 
@@ -168,13 +170,24 @@ const Slider = ({
     setFraction(clickedX / width);
   }
 
-  function endDragging() {
+  function endDragging(e) {
     isMouseDownRef.current = false;
     onMouseDownStateChange(false);
+    moveProgressNow(e);
+  }
+
+  function handleClick(e) {
+    isMouseDownRef.current = false;
+    moveProgressNow(e);
+  }
+
+  function handleMouseLeave(e) {
+    if (!isMouseDownRef.current) return;
+    endDragging(e);
   }
 
   useEffect(() => {
-    if (sliderRef.current) setWidth(sliderRef.current.offsetWidth);
+    if (sliderRef.current) setWidth(sliderRef.current.getBoundingClientRect().width);
   }, []);
 
   return (
@@ -182,18 +195,20 @@ const Slider = ({
       <div
         css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime, shouldThumbAnytime)}
         ref={sliderRef}
-        onDrag={(e) => {
-          e.preventDefault();
-        }}
-        onClick={moveProgressNow}
+        onClick={handleClick}
         onMouseDown={startDragging}
         onMouseMove={syncProgressWithDrag}
         onMouseUp={endDragging}
-        onMouseLeave={endDragging}
+        onMouseLeave={handleMouseLeave}
       >
         <div css={sliderEmptyStyle(bottom, mergedColor.empty, shouldHoverGrow)}></div>
         <div css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, bottom, shouldHoverGrow)}></div>
-        <div className="thumb" css={thumbStyle(fraction, mergedColor.thumb, bottom, width)}></div>
+        {sliderRef.current && showThumb && (
+          <div
+            className="thumb"
+            css={thumbStyle(fraction, mergedColor.thumb, bottom, sliderRef.current.offsetWidth)}
+          ></div>
+        )}
       </div>
     </>
   );

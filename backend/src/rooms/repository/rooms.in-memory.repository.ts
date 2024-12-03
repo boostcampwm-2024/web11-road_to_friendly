@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 
 import { PHASE, Phase } from '../../common/definition/phase';
 import { Room } from '../definition/room';
+
 import { RoomsRepository } from './rooms.repository';
 
 export class RoomsInMemoryRepository implements RoomsRepository {

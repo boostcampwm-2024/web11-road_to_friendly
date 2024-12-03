@@ -15,7 +15,7 @@ const WaitingListInfo = ({ numWaiting }: WaitingListInfoProps) => {
     width: '100%',
     padding: '6px 0',
     textAlign: 'center',
-    font: Variables.typography.font_medium_18,
+    font: Variables.typography.font_medium_16,
     color: `${numWaiting > 0 ? Variables.colors.text_word_medium : Variables.colors.text_alt}`,
     backgroundColor: `${numWaiting > 0 ? '#EFFFF7' : Variables.colors.surface_default}`,
     borderRadius: '999px',

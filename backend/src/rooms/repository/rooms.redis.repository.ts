@@ -1,9 +1,10 @@
 import { v4 as uuid } from 'uuid';
+import Redis from 'ioredis';
 
 import { PHASE, Phase } from '../../common/definition/phase';
 import { Room } from '../definition/room';
+
 import { RoomsRepository } from './rooms.repository';
-import Redis from 'ioredis';
 
 export class RoomsRedisRepository implements RoomsRepository {
   constructor(private readonly redis: Redis) {}

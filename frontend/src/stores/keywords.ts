@@ -2,12 +2,15 @@ import { create } from 'zustand';
 
 import { Keyword, KeywordInfo, Keywords, PrefixSumMap, CommonResult } from '@/types';
 
+const MAX_KEYWORDS_NUM = 30;
+
 interface KeywordsStore {
   keywords: Keywords;
   prefixSumMap: PrefixSumMap;
   statisticsKeywords: CommonResult;
 
   upsertKeyword: (targetKeyword: KeywordInfo) => void;
+  upsertMultipleKeywords: (questionId: number, newKeywords: Keyword[]) => void;
   deleteKeyword: (targetKeyword: { questionId: number; keyword: string }) => void;
   setStatisticsKeywords: (newStatisticsKeywords: CommonResult) => void;
 }
@@ -92,6 +95,54 @@ export const useKeywordsStore = create<KeywordsStore>((set) => ({
       if (state.keywords[questionId].some((element) => element.keyword === keyword))
         return modifyKeywordCount(state.keywords, state.prefixSumMap, targetKeyword);
       return appendKeyword(state.keywords, state.prefixSumMap, targetKeyword);
+    });
+  },
+
+  upsertMultipleKeywords: (questionId, newKeywords) => {
+    set((state) => {
+      const existingKeywords = state.keywords[questionId] || [];
+
+      // 병합 및 count 업데이트
+      // newKeywords에 포함된 키워드들은 count를 새로 덮어쓰고, 기존 키워드들은 count를 그대로 유지
+      const keywordMap = new Map<string, { count: number; prev: 0 | 1 }>();
+
+      // 기존 키워드들은 count를 그대로 유지
+      existingKeywords.forEach(({ keyword, count }) => {
+        keywordMap.set(keyword, { count, prev: 1 });
+      });
+
+      // 새로운 키워드들은 count를 덮어쓰거나 추가
+      newKeywords.forEach(({ keyword, count }) => {
+        keywordMap.set(keyword, { count, prev: 0 });
+      });
+
+      // 병합 결과를 배열로 변환 후 정렬
+      const mergedKeywords = Array.from(keywordMap.entries())
+        .map(([keyword, { count, prev }]) => ({ keyword, count, prev }))
+        .filter(({ count }) => count > 0) // count가 0 이상인 것만
+        .sort((a, b) => {
+          if (b.count === a.count) {
+            // count가 같은 경우 prev 기준 오름차순 (새로 추가된 키워드 우선)
+            return a.prev - b.prev;
+          }
+          // 기본은 count 기준 내림차순
+          return b.count - a.count;
+        })
+        .slice(0, MAX_KEYWORDS_NUM);
+
+      // 새 PrefixSumMap 계산
+      const updatedPrefixSumMap = {
+        ...state.prefixSumMap,
+        [questionId]: getPrefixSumMap(mergedKeywords)
+      };
+
+      return {
+        keywords: {
+          ...state.keywords,
+          [questionId]: mergedKeywords
+        },
+        prefixSumMap: updatedPrefixSumMap
+      };
     });
   },
 

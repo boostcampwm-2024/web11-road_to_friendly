@@ -1,11 +1,13 @@
+import * as process from 'node:process';
+
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ServerOptions } from 'socket.io';
-import * as process from 'node:process';
 import Redis from 'ioredis';
 import { createAdapter } from '@socket.io/redis-adapter';
 
 export class CustomWebSocketAdapter extends IoAdapter {
   constructor(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     appOrHttpServer: any,
     private readonly redisClient: Redis | null,
   ) {

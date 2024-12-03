@@ -1,10 +1,12 @@
-import { KeywordsRedisRepository } from './keywords.redis.repository';
 import Redis from 'ioredis';
-import { ACTION } from '../dto/keywords.info.dto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { KeywordsRepositoryProvider } from './keywords.repository.provider';
 import { ConfigService } from '@nestjs/config';
+
+import { ACTION } from '../dto/keywords.info.dto';
 import { RedisProvider } from '../../common/provider/redis-provider';
+
+import { KeywordsRepositoryProvider } from './keywords.repository.provider';
+import { KeywordsRedisRepository } from './keywords.redis.repository';
 
 describe('KeywordsRedisRepository', () => {
   let redisClient: Redis;

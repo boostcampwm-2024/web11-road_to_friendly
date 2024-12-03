@@ -9,10 +9,8 @@ import { RoomsService } from './rooms/service/rooms.service';
 import { RoomsController } from './rooms/controller/rooms.controller';
 import { KeywordsGateway } from './keywords/gateway/keywords.gateway';
 import { KeywordsService } from './keywords/service/keywords.service';
-import { KeywordsInMemoryRepository } from './keywords/repository/keywords.in-memory.repository';
 import { ClientsGateway } from './clients/gateway/clients.gateway';
 import { ClientsService } from './clients/service/clients.service';
-import { RoomsInMemoryRepository } from './rooms/repository/rooms.in-memory.repository';
 import { HostGuard } from './common/guard/host.guard';
 import { ParticipantGuard } from './common/guard/participant.guard';
 import { ExistGuard } from './common/guard/exist.guard';
@@ -23,18 +21,21 @@ import { InterestsRepositoryProvider } from './interests/repository/interests.re
 import { RedisProvider } from './common/provider/redis-provider';
 import { RoomsRepositoryProvider } from './rooms/repository/rooms.repository.provider';
 import { KeywordsRepositoryProvider } from './keywords/repository/keywords.repository.provider';
+import { CustomValidationPipe } from './interests/pipe/custom-validation.pipe';
+import { IsYoutubeLinkConstraint } from './interests/decorator/is-youtube-link.decorator';
+import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV?.trim() || 'dev'}`,
+      envFilePath: `.env.${process.env.NODE_ENV?.trim() || 'sample'}`,
       validationOptions: {
         abortEarly: true,
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'backend', 'interests', 'shareImage'),
+      rootPath: join(process.cwd(), 'src', 'interests', 'shareImage'),
       serveRoot: '/shareImage',
     }),
   ],
@@ -42,23 +43,24 @@ import { KeywordsRepositoryProvider } from './keywords/repository/keywords.repos
   providers: [
     RoomsGateway,
     RoomsService,
-    RoomsInMemoryRepository,
     HostGuard,
     ParticipantGuard,
     ExistGuard,
     ConnectGuard,
     KeywordsGateway,
     KeywordsService,
-    KeywordsInMemoryRepository,
     ClientsGateway,
     ClientsService,
     InterestsGateway,
     InterestsService,
     InterestsRepositoryProvider,
+    CustomValidationPipe,
+    IsYoutubeLinkConstraint,
     RedisProvider,
     RoomsRepositoryProvider,
     KeywordsRepositoryProvider,
+    InterestsInMemoryRepository,
   ],
-  exports: ['INTERESTS_REPOSITORY'],
+  exports: ['INTERESTS_IMAGE_REPOSITORY'],
 })
 export class AppModule {}

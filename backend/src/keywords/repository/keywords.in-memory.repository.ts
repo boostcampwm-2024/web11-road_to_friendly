@@ -1,6 +1,7 @@
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 import { getOrCreateValue } from '../../common/util/get-or-create-value';
+
 import { KeywordsRepository } from './keywords.repository';
 
 type SerializedKeywordInfo = {

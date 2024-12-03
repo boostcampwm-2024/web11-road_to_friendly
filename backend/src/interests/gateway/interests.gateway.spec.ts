@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 
 import { InterestsService } from '../service/interests.service';
 import { RoomsService } from '../../rooms/service/rooms.service';
-
-import { InterestsGateway } from './interests.gateway';
 import { RoomsRepositoryProvider } from '../../rooms/repository/rooms.repository.provider';
 import { KeywordsRepositoryProvider } from '../../keywords/repository/keywords.repository.provider';
 import { RedisProvider } from '../../common/provider/redis-provider';
-import { ConfigService } from '@nestjs/config';
 import { InterestsRepositoryProvider } from '../repository/interests.repository.provider';
+
+import { InterestsGateway } from './interests.gateway';
 
 describe('InterestsGateway', () => {
   let gateway: InterestsGateway;

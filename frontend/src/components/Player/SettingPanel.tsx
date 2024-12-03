@@ -1,18 +1,19 @@
 import { Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { useState } from 'react';
-import YouTubePlayer from 'react-player/youtube';
 
 import SpeedFillIcon from '@/assets/icons/speed-fill.svg?react';
 import ArrowLeftIcon from '@/assets/icons/arrow-left-s-line.svg?react';
 import ArrowRightIcon from '@/assets/icons/arrow-right-s-line.svg?react';
 import CheckIcon from '@/assets/icons/check-line.svg?react';
+import ReactPlayer from 'react-player';
+import { useSocketStore } from '@/stores';
 
 type SettingTarget = 'selection' | 'speed';
 
 interface SettingPanelProps {
   openSettingPanel: boolean;
-  player: YouTubePlayer;
+  player: ReactPlayer;
   controllBarHeight: number;
 }
 
@@ -21,7 +22,7 @@ interface SettingSelectionProps {
 }
 
 interface SettingSpeedProps {
-  player: YouTubePlayer;
+  player: ReactPlayer;
   setSettingTarget: React.Dispatch<React.SetStateAction<SettingTarget>>;
 }
 
@@ -47,7 +48,8 @@ const settingPanelStyle = (openSettingPanel: boolean, controllBarHeight: number)
     },
 
     opacity: openSettingPanel ? '1' : '0',
-    transition: 'opacity 0.1s ease-in'
+    transition: 'opacity 0.1s ease-in',
+    pointerEvents: openSettingPanel ? 'auto' : 'none'
   });
 
 const optionStyle = css({
@@ -129,8 +131,23 @@ const SettingSelection = ({ setSettingTarget }: SettingSelectionProps) => {
 
 const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
   const internalPlayer = player.getInternalPlayer();
+  const { socket } = useSocketStore();
 
   const [speed, setSpeed] = useState(internalPlayer.getPlaybackRate());
+
+  function sendSpeedChange(playSpeed: number) {
+    if (!socket) return;
+
+    socket.emit('interest:youtube:speed', { playSpeed });
+  }
+
+  function changeSpeed(e: React.ChangeEvent<HTMLInputElement>) {
+    const newSpeed = Number(e.target.value);
+    setSpeed(newSpeed);
+    internalPlayer.setPlaybackRate(newSpeed);
+
+    sendSpeedChange(newSpeed);
+  }
 
   return (
     <>
@@ -151,11 +168,7 @@ const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
                 css={{ display: 'none' }}
                 value={playbackRate}
                 checked={checked}
-                onChange={(e) => {
-                  const newSpeed = Number(e.target.value);
-                  setSpeed(newSpeed);
-                  internalPlayer.setPlaybackRate(newSpeed);
-                }}
+                onChange={(e) => changeSpeed(e)}
               />
             </label>
           );

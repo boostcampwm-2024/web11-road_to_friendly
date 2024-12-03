@@ -1,6 +1,9 @@
 import { css } from '@emotion/react';
 
+import { Player } from '@/components';
+import { useSocketStore } from '@/stores';
 import { Content } from '@/types';
+import { isShorts } from '@/utils';
 
 const ContentPresentSectionStyle = css({
   flexGrow: 1,
@@ -23,16 +26,37 @@ const ImageContentStyle = css({
 
 interface ContentPresentSectionProps {
   content: Content;
+  prevVolumeRef?: React.MutableRefObject<number | null>;
 }
 
 /* 컨텐츠가 실제로 표시되는 영역 */
-const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
+const ContentPresentSection = ({ content, prevVolumeRef }: ContentPresentSectionProps) => {
+  const { socket } = useSocketStore();
+  const isSharer = content.sharerSocketId === socket.id;
+
+  const parseIfPlaylistURL = (url: string) => {
+    const playlistPattern = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]+&list=[\w-]+/;
+    return playlistPattern.test(url) ? url.slice(0, url.indexOf('&list=')) : url;
+  };
+
   return (
-    content.type === 'IMAGE' && (
-      <div css={ContentPresentSectionStyle}>
-        <img css={ImageContentStyle} src={content.resourceURL} alt={'content'} />
-      </div>
-    )
+    <>
+      {content.type === 'IMAGE' && (
+        <div css={ContentPresentSectionStyle}>
+          <img css={ImageContentStyle} src={content.resourceURL} alt={'content'} />
+        </div>
+      )}
+      {content.type === 'YOUTUBE' && (
+        <div css={ContentPresentSectionStyle}>
+          <Player
+            url={parseIfPlaylistURL(content.resourceURL)}
+            isSharer={isSharer}
+            isShorts={isShorts(content.resourceURL)}
+            prevVolumeRef={prevVolumeRef}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

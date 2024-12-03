@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { InterestsOSImageRepository } from './interests.os.image.repository';
 import { InterestsInMemoryImageRepository } from './interests.in-memory.image.repository';
 
-export const InterestsRepositoryProvider: Provider = {
+export const InterestsImageRepositoryProvider: Provider = {
   provide: 'INTERESTS_IMAGE_REPOSITORY',
   useFactory: (configService: ConfigService) => {
     const environment = configService.get<string>('NODE_ENV', 'sample').trim();

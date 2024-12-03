@@ -6,7 +6,7 @@ import { RoomsService } from '../../rooms/service/rooms.service';
 import { RoomsRepositoryProvider } from '../../rooms/repository/rooms.repository.provider';
 import { KeywordsRepositoryProvider } from '../../keywords/repository/keywords.repository.provider';
 import { RedisProvider } from '../../common/provider/redis-provider';
-import { InterestsRepositoryProvider } from '../repository/interests.repository.provider';
+import { InterestsImageRepositoryProvider } from '../repository/interests.image.repository.provider';
 
 import { InterestsGateway } from './interests.gateway';
 
@@ -18,7 +18,7 @@ describe('InterestsGateway', () => {
       providers: [
         InterestsGateway,
         InterestsService,
-        InterestsRepositoryProvider,
+        InterestsImageRepositoryProvider,
         RoomsService,
         RoomsRepositoryProvider,
         KeywordsRepositoryProvider,

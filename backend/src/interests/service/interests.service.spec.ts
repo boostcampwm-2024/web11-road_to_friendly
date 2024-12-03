@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 
-import { InterestsRepositoryProvider } from '../repository/interests.repository.provider';
+import { InterestsImageRepositoryProvider } from '../repository/interests.image.repository.provider';
 
 import { InterestsService } from './interests.service';
 
@@ -10,7 +10,7 @@ describe('InterestsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [InterestsService, InterestsRepositoryProvider, ConfigService],
+      providers: [InterestsService, InterestsImageRepositoryProvider, ConfigService],
     }).compile();
 
     service = module.get<InterestsService>(InterestsService);

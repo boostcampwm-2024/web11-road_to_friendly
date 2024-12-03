@@ -17,7 +17,7 @@ import { ExistGuard } from './common/guard/exist.guard';
 import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
-import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
+import { InterestsImageRepositoryProvider } from './interests/repository/interests.image.repository.provider';
 import { RedisProvider } from './common/provider/redis-provider';
 import { RoomsRepositoryProvider } from './rooms/repository/rooms.repository.provider';
 import { KeywordsRepositoryProvider } from './keywords/repository/keywords.repository.provider';
@@ -53,7 +53,7 @@ import { InterestsInMemoryRepository } from './interests/repository/interests.in
     ClientsService,
     InterestsGateway,
     InterestsService,
-    InterestsRepositoryProvider,
+    InterestsImageRepositoryProvider,
     CustomValidationPipe,
     IsYoutubeLinkConstraint,
     RedisProvider,

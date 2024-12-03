@@ -1,17 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { RoomsService } from '../../rooms/service/rooms.service';
-import { RoomsInMemoryRepository } from '../../rooms/repository/rooms.in-memory.repository';
-import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.in-memory.repository';
 
 import { ClientsGateway } from './clients.gateway';
+import { RoomsRepositoryProvider } from '../../rooms/repository/rooms.repository.provider';
+import { KeywordsRepositoryProvider } from '../../keywords/repository/keywords.repository.provider';
+import { ConfigService } from '@nestjs/config';
+import { RedisProvider } from '../../common/provider/redis-provider';
 
 describe('ClientsGateway', () => {
   let gateway: ClientsGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ClientsGateway, RoomsService, RoomsInMemoryRepository, KeywordsInMemoryRepository],
+      providers: [
+        ClientsGateway,
+        RoomsService,
+        RoomsRepositoryProvider,
+        KeywordsRepositoryProvider,
+        ConfigService,
+        RedisProvider,
+      ],
     }).compile();
 
     gateway = module.get<ClientsGateway>(ClientsGateway);

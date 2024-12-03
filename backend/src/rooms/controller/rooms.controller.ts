@@ -5,12 +5,11 @@ import { RoomsService } from '../service/rooms.service';
 
 @Controller('rooms')
 export class RoomsController {
-  constructor(private readonly roomsService: RoomsService) {
-  }
+  constructor(private readonly roomsService: RoomsService) {}
 
   @Post()
-  createRoom(@Req() request: Request, @Res() response: Response) {
-    const roomId = this.roomsService.create();
-    response.redirect(`${ request.headers['origin'] }/rooms/${ roomId }`);
+  async createRoom(@Req() request: Request, @Res() response: Response) {
+    const roomId = await this.roomsService.create();
+    response.redirect(`${request.headers['origin']}/rooms/${roomId}`);
   }
 }

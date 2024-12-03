@@ -63,7 +63,7 @@ export class InterestsGateway implements OnModuleInit {
   async next(@ConnectedSocket() client: Socket) {
     const roomId = client.data.roomId;
     const clientId = client.id;
-    const hostFlag = this.roomsService.isHost(roomId, clientId);
+    const hostFlag = await this.roomsService.isHost(roomId, clientId);
 
     const interestsBroadcastResponseDto = this.interestsService.next(roomId, hostFlag, clientId);
 

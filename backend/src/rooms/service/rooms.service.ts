@@ -1,37 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { Topic } from '../entity/Topic';
-import { RoomsInMemoryRepository } from '../repository/rooms.in-memory.repository';
 import { PHASE, Phase } from '../../common/definition/phase';
 import { KeywordsAlertDto } from '../../keywords/dto/keywords.alert.dto';
-import { KeywordsInMemoryRepository } from '../../keywords/repository/keywords.in-memory.repository';
+import { RoomsRepository } from '../repository/rooms.repository';
+import { KeywordsRepository } from '../../keywords/repository/keywords.repository';
 
 @Injectable()
 export class RoomsService {
   constructor(
-    private readonly roomsInMemoryRepository: RoomsInMemoryRepository,
-    private readonly keywordsInMemoryRepository: KeywordsInMemoryRepository,
+    @Inject('ROOMS_REPOSITORY')
+    private readonly roomsRepository: RoomsRepository,
+    @Inject('KEYWORDS_REPOSITORY')
+    private readonly keywordsRepository: KeywordsRepository,
   ) {}
 
-  create() {
-    return this.roomsInMemoryRepository.create();
+  async create() {
+    return await this.roomsRepository.create();
   }
 
-  isExistRoom(roomId: string) {
-    return this.roomsInMemoryRepository.isExistRoom(roomId);
+  async isExistRoom(roomId: string) {
+    return await this.roomsRepository.isExistRoom(roomId);
   }
 
-  isHost(roomId: string, clientId: string) {
-    const hostId = this.roomsInMemoryRepository.getHostId(roomId);
+  async isHost(roomId: string, clientId: string) {
+    const hostId = await this.roomsRepository.getHostId(roomId);
     return hostId === clientId;
   }
 
   setHostIfHostUndefined(roomId: string, clientId: string) {
-    return this.roomsInMemoryRepository.setHostIfHostUndefined(roomId, clientId);
+    return this.roomsRepository.setHostIfHostUndefined(roomId, clientId);
   }
 
   getHostId(roomId: string) {
-    return this.roomsInMemoryRepository.getHostId(roomId);
+    return this.roomsRepository.getHostId(roomId);
   }
 
   private readonly topicTitles: string[] = [
@@ -42,7 +44,7 @@ export class RoomsService {
     '좋아하는 게임은?',
   ];
 
-  getEmpathyTopics(count = 5, topicSecond = 60, topicTermSecond = 1) {
+  getEmpathyTopics(count = 5, topicSecond = 1, topicTermSecond = 1) {
     count = Math.min(this.topicTitles.length, count);
 
     const randomTopicTitles = [...this.topicTitles];
@@ -59,22 +61,22 @@ export class RoomsService {
   }
 
   deleteRoom(roomId: string) {
-    this.roomsInMemoryRepository.deleteRoom(roomId);
+    this.roomsRepository.deleteRoom(roomId);
   }
 
   setHost(roomId: string, nextHostId: string) {
-    this.roomsInMemoryRepository.updateHost(roomId, nextHostId);
+    this.roomsRepository.updateHost(roomId, nextHostId);
   }
 
-  isPhase(roomId: string, phase: Phase) {
-    return this.roomsInMemoryRepository.getPhase(roomId) === phase;
+  async isPhase(roomId: string, phase: Phase) {
+    return (await this.roomsRepository.getPhase(roomId)) === phase;
   }
 
   setPhase(roomId: string, phase: Phase) {
-    return this.roomsInMemoryRepository.setPhase(roomId, phase);
+    return this.roomsRepository.setPhase(roomId, phase);
   }
 
-  generateBroadcastStatisticsEvent(
+  async generateBroadcastStatisticsEvent(
     roomId: string,
     finishTime: string,
     broadcastStatistics: (roomId: string, statistics: Record<string, KeywordsAlertDto[]>) => void,
@@ -86,7 +88,7 @@ export class RoomsService {
       const broadcastFlag = this.setPhase(roomId, PHASE.INTEREST);
 
       if (broadcastFlag) {
-        const statistics = await this.keywordsInMemoryRepository.getStatistics(roomId);
+        const statistics = await this.keywordsRepository.getStatistics(roomId);
         broadcastStatistics(roomId, statistics);
       }
     }, delay);

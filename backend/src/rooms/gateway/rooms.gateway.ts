@@ -41,7 +41,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
   @SubscribeMessage('join')
   async join(@ConnectedSocket() client: Socket, @MessageBody() { roomId }: RoomsEnterRequestDto) {
     client.join(roomId);
-    const hostId = this.roomsService.setHostIfHostUndefined(roomId, client.id);
+    const hostId = await this.roomsService.setHostIfHostUndefined(roomId, client.id);
 
     client.data.roomId = roomId;
     client.data.nickname = this.clientsService.randomNickname();
@@ -75,7 +75,7 @@ export class RoomsGateway implements OnModuleInit, OnGatewayDisconnect {
       return;
     }
 
-    const hostId = this.roomsService.getHostId(roomId);
+    const hostId = await this.roomsService.getHostId(roomId);
     const hostChangeFlag = hostId === client.id;
 
     this.server.to(roomId).emit('participant:exit', {

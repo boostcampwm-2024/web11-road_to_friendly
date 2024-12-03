@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import StopIcon from '@/assets/icons/stop.svg?react';
 import { useToast } from '@/hooks';
@@ -53,6 +53,8 @@ const ContentShareView = () => {
   const [currentContent, setCurrentContent] = useState<Content | null>(null);
   const [numberOfWaiters, setNumberOfWaiters] = useState(0);
 
+  const prevVolumeRef = useRef<number | null>(null);
+
   const stopSharing = async () => {
     try {
       await sendShareStopRequest(socket);
@@ -103,7 +105,7 @@ const ContentShareView = () => {
       ) : (
         <>
           <WaitingListInfo numWaiting={numberOfWaiters} />
-          <ContentPresentSection content={currentContent} />
+          <ContentPresentSection content={currentContent} prevVolumeRef={prevVolumeRef} />
           {isHostOrSharer && (
             <button css={StopShareButtonStyle} onClick={stopSharing}>
               <StopIcon fill={Variables.colors.text_white} />

@@ -17,6 +17,7 @@ interface PlayerProps {
   url: string;
   isSharer: boolean;
   isShorts: boolean;
+  prevVolumeRef?: React.MutableRefObject<number | null>;
 }
 
 // 기본 플레이어의 비율은 16:9 비율
@@ -38,12 +39,12 @@ const wrapperStyle = css({
   userSelect: 'none'
 });
 
-const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
+const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
   const [fraction, setFraction] = useFraction(0);
   const [isHovering, setIsHovering] = useState(false);
-  const [volume, setVolume] = useFraction(0);
+  const [volume, setVolume] = useFraction(prevVolumeRef?.current ?? 0);
   const [isSharerDragging, setIsSharerDragging] = useState(false);
 
   const prevPlayedSecRef = useRef(0);
@@ -190,6 +191,12 @@ const Player = ({ url, isSharer, isShorts }: PlayerProps) => {
 
     requestAnimationFrame(() => onProgressWithReqeustAnimation(callback));
   }
+
+  useEffect(() => {
+    return () => {
+      if (prevVolumeRef !== undefined) prevVolumeRef.current = volume;
+    };
+  }, [volume]);
 
   useEffect(() => {
     return () => {

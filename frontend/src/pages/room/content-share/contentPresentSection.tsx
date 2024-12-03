@@ -26,10 +26,11 @@ const ImageContentStyle = css({
 
 interface ContentPresentSectionProps {
   content: Content;
+  prevVolumeRef?: React.MutableRefObject<number | null>;
 }
 
 /* 컨텐츠가 실제로 표시되는 영역 */
-const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
+const ContentPresentSection = ({ content, prevVolumeRef }: ContentPresentSectionProps) => {
   const { socket } = useSocketStore();
   const isSharer = content.sharerSocketId === socket.id;
 
@@ -51,6 +52,7 @@ const ContentPresentSection = ({ content }: ContentPresentSectionProps) => {
             url={parseIfPlaylistURL(content.resourceURL)}
             isSharer={isSharer}
             isShorts={isShorts(content.resourceURL)}
+            prevVolumeRef={prevVolumeRef}
           />
         </div>
       )}

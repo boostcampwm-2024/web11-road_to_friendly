@@ -20,12 +20,13 @@ import { ConnectGuard } from './common/guard/connect.guard';
 import { InterestsGateway } from './interests/gateway/interests.gateway';
 import { InterestsService } from './interests/service/interests.service';
 import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
+import { RedisProvider } from './common/provider/redis-provider';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV || 'dev'}`,
+      envFilePath: `.env.${process.env.NODE_ENV?.trim() || 'dev'}`,
       validationOptions: {
         abortEarly: true,
       },
@@ -52,6 +53,7 @@ import { InterestsRepositoryProvider } from './interests/repository/interests.re
     InterestsGateway,
     InterestsService,
     InterestsRepositoryProvider,
+    RedisProvider,
   ],
   exports: ['INTERESTS_REPOSITORY'],
 })

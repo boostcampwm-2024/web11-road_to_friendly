@@ -2,16 +2,28 @@ import { css } from '@emotion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Edit from '@/assets/icons/edit.svg?react';
-import Profile from '@/assets/icons/profile.svg?react';
+import { PROFILE_STYLES } from '@/constants/profile';
 import { useParticipantsStore, useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 
 import Modal from './common/Modal';
 
-const profileImageStyle = css`
+const profileContainerStyle = css`
   width: 40px;
-  height: 100%;
+  height: 40px;
   border-radius: 50%;
+  cursor: pointer;
+`;
+const profileImageStyle = (bgColor: string) => css`
+  width: 100%;
+  height: 100%;
+  background-color: ${bgColor};
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
   cursor: pointer;
 `;
 
@@ -80,6 +92,7 @@ const ProfileEditButton = () => {
   const [nicknameInput, setNicknameInput] = useState('');
   const { participants, setParticipants } = useParticipantsStore();
   const nickNameInputRef = useRef<HTMLInputElement>(null);
+  const profileStyles = PROFILE_STYLES[(participants[socket?.id]?.index || 0) % PROFILE_STYLES.length];
   const MAX_LENGTH = 6;
 
   const handleSaveNickname = () => {
@@ -143,8 +156,10 @@ const ProfileEditButton = () => {
 
   return (
     <div>
-      <button css={profileImageStyle} onClick={() => setIsModalOpen(true)}>
-        <Profile width={'100%'} height={'100%'} />
+      <button css={profileContainerStyle} onClick={() => setIsModalOpen(true)}>
+        <div css={profileImageStyle(profileStyles[0])}>
+          <div>{profileStyles[1]}</div>
+        </div>
       </button>
       <Modal
         position="topRight"
@@ -158,7 +173,9 @@ const ProfileEditButton = () => {
         <div css={profileEditContainerStyle}>
           <h3>내 프로필</h3>
           <div css={{ position: 'relative', width: '100px', height: '100px' }}>
-            <Profile width={'100%'} height={'100%'} />
+            <div css={[profileImageStyle(profileStyles[0]), { fontSize: '65px' }]}>
+              <div>{profileStyles[1]}</div>
+            </div>
           </div>
           <div css={flexStyle(10)}>
             <span style={{ font: Variables.typography.font_medium_14 }}>닉네임</span>

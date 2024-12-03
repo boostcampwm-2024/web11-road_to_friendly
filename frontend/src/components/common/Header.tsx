@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import ProfileEditButton from '@/components/ProfileEditButton';
 
+import { useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 import { useModal } from '@/hooks/useModal';
 import TutorialModal from '../TutorialModal';
@@ -46,6 +47,7 @@ const Header = ({ paddingY = 12 }: HeaderProps) => {
   const { ModalWithOverlay: Modal, isOpen, openModal, closeModal } = useModal();
   const location = useLocation();
   const navigate = useNavigate();
+
 
   return (
     <>

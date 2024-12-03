@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/react';
+import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useBeforeUnload, useParams } from 'react-router-dom';
 
@@ -60,8 +60,7 @@ const Room = () => {
 
   const {} = useRoomAccess();
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
-  const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
-  const { setOutOfBounds } = useRadiusStore();
+  const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
@@ -148,14 +147,14 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {Object.keys(participants).map((participantId, index) => {
+              {Object.keys(participants).map((participantId) => {
+                const index = participants[participantId]?.index || 0;
                 const position = positions[index];
                 if (!position) return null;
                 return (
                   <UserProfile
                     key={participantId}
                     participant={participants[participantId]}
-                    index={index}
                     isCurrentUser={participantId === currentUserId}
                     isHost={hostId === participantId}
                     position={{ x: positions[index][0], y: positions[index][1] }}
@@ -190,7 +189,7 @@ const Room = () => {
             </div>
             {isIntroViewActive && <ShareButton />}
           </div>
-          <ParticipantListSidebar />
+          <ParticipantListSidebar currentUserId={currentUserId}/>
         </>
       )}
     </>

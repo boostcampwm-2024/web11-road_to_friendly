@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
 
 import Crown from '@/assets/icons/crown.svg?react';
+import { PROFILE_STYLES } from '@/constants/profile';
 import ResultView from '@/pages/room/resultView';
 import { useRadiusStore } from '@/stores';
 import { Variables, flexStyle } from '@/styles';
@@ -61,19 +62,6 @@ const hostStyle = css`
   height: 40px;
 `;
 
-const profileColors = [
-  [Variables.colors.player_blue, '🐯'],
-  [Variables.colors.player_grey, '🦊'],
-  [Variables.colors.player_red, '🐱'],
-  [Variables.colors.player_green, '🐼'],
-  [Variables.colors.player_orange, '🐨'],
-  [Variables.colors.player_purple, '🐵'],
-  [Variables.colors.player_yellow, '🐰'],
-  [Variables.colors.player_pink, '🦁'],
-  [Variables.colors.player_cyan, '🐶'],
-  [Variables.colors.player_brown, '🦝']
-];
-
 interface Positon {
   x: number;
   y: number;
@@ -81,25 +69,25 @@ interface Positon {
 
 interface UserProfileProps {
   participant: Participant;
-  index: number;
   isCurrentUser: boolean;
   isHost: boolean;
   position: Positon;
   isResultView: boolean;
 }
 
-const UserProfile = ({ participant, index, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
+const UserProfile = ({ participant, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
   const { radius, isOutOfBounds } = useRadiusStore();
+  const profileStyles = PROFILE_STYLES[(participant?.index || 0) % PROFILE_STYLES.length];
 
   return (
     <div css={profileStyle(position.x, position.y, radius[0], radius[1], isOutOfBounds)}>
-      <div css={profileImageStyle(profileColors[index % profileColors.length][0])}>
+      <div css={profileImageStyle(profileStyles[0])}>
         {isHost && (
           <div css={hostStyle}>
             <Crown />
           </div>
         )}
-        <div>{profileColors[index % profileColors.length][1]}</div>
+        <div>{profileStyles[1]}</div>
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>

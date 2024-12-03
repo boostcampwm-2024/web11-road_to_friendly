@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useSocketStore , useParticipantsStore } from '@/stores';
+import { useSocketStore, useParticipantsStore } from '@/stores';
 import { ParticipantItem } from '@/types';
 import { convertArrayToObject } from '@/utils';
 
@@ -17,7 +17,13 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
   }) => {
     setRoomExists(response.status === 'ok');
     if (response.status === 'ok') {
-      setParticipants(convertArrayToObject(response.body.participants));
+      // 참가자 목록에 index 추가
+      const participantsWithIndex = response.body.participants.map((participant, index) => ({
+        ...participant,
+        index
+      }));
+
+      setParticipants(convertArrayToObject(participantsWithIndex));
       setHostId(response.body.hostId);
       setLoading(false);
     }
@@ -25,13 +31,17 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
   };
 
   const handleParticipantJoin = (newParticipant: { participantId: string; nickname: string }) => {
-    setParticipants((prev) => ({
-      ...prev,
-      [newParticipant.participantId]: {
-        id: newParticipant.participantId,
-        nickname: newParticipant.nickname
-      }
-    }));
+    setParticipants((prev) => {
+      const nextIndex = Object.keys(prev).length;
+      return {
+        ...prev,
+        [newParticipant.participantId]: {
+          index: nextIndex,
+          id: newParticipant.participantId,
+          nickname: newParticipant.nickname
+        }
+      };
+    });
   };
 
   const handleParticipantExit = (Participant: { participantId: string; nickname: string }) => {

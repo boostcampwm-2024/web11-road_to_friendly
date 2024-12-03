@@ -62,6 +62,7 @@ const progressBarStyle = css`
     background-color: ${Variables.colors.surface_strong};
     border-radius: 50px;
     height: 12px;
+    transition: width 1s linear;
   }
 `;
 

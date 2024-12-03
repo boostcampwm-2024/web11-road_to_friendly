@@ -1,5 +1,5 @@
 export interface ParticipantItem {
-    id: string;
-    nickname: string;
-  }
-  
+  index?: number;
+  id: string;
+  nickname: string;
+}

@@ -5,9 +5,9 @@ import Redis from 'ioredis';
 export const RedisProvider: Provider = {
   provide: 'REDIS_CLIENT',
   useFactory: (configService: ConfigService) => {
-    const environment = configService.get<string>('NODE_ENV', 'dev');
+    const environment = configService.get<string>('NODE_ENV', 'sample');
 
-    if (environment === 'dev') {
+    if (environment === 'sample') {
       return null;
     }
 

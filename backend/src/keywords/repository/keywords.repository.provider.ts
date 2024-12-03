@@ -7,9 +7,9 @@ import { KeywordsRedisRepository } from './keywords.redis.repository';
 export const KeywordsRepositoryProvider: Provider = {
   provide: 'KEYWORDS_REPOSITORY',
   useFactory: (redis: Redis, configService: ConfigService) => {
-    const environment = configService.get<string>('NODE_ENV', 'dev');
+    const environment = configService.get<string>('NODE_ENV', 'sample');
 
-    if (environment === 'dev') {
+    if (environment === 'sample') {
       return new KeywordsInMemoryRepository();
     }
 

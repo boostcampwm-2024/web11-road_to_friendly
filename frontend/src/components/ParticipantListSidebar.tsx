@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import Menu from '@/assets/icons/menu.svg?react';
 import { PROFILE_STYLES } from '@/constants/profile';
-import { useParticipantsStore, useSocketStore } from '@/stores';
+import { useParticipantsStore } from '@/stores';
 import { Variables } from '@/styles';
 
 import Modal from './common/Modal';
@@ -55,7 +55,6 @@ const ParticipantItemStyle = css`
 `;
 
 const ParticipantListSidebar = () => {
-  const { socket } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { participants } = useParticipantsStore();
 

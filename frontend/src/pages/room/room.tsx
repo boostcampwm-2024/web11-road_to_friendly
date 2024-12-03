@@ -55,8 +55,7 @@ const Room = () => {
   const [resultLoading, setResultLoading] = useState<boolean>(false);
 
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
-  const { radius, increaseRadius, increaseLongRadius } = useRadiusStore();
-  const { setOutOfBounds } = useRadiusStore();
+  const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
 
   const [isIntroViewActive, setIsIntroViewActive] = useState(true);
   const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부

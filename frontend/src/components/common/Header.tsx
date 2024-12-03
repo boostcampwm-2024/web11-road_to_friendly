@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 import ProfileEditButton from '@/components/ProfileEditButton';
 
+import { useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 
 const headerWrapperStyle = css({
@@ -42,6 +43,7 @@ interface HeaderProps {
 
 const Header = ({ paddingY = 12 }: HeaderProps) => {
   const location = useLocation();
+
   return (
     <header css={headerWrapperStyle}>
       <div css={headerStyle(paddingY)}>

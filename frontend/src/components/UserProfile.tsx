@@ -69,25 +69,25 @@ interface Positon {
 
 interface UserProfileProps {
   participant: Participant;
-  index: number;
   isCurrentUser: boolean;
   isHost: boolean;
   position: Positon;
   isResultView: boolean;
 }
 
-const UserProfile = ({ participant, index, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
+const UserProfile = ({ participant, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
   const { radius, isOutOfBounds } = useRadiusStore();
+  const profileStyles = PROFILE_STYLES[(participant?.index || 0) % PROFILE_STYLES.length];
 
   return (
     <div css={profileStyle(position.x, position.y, radius[0], radius[1], isOutOfBounds)}>
-      <div css={profileImageStyle(PROFILE_STYLES[index % PROFILE_STYLES.length][0])}>
+      <div css={profileImageStyle(profileStyles[0])}>
         {isHost && (
           <div css={hostStyle}>
             <Crown />
           </div>
         )}
-        <div>{PROFILE_STYLES[index % PROFILE_STYLES.length][1]}</div>
+        <div>{profileStyles[1]}</div>
         <div css={participantNicknameStyle}>{participant.nickname}</div>
         {isCurrentUser && <div css={selfTagStyle}>나</div>}
       </div>

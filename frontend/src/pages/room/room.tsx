@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/react';
+import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -150,14 +150,14 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {Object.keys(participants).map((participantId, index) => {
+              {Object.keys(participants).map((participantId) => {
+                const index = participants[participantId]?.index || 0;
                 const position = positions[index];
                 if (!position) return null;
                 return (
                   <UserProfile
                     key={participantId}
                     participant={participants[participantId]}
-                    index={index}
                     isCurrentUser={participantId === currentUserId}
                     isHost={hostId === participantId}
                     position={{ x: positions[index][0], y: positions[index][1] }}

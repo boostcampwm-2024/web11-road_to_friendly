@@ -2,11 +2,24 @@ import { css } from '@emotion/react';
 import { useState } from 'react';
 
 import Menu from '@/assets/icons/menu.svg?react';
-import Profile from '@/assets/icons/profile.svg?react';
-import { useParticipantsStore } from '@/stores';
+import { PROFILE_STYLES } from '@/constants/profile';
+import { useParticipantsStore, useSocketStore } from '@/stores';
 import { Variables } from '@/styles';
 
 import Modal from './common/Modal';
+
+const profileImageStyle = (bgColor: string) => css`
+  width: 40px;
+  height: 40px;
+  background-color: ${bgColor};
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  cursor: pointer;
+`;
 
 const ListContainerStyle = css`
   display: flex;
@@ -42,6 +55,7 @@ const ParticipantItemStyle = css`
 `;
 
 const ParticipantListSidebar = () => {
+  const { socket } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { participants } = useParticipantsStore();
 
@@ -55,7 +69,13 @@ const ParticipantListSidebar = () => {
           <div>{`참여자 리스트(${Object.keys(participants).length})`}</div>
           {Object.keys(participants).map((participantId) => (
             <div key={participantId} css={ParticipantItemStyle}>
-              <Profile />
+              <div
+                css={profileImageStyle(
+                  PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][0]
+                )}
+              >
+                <div>{PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][1]}</div>
+              </div>
               <span>{participants[participantId].nickname}</span>
             </div>
           ))}

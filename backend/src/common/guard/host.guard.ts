@@ -5,14 +5,13 @@ import { CustomException } from '../exception/custom-exception';
 
 @Injectable()
 export class HostGuard implements CanActivate {
-  constructor(private readonly roomsService: RoomsService) {
-  }
+  constructor(private readonly roomsService: RoomsService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient();
     const roomId = client.data.roomId;
 
-    if (!this.roomsService.isHost(roomId, client.id)) {
+    if (!(await this.roomsService.isHost(roomId, client.id))) {
       throw new CustomException('호스트가 아닙니다.');
     }
 

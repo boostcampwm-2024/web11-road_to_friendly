@@ -1,11 +1,12 @@
 import { css } from '@emotion/react';
+import { memo } from 'react';
 
 interface VideoOverlayToggleProps {
   isPlaying: boolean;
   sharerControlFunctions: { playVideoAsSharer: () => void; pauseVideoAsSharer: () => void };
 }
 
-const VideoOverlayToggle = ({ isPlaying, sharerControlFunctions }: VideoOverlayToggleProps) => {
+const VideoOverlayToggle = memo(({ isPlaying, sharerControlFunctions }: VideoOverlayToggleProps) => {
   const { playVideoAsSharer, pauseVideoAsSharer } = sharerControlFunctions;
 
   function toggleVideo() {
@@ -22,7 +23,7 @@ const VideoOverlayToggle = ({ isPlaying, sharerControlFunctions }: VideoOverlayT
       }}
     ></div>
   );
-};
+});
 
 const mediaSectionStyle = css({
   position: 'absolute',

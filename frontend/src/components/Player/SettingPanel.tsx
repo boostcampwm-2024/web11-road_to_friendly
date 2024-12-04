@@ -25,6 +25,81 @@ interface SettingSpeedProps {
   player: ReactPlayer;
   setSettingTarget: React.Dispatch<React.SetStateAction<SettingTarget>>;
 }
+const SettingSelection = ({ setSettingTarget }: SettingSelectionProps) => {
+  return (
+    <>
+      <button css={optionStyle} onClick={() => setSettingTarget('speed')}>
+        <SpeedFillIcon css={iconStyle} />
+        <div css={textAreaStyle}>
+          <p>재생 속도</p>
+          <ArrowRightIcon css={iconStyle} />
+        </div>
+      </button>
+    </>
+  );
+};
+
+const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
+  const internalPlayer = player.getInternalPlayer();
+  const { socket } = useSocketStore();
+
+  const [speed, setSpeed] = useState(internalPlayer.getPlaybackRate());
+
+  function sendSpeedChange(playSpeed: number) {
+    if (!socket) return;
+
+    socket.emit('interest:youtube:speed', { playSpeed });
+  }
+
+  function changeSpeed(e: React.ChangeEvent<HTMLInputElement>) {
+    const newSpeed = Number(e.target.value);
+    setSpeed(newSpeed);
+    internalPlayer.setPlaybackRate(newSpeed);
+
+    sendSpeedChange(newSpeed);
+  }
+
+  return (
+    <>
+      <button css={panelHeaderStyle} onClick={() => setSettingTarget('selection')}>
+        <ArrowLeftIcon css={iconStyle} />
+        <p>재생 속도</p>
+      </button>
+      <div css={detailOptionListStyle}>
+        {internalPlayer.getAvailablePlaybackRates().map((playbackRate: number) => {
+          const checked = speed === playbackRate;
+          return (
+            <label key={playbackRate} css={optionItemStyle(checked)}>
+              {checked && <CheckIcon css={checkedIconStyle} />}
+              {playbackRate}
+              <input
+                type="radio"
+                name="playbackRadio"
+                css={{ display: 'none' }}
+                value={playbackRate}
+                checked={checked}
+                onChange={(e) => changeSpeed(e)}
+              />
+            </label>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+const SettingPanel = ({ openSettingPanel, player, controllBarHeight }: SettingPanelProps) => {
+  const [settingTarget, setSettingTarget] = useState<SettingTarget>('selection');
+
+  return (
+    <>
+      <div css={[settingPanelStyle(openSettingPanel, controllBarHeight), scrollbarStyle]}>
+        {settingTarget === 'selection' && <SettingSelection setSettingTarget={setSettingTarget} />}
+        {settingTarget === 'speed' && <SettingSpeed setSettingTarget={setSettingTarget} player={player} />}
+      </div>
+    </>
+  );
+};
 
 const settingPanelStyle = (openSettingPanel: boolean, controllBarHeight: number) =>
   css({
@@ -114,81 +189,5 @@ const checkedIconStyle = css(iconStyle, {
   position: 'absolute',
   left: '0'
 });
-
-const SettingSelection = ({ setSettingTarget }: SettingSelectionProps) => {
-  return (
-    <>
-      <button css={optionStyle} onClick={() => setSettingTarget('speed')}>
-        <SpeedFillIcon css={iconStyle} />
-        <div css={textAreaStyle}>
-          <p>재생 속도</p>
-          <ArrowRightIcon css={iconStyle} />
-        </div>
-      </button>
-    </>
-  );
-};
-
-const SettingSpeed = ({ setSettingTarget, player }: SettingSpeedProps) => {
-  const internalPlayer = player.getInternalPlayer();
-  const { socket } = useSocketStore();
-
-  const [speed, setSpeed] = useState(internalPlayer.getPlaybackRate());
-
-  function sendSpeedChange(playSpeed: number) {
-    if (!socket) return;
-
-    socket.emit('interest:youtube:speed', { playSpeed });
-  }
-
-  function changeSpeed(e: React.ChangeEvent<HTMLInputElement>) {
-    const newSpeed = Number(e.target.value);
-    setSpeed(newSpeed);
-    internalPlayer.setPlaybackRate(newSpeed);
-
-    sendSpeedChange(newSpeed);
-  }
-
-  return (
-    <>
-      <button css={panelHeaderStyle} onClick={() => setSettingTarget('selection')}>
-        <ArrowLeftIcon css={iconStyle} />
-        <p>재생 속도</p>
-      </button>
-      <div css={detailOptionListStyle}>
-        {internalPlayer.getAvailablePlaybackRates().map((playbackRate: number) => {
-          const checked = speed === playbackRate;
-          return (
-            <label key={playbackRate} css={optionItemStyle(checked)}>
-              {checked && <CheckIcon css={checkedIconStyle} />}
-              {playbackRate}
-              <input
-                type="radio"
-                name="playbackRadio"
-                css={{ display: 'none' }}
-                value={playbackRate}
-                checked={checked}
-                onChange={(e) => changeSpeed(e)}
-              />
-            </label>
-          );
-        })}
-      </div>
-    </>
-  );
-};
-
-const SettingPanel = ({ openSettingPanel, player, controllBarHeight }: SettingPanelProps) => {
-  const [settingTarget, setSettingTarget] = useState<SettingTarget>('selection');
-
-  return (
-    <>
-      <div css={[settingPanelStyle(openSettingPanel, controllBarHeight), scrollbarStyle]}>
-        {settingTarget === 'selection' && <SettingSelection setSettingTarget={setSettingTarget} />}
-        {settingTarget === 'speed' && <SettingSpeed setSettingTarget={setSettingTarget} player={player} />}
-      </div>
-    </>
-  );
-};
 
 export default SettingPanel;

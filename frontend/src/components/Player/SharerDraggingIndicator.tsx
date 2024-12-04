@@ -7,6 +7,21 @@ interface SharerDraggingIndicatorProps {
   isSharerDragging: boolean;
 }
 
+const SharerDraggingIndicator = memo(({ isSharerDragging }: SharerDraggingIndicatorProps) => {
+  return (
+    <div css={sharerDraggingIndicatorStyle(isSharerDragging)}>
+      <p css={textStyle}>공유자가 영상을 탐색 중입니다. 잠시만 기다려주세요!</p>
+      <div css={lottieContainerStyle}>
+        <DotLottieReact
+          src="https://lottie.host/f12f6ee7-86c1-46d6-8340-03434ad15f62/VGZwdJK6WD.lottie"
+          loop
+          autoplay
+        />
+      </div>
+    </div>
+  );
+});
+
 const sharerDraggingIndicatorStyle = (isSharerDragging: boolean) =>
   css({
     position: 'absolute',
@@ -34,21 +49,6 @@ const lottieContainerStyle = css({
 const textStyle = css({
   color: Variables.colors.text_white,
   font: Variables.typography.font_medium_16
-});
-
-const SharerDraggingIndicator = memo(({ isSharerDragging }: SharerDraggingIndicatorProps) => {
-  return (
-    <div css={sharerDraggingIndicatorStyle(isSharerDragging)}>
-      <p css={textStyle}>공유자가 영상을 탐색 중입니다. 잠시만 기다려주세요!</p>
-      <div css={lottieContainerStyle}>
-        <DotLottieReact
-          src="https://lottie.host/f12f6ee7-86c1-46d6-8340-03434ad15f62/VGZwdJK6WD.lottie"
-          loop
-          autoplay
-        />
-      </div>
-    </div>
-  );
 });
 
 export default SharerDraggingIndicator;

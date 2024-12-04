@@ -48,7 +48,7 @@ export class InterestsRedisRepository implements InterestsRepository, OnModuleIn
 
       return InterestsBroadcastResponseDto.of(JSON.parse(nextInterest), nowQueueSize);
     } catch (error) {
-      throw new CustomException(error.message);
+      throw new CustomException('호스트 또는 공유자가 아닙니다.');
     }
   }
 }

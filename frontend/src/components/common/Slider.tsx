@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Variables } from '@/styles';
 
@@ -21,6 +21,119 @@ interface SliderProps {
   color?: Color;
   onMouseDownStateChange?: (isDown: boolean) => void;
 }
+
+const defaultColor = {
+  empty: Variables.colors.surface_transparent_white_35,
+  fill: Variables.colors.surface_white,
+  thumb: Variables.colors.surface_youtube_weak
+};
+
+const Slider = ({
+  showThumb = true,
+  fraction,
+  setFraction,
+  bottom,
+  shouldHoverGrow = false,
+  shouldExtendWhenDrag = false,
+  shouldExtendAnytime = false,
+  shouldThumbAnytime = true,
+  color = {},
+  onMouseDownStateChange = () => {}
+}: SliderProps) => {
+  const [width, setWidth] = useState(0);
+
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const isMouseDownRef = useRef<boolean>(false);
+  const mergedColor = { ...defaultColor, ...color };
+
+  const moveProgress = useCallback(
+    (e) => {
+      const barLeft = sliderRef.current.getBoundingClientRect().left;
+      const clickedX = e.clientX - barLeft;
+
+      setFraction(clickedX / width);
+    },
+    [setFraction]
+  );
+
+  const moveProgressNow = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!sliderRef.current) return;
+      moveProgress(e);
+    },
+    [moveProgress]
+  );
+
+  const startDragging = useCallback(() => {
+    isMouseDownRef.current = true;
+    onMouseDownStateChange(true);
+  }, [onMouseDownStateChange]);
+
+  const syncProgressWithDrag = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!isMouseDownRef.current) return;
+      if (!sliderRef.current) return;
+
+      moveProgress(e);
+    },
+    [moveProgress]
+  );
+
+  const endDragging = useCallback(
+    (e) => {
+      isMouseDownRef.current = false;
+      onMouseDownStateChange(false);
+      moveProgressNow(e);
+    },
+    [onMouseDownStateChange, moveProgress]
+  );
+
+  const handleClick = useCallback(
+    (e) => {
+      isMouseDownRef.current = false;
+      moveProgressNow(e);
+    },
+    [moveProgressNow]
+  );
+
+  const handleMouseLeave = useCallback(
+    (e) => {
+      if (!isMouseDownRef.current) return;
+      endDragging(e);
+    },
+    [endDragging]
+  );
+
+  useEffect(() => {
+    if (sliderRef.current) setWidth(sliderRef.current.getBoundingClientRect().width);
+  }, []);
+
+  return (
+    <>
+      <div
+        css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime, shouldThumbAnytime)}
+        ref={sliderRef}
+        onClick={handleClick}
+        onMouseDown={startDragging}
+        onMouseMove={syncProgressWithDrag}
+        onMouseUp={endDragging}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div css={sliderEmptyStyle(mergedColor.empty, shouldHoverGrow)} style={sliderPositionStyle(bottom)}></div>
+        <div
+          css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, shouldHoverGrow)}
+          style={sliderPositionStyle(bottom)}
+        ></div>
+        {sliderRef.current && showThumb && (
+          <div
+            className="thumb"
+            style={thumbStyle(fraction, mergedColor.thumb, bottom, sliderRef.current.offsetWidth)}
+          ></div>
+        )}
+      </div>
+    </>
+  );
+};
 
 const thumbDisplayStyle = (shouldThumbAnytime: boolean) =>
   css(
@@ -58,22 +171,20 @@ const sliderWrapperStyle = (shouldExtendWhenDrag: boolean, shouldExtendAnytime: 
     thumbDisplayStyle(shouldThumbAnytime)
   );
 
-const sliderPositionStyle = (bottom: number) =>
-  css({
-    position: 'absolute',
-    bottom: `${bottom}px`
-  });
+const sliderPositionStyle = (bottom: number) => ({
+  position: 'absolute' as const,
+  bottom: `${bottom}px`
+});
 
-const sliderCommonStyle = (bottom: number) =>
-  css(sliderPositionStyle(bottom), {
-    width: '100%',
-    height: '0.25rem',
-    borderRadius: '1.2rem'
-  });
+const sliderCommonStyle = css({
+  width: '100%',
+  height: '0.25rem',
+  borderRadius: '1.2rem'
+});
 
-const sliderEmptyStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: boolean) =>
+const sliderEmptyStyle = (colorEmpty: string, shouldHoverGrow: boolean) =>
   css(
-    sliderCommonStyle(bottom),
+    sliderCommonStyle,
     {
       backgroundColor: colorEmpty,
       transition: 'transform 0.2s ease-in-out'
@@ -87,15 +198,9 @@ const sliderEmptyStyle = (bottom: number, colorEmpty: string, shouldHoverGrow: b
       : {}
   );
 
-const sliderFillStyle = (
-  fraction: number,
-  colorFill: string,
-  colorThumb: string,
-  bottom: number,
-  shouldHoverGrow: boolean
-) =>
+const sliderFillStyle = (fraction: number, colorFill: string, colorThumb: string, shouldHoverGrow: boolean) =>
   css(
-    sliderCommonStyle(bottom),
+    sliderCommonStyle,
     {
       background: `linear-gradient(to right, ${colorFill} 60%, ${colorThumb})`,
       transformOrigin: 'left',
@@ -113,105 +218,14 @@ const sliderFillStyle = (
       : {}
   );
 
-const thumbStyle = (fraction: number, colorThumb: string, bottom: number, sliderWidth: number) =>
-  css(sliderPositionStyle(bottom), {
-    width: '0.75rem',
-    height: '0.75rem',
-    borderRadius: '100%',
-    backgroundColor: colorThumb,
-    transform: `translateX(${fraction * sliderWidth - 4}px) translateY(37.5%)`,
-    transition: 'opacity 0.1s ease-out'
-  });
-
-const defaultColor = {
-  empty: Variables.colors.surface_transparent_white_35,
-  fill: Variables.colors.surface_white,
-  thumb: Variables.colors.surface_youtube_weak
-};
-
-const Slider = ({
-  showThumb = true,
-  fraction,
-  setFraction,
-  bottom,
-  shouldHoverGrow = false,
-  shouldExtendWhenDrag = false,
-  shouldExtendAnytime = false,
-  shouldThumbAnytime = true,
-  color = {},
-  onMouseDownStateChange = () => {}
-}: SliderProps) => {
-  const [width, setWidth] = useState(0);
-
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const isMouseDownRef = useRef<boolean>(false);
-  const mergedColor = { ...defaultColor, ...color };
-
-  function moveProgressNow(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if (!sliderRef.current) return;
-
-    const barLeft = sliderRef.current.getBoundingClientRect().left;
-    const clickedX = e.clientX - barLeft;
-    setFraction(clickedX / width);
-  }
-
-  function startDragging() {
-    isMouseDownRef.current = true;
-    onMouseDownStateChange(true);
-  }
-
-  function syncProgressWithDrag(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if (!isMouseDownRef.current) return;
-    if (!sliderRef.current) return;
-
-    const barLeft = sliderRef.current.getBoundingClientRect().left;
-    const clickedX = e.clientX - barLeft;
-
-    setFraction(clickedX / width);
-  }
-
-  function endDragging(e) {
-    isMouseDownRef.current = false;
-    onMouseDownStateChange(false);
-    moveProgressNow(e);
-  }
-
-  function handleClick(e) {
-    isMouseDownRef.current = false;
-    moveProgressNow(e);
-  }
-
-  function handleMouseLeave(e) {
-    if (!isMouseDownRef.current) return;
-    endDragging(e);
-  }
-
-  useEffect(() => {
-    if (sliderRef.current) setWidth(sliderRef.current.getBoundingClientRect().width);
-  }, []);
-
-  return (
-    <>
-      <div
-        css={sliderWrapperStyle(shouldExtendWhenDrag, shouldExtendAnytime, shouldThumbAnytime)}
-        ref={sliderRef}
-        onClick={handleClick}
-        onMouseDown={startDragging}
-        onMouseMove={syncProgressWithDrag}
-        onMouseUp={endDragging}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div css={sliderEmptyStyle(bottom, mergedColor.empty, shouldHoverGrow)}></div>
-        <div css={sliderFillStyle(fraction, mergedColor.fill, mergedColor.thumb, bottom, shouldHoverGrow)}></div>
-        {sliderRef.current && showThumb && (
-          <div
-            className="thumb"
-            css={thumbStyle(fraction, mergedColor.thumb, bottom, sliderRef.current.offsetWidth)}
-          ></div>
-        )}
-      </div>
-    </>
-  );
-};
+const thumbStyle = (fraction: number, colorThumb: string, bottom: number, sliderWidth: number) => ({
+  ...sliderPositionStyle(bottom),
+  width: '0.75rem',
+  height: '0.75rem',
+  borderRadius: '100%',
+  backgroundColor: colorThumb,
+  transform: `translateX(${fraction * sliderWidth - 4}px) translateY(37.5%)`,
+  transition: 'opacity 0.1s ease-out'
+});
 
 export default Slider;

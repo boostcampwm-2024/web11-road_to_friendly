@@ -11,7 +11,7 @@ import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
 import { roomError } from '@/constants/roomError';
-import { useRoomAccess } from '@/hooks';
+import { FADE_OUT_DELAY, CONTENT_SHARE_DELAY } from '@/constants/time';
 import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
@@ -22,43 +22,12 @@ import ResultInstruction from './resultInstruction';
 import RoomCatchWrapper from './RoomCatchWrapper';
 import RoomIntroView from './roomIntroView';
 
-const backgroundStyle = css`
-  background: ${Variables.colors.surface_default};
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding-top: 100px; /* 헤더 높이를 고려한 여백 추가 */
-`;
-
-const ParticipantsContainer = (shortRadius: number, longRadius: number) => css`
-  position: relative;
-  width: ${longRadius * 2}px;
-  height: ${shortRadius * 2}px;
-  border-radius: 50%;
-`;
-
-const SubjectContainer = (shortRadius: number, longRadius: number) => css`
-  width: 80%;
-  position: absolute;
-  bottom: ${shortRadius}px;
-  left: ${longRadius}px;
-  transform: translate(-50%, 50%);
-  white-space: nowrap;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
 const Room = () => {
   const { showBoundary } = useErrorBoundary();
   const roomId = useParams<{ roomId: string }>().roomId || null;
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [resultLoading, setResultLoading] = useState<boolean>(false);
 
-  const {} = useRoomAccess();
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
   const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
 
@@ -82,13 +51,13 @@ const Room = () => {
       // 로딩이 3초
       const fadeOutTimer = setTimeout(() => {
         setIsFadingOut(true);
-      }, 5000);
+      }, FADE_OUT_DELAY);
 
       // 페이드아웃 1초 후 ContentShareView 표시
       const showContentTimer = setTimeout(() => {
         setIsResultInstructionVisible(false);
         setIsContentShareVisible(true);
-      }, 6000);
+      }, CONTENT_SHARE_DELAY);
 
       return () => {
         clearTimeout(fadeOutTimer);
@@ -211,3 +180,33 @@ const RoomWithCatch = () => {
 };
 
 export default RoomWithCatch;
+
+const backgroundStyle = css`
+  background: ${Variables.colors.surface_default};
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 100px; /* 헤더 높이를 고려한 여백 추가 */
+`;
+
+const ParticipantsContainer = (shortRadius: number, longRadius: number) => css`
+  position: relative;
+  width: ${longRadius * 2}px;
+  height: ${shortRadius * 2}px;
+  border-radius: 50%;
+`;
+
+const SubjectContainer = (shortRadius: number, longRadius: number) => css`
+  width: 80%;
+  position: absolute;
+  bottom: ${shortRadius}px;
+  left: ${longRadius}px;
+  transform: translate(-50%, 50%);
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;

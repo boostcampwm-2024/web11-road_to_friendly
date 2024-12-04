@@ -3,10 +3,9 @@ local queueKey = KEYS[2]
 local hostFlag = ARGV[1]
 local clientId = ARGV[2]
 
-local firstItem = redis.call('LINDEX', queueKey, 0)
-redis.log(redis.LOG_WARNING, firstItem)
+local nowShareClientId = redis.call('HGET', shareKey, 'clientId')
 
-if hostFlag == '1' or (firstItem and cjson.decode(firstItem).clientId == clientId) then
+if hostFlag == '1' or (nowShareClientId == clientId) then
     local queueItem = redis.call('LPOP', queueKey)
 
     if queueItem then

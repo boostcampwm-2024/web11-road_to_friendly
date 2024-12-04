@@ -42,16 +42,16 @@ const ControllerSection = ({
   const hasDragHandledRef = useRef(false);
   const prevVolumeRef = useRef(0);
 
-  function sendDraggingStart() {
+  const sendDraggingStart = () => {
     socket?.emit('interest:youtube:dragging');
-  }
+  };
 
-  function sendTimelineChange(targetTime: number) {
+  const sendTimelineChange = (targetTime: number) => {
     const playStatus = prevIsPlayingRef.current ? 'play' : 'pause';
     socket?.emit('interest:youtube:timeline', { targetTime, playStatus, clientTimestamp: Date.now() });
-  }
+  };
 
-  function handleDragStart() {
+  const handleDragStart = () => {
     hasDragHandledRef.current = true;
 
     setIsPlaying(false);
@@ -59,9 +59,9 @@ const ControllerSection = ({
     player?.getInternalPlayer().pauseVideo();
 
     sendDraggingStart();
-  }
+  };
 
-  function setFractionAndMove(newFraction: number) {
+  const setFractionAndMove = (newFraction: number) => {
     if (!isSharer || !player) return;
 
     player.seekTo(newFraction, 'fraction');
@@ -86,7 +86,7 @@ const ControllerSection = ({
 
       hasDragHandledRef.current = false;
     }
-  }
+  };
 
   return (
     isHovering &&

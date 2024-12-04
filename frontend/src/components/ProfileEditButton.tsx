@@ -8,83 +8,6 @@ import { flexStyle, Variables } from '@/styles';
 
 import Modal from './common/Modal';
 
-const profileContainerStyle = css`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-`;
-const profileImageStyle = (bgColor: string) => css`
-  width: 100%;
-  height: 100%;
-  background-color: ${bgColor};
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  cursor: pointer;
-`;
-
-const inputStyle = css`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font: ${Variables.typography.font_medium_16};
-  text-align: start;
-  border-radius: 8px;
-  border: 1px solid ${Variables.colors.surface_alt};
-  padding: 5px;
-  width: 130px;
-`;
-
-const editButtonStyle = css`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  cursor: pointer;
-`;
-
-const saveButtonStyle = css`
-  border: none;
-  border-radius: 8px;
-  padding: 4px 5px;
-  color: white;
-  white-space: nowrap;
-  background-color: ${Variables.colors.surface_strong};
-`;
-
-const nicknameContainerStyle = css`
-  display: flex;
-  gap: 5px;
-  align-items: center;
-`;
-
-const profileEditContainerStyle = css`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  min-width: 250px;
-  height: 200px;
-  padding-top: 10px;
-`;
-
-const wrapperStyle = css`
-  position: relative;
-  width: 100%;
-`;
-
-const spanStyle = css`
-  position: absolute;
-  right: 10px;
-  bottom: 8px;
-  font-size: 12px;
-  color: ${Variables.colors.text_alt};
-`;
-
 const ProfileEditButton = () => {
   const { socket, connect } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -219,3 +142,80 @@ const ProfileEditButton = () => {
 };
 
 export default ProfileEditButton;
+
+const profileContainerStyle = css`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+`;
+const profileImageStyle = (bgColor: string) => css`
+  width: 100%;
+  height: 100%;
+  background-color: ${bgColor};
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  cursor: pointer;
+`;
+
+const inputStyle = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: ${Variables.typography.font_medium_16};
+  text-align: start;
+  border-radius: 8px;
+  border: 1px solid ${Variables.colors.surface_alt};
+  padding: 5px;
+  width: 130px;
+`;
+
+const editButtonStyle = css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+`;
+
+const saveButtonStyle = css`
+  border: none;
+  border-radius: 8px;
+  padding: 4px 5px;
+  color: white;
+  white-space: nowrap;
+  background-color: ${Variables.colors.surface_strong};
+`;
+
+const nicknameContainerStyle = css`
+  display: flex;
+  gap: 5px;
+  align-items: center;
+`;
+
+const profileEditContainerStyle = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 250px;
+  height: 200px;
+  padding-top: 10px;
+`;
+
+const wrapperStyle = css`
+  position: relative;
+  width: 100%;
+`;
+
+const spanStyle = css`
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 12px;
+  color: ${Variables.colors.text_alt};
+`;

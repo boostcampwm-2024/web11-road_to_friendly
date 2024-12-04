@@ -4,18 +4,6 @@ import { LoadingSpinnerWave } from '@/components/common';
 
 import { Variables } from '@/styles';
 
-const loadingPageStyle = css({
-  width: '100vw',
-  height: '100vh',
-
-  display: 'flex',
-  gap: '2rem',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  textAlign: 'center'
-});
-
 interface LoadingPageProps {
   isAnalyzing?: boolean; //분석 페이지 여부
   loadingMessage?: string;
@@ -41,3 +29,15 @@ const LoadingPage = ({ isAnalyzing = false, loadingMessage }: LoadingPageProps) 
 };
 
 export default LoadingPage;
+
+const loadingPageStyle = css({
+  width: '100vw',
+  height: '100vh',
+
+  display: 'flex',
+  gap: '2rem',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  textAlign: 'center'
+});

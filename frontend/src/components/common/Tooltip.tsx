@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { Variables } from '../../styles/Variables';
+
+import { Variables } from '../../styles/variables';
 
 type Direction = 'UP' | 'DOWN';
 type Position = 'LEFT' | 'CENTER' | 'RIGHT';
@@ -31,6 +32,18 @@ function getDirectionPosition(direction: Direction, position: Position) {
 
   return [positionStyleMap[position], directionStyleMap[direction], transform];
 }
+
+const Tooltip = ({ message, direction = 'DOWN', position = 'RIGHT' }: TooltipProps) => {
+  return (
+    <div css={tooltipSylte}>
+      {direction === 'UP' && <div css={tailStyle(direction, position)}></div>}
+      <div css={textBoxStyle}>{message}</div>
+      {direction === 'DOWN' && <div css={tailStyle(direction, position)}></div>}
+    </div>
+  );
+};
+
+export default Tooltip;
 
 const tooltipSylte = css({
   display: 'block',
@@ -64,15 +77,3 @@ const tailStyle = (direction: Direction, position: Position) =>
     },
     getDirectionPosition(direction, position)
   );
-
-const Tooltip = ({ message, direction = 'DOWN', position = 'RIGHT' }: TooltipProps) => {
-  return (
-    <div css={tooltipSylte}>
-      {direction === 'UP' && <div css={tailStyle(direction, position)}></div>}
-      <div css={textBoxStyle}>{message}</div>
-      {direction === 'DOWN' && <div css={tailStyle(direction, position)}></div>}
-    </div>
-  );
-};
-
-export default Tooltip;

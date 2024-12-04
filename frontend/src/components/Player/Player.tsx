@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
 import { YOUTUBE_ERROR_MESSAGES } from '@/constants/youtube';
@@ -30,15 +30,6 @@ const statusEventNameMap: Record<PlayerState, string> = {
   pause: 'interest:youtube:stop'
 };
 
-const wrapperStyle = css({
-  position: 'relative',
-  width: PLAYER_WIDTH_DEFAULT,
-  height: PLAYER_HEIGHT_DEFAULT,
-  overflow: 'hidden',
-  borderRadius: '1rem',
-  userSelect: 'none'
-});
-
 const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [player, setPlayer] = useState<ReactPlayer | null>(null);
@@ -56,11 +47,6 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
   const { socket } = useSocketStore();
   const { openToast } = useToast();
 
-  const sharerControlFunctions = {
-    playVideoAsSharer,
-    pauseVideoAsSharer
-  };
-
   const requestFunctionMap: Record<YoutubeRequestType, Function> = {
     PLAY: syncWithSharerPlayOrPause,
     STOP: syncWithSharerPlayOrPause,
@@ -69,7 +55,18 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
     DRAGGING: syncWithSharerDragStart
   };
 
-  function playVideoAsSharer() {
+  const sendPlayerState = useCallback(
+    (stateChange: PlayerState) => {
+      const eventName = statusEventNameMap[stateChange];
+      const body: Record<string, any> = { videoCurrentTime: player?.getCurrentTime(), playStatus: stateChange };
+
+      if (stateChange === 'play') body['clientTimestamp'] = Date.now();
+      socket?.emit(eventName, body);
+    },
+    [player, socket]
+  );
+
+  const playVideoAsSharer = useCallback(() => {
     if (!isSharer) return;
     prevIsPlayingRef.current = true;
 
@@ -77,9 +74,9 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
     player?.getInternalPlayer().playVideo();
 
     sendPlayerState('play');
-  }
+  }, [isSharer, player, sendPlayerState]);
 
-  function pauseVideoAsSharer() {
+  const pauseVideoAsSharer = useCallback(() => {
     if (!isSharer) return;
     prevIsPlayingRef.current = false;
 
@@ -87,7 +84,7 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
     player?.getInternalPlayer().pauseVideo();
 
     sendPlayerState('pause');
-  }
+  }, [isSharer, player, sendPlayerState]);
 
   function syncWithSharerPlayOrPause({
     requestType,
@@ -160,14 +157,6 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
     });
   }
 
-  function sendPlayerState(stateChange: PlayerState) {
-    const eventName = statusEventNameMap[stateChange];
-    const body: Record<string, any> = { videoCurrentTime: player?.getCurrentTime(), playStatus: stateChange };
-
-    if (stateChange === 'play') body['clientTimestamp'] = Date.now();
-    socket?.emit(eventName, body);
-  }
-
   function syncFractionWithProgress({ played }: { played: number }) {
     if (hasEndedRef.current) return;
     setFraction(played);
@@ -191,6 +180,14 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
 
     requestAnimationFrame(() => onProgressWithReqeustAnimation(callback));
   }
+
+  const sharerControlFunctions = useMemo(
+    () => ({
+      playVideoAsSharer,
+      pauseVideoAsSharer
+    }),
+    [playVideoAsSharer, pauseVideoAsSharer]
+  );
 
   useEffect(() => {
     return () => {
@@ -221,6 +218,7 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
         {!isDraggingSliderRef.current && (
           <StateChangeIndicator isPlaying={isPlaying} prevIsPlayingRef={prevIsPlayingRef} />
         )}
+        <SharerDraggingIndicator isSharerDragging={isSharerDragging} />
         <ReactPlayer
           style={{
             pointerEvents: 'none',
@@ -246,7 +244,6 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
           }}
           config={{ youtube: { playerVars: { autoplay: 1 } } }}
         />
-        <SharerDraggingIndicator isSharerDragging={isSharerDragging} />
         {isHovering && player && (
           <ControllerSection
             isHovering={isHovering}
@@ -268,5 +265,14 @@ const Player = ({ url, isSharer, isShorts, prevVolumeRef }: PlayerProps) => {
     </>
   );
 };
+
+const wrapperStyle = css({
+  position: 'relative',
+  width: PLAYER_WIDTH_DEFAULT,
+  height: PLAYER_HEIGHT_DEFAULT,
+  overflow: 'hidden',
+  borderRadius: '1rem',
+  userSelect: 'none'
+});
 
 export default Player;

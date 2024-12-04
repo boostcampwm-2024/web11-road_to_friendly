@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import Menu from '@/assets/icons/menu.svg?react';
 import { PROFILE_STYLES } from '@/constants/profile';
@@ -7,6 +7,55 @@ import { useParticipantsStore } from '@/stores';
 import { Variables } from '@/styles';
 
 import Modal from './common/Modal';
+
+interface ParticipantListSidebarProps {
+  currentUserId: string;
+}
+
+const ParticipantListSidebar = React.memo(
+  ({ currentUserId }: ParticipantListSidebarProps) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { participants } = useParticipantsStore();
+
+    // 참여자 목록에서 본인이 최상단에 위치하도록 정렬
+    const sortedParticipants = Object.keys(participants).sort((a, b) => {
+      if (a === currentUserId) return -1;
+      if (b === currentUserId) return 1;
+      return 0; // 나머지 참가자는 그대로
+    });
+
+    return (
+      <div>
+        <button css={SidebarButtonStyle(isModalOpen)} onClick={() => setIsModalOpen(!isModalOpen)}>
+          <Menu width={30} height={30} />
+        </button>
+        <Modal position={'topLeft'} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <div css={ListContainerStyle}>
+            <div>{`참여자 리스트(${Object.keys(participants).length})`}</div>
+            {sortedParticipants.map((participantId) => (
+              <div key={participantId} css={ParticipantItemStyle}>
+                <div
+                  css={profileImageStyle(
+                    PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][0]
+                  )}
+                >
+                  <div>{PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][1]}</div>
+                </div>
+                <span>{participants[participantId].nickname}</span>
+                {participantId === currentUserId && <div css={selfTagStyle}>나</div>}
+              </div>
+            ))}
+          </div>
+        </Modal>
+      </div>
+    );
+  },
+  (prevProps, nextProps) => {
+    return prevProps.currentUserId === nextProps.currentUserId;
+  }
+);
+
+export default ParticipantListSidebar;
 
 const profileImageStyle = (bgColor: string) => css`
   width: 40px;
@@ -65,47 +114,3 @@ const selfTagStyle = css`
   align-items: center;
   font-size: 12px;
 `;
-
-interface ParticipantListSidebarProps {
-  currentUserId: string;
-}
-
-const ParticipantListSidebar = ({ currentUserId }: ParticipantListSidebarProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { participants } = useParticipantsStore();
-
-  // 참여자 목록에서 본인이 최상단에 위치하도록 정렬
-  const sortedParticipants = Object.keys(participants).sort((a, b) => {
-    if (a === currentUserId) return -1;
-    if (b === currentUserId) return 1;
-    return 0; // 나머지 참가자는 그대로
-  });
-
-  return (
-    <div>
-      <button css={SidebarButtonStyle(isModalOpen)} onClick={() => setIsModalOpen(!isModalOpen)}>
-        <Menu width={30} height={30} />
-      </button>
-      <Modal position={'topLeft'} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div css={ListContainerStyle}>
-          <div>{`참여자 리스트(${Object.keys(participants).length})`}</div>
-          {sortedParticipants.map((participantId) => (
-            <div key={participantId} css={ParticipantItemStyle}>
-              <div
-                css={profileImageStyle(
-                  PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][0]
-                )}
-              >
-                <div>{PROFILE_STYLES[(participants[participantId]?.index || 0) % PROFILE_STYLES.length][1]}</div>
-              </div>
-              <span>{participants[participantId].nickname}</span>
-              {participantId === currentUserId && <div css={selfTagStyle}>나</div>}
-            </div>
-          ))}
-        </div>
-      </Modal>
-    </div>
-  );
-};
-
-export default ParticipantListSidebar;

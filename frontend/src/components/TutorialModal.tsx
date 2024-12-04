@@ -1,14 +1,16 @@
 import { css } from '@emotion/react';
 import { useEffect, useRef } from 'react';
-import { useIndex } from '@/hooks';
-import { TextSeparate } from './common';
-import { flexStyle, Variables } from '@/styles';
+
 import LeftArrowIcon from '@/assets/icons/arrow-left-wide-line.svg?react';
 import RightArrowIcon from '@/assets/icons/arrow-right-wide-line.svg?react';
 import XIcon from '@/assets/icons/closeX.svg?react';
+import contentShareWebm from '@/assets/webm/content.webm';
 import enterWebm from '@/assets/webm/enter.webm';
 import wordcloudWebm from '@/assets/webm/wordcloud2.webm';
-import contentShareWebm from '@/assets/webm/content.webm';
+import { useIndex } from '@/hooks';
+import { flexStyle, Variables } from '@/styles';
+
+import { TextSeparate } from './common';
 
 interface TutorialModalProps {
   closeModal: () => void;

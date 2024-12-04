@@ -12,35 +12,6 @@ interface QuestionInputProps {
   onSubmit: (keyword: string, type: 'add' | 'delete') => void;
 }
 
-const wrapperStyle = css`
-  position: relative;
-  width: 100%;
-  margin-top: ${Variables.spacing.spacing_sm};
-`;
-
-const inputStyle = css`
-  width: 100%;
-  height: 30px;
-  margin-top: 12px;
-  font: ${Variables.typography.font_medium_18};
-  color: ${Variables.colors.text_alt};
-  text-align: center;
-  line-height: 30px;
-  border: none;
-  border-bottom: 1px solid black;
-  outline: none;
-  background-color: transparent;
-  opacity: 1;
-`;
-
-const spanStyle = css`
-  position: absolute;
-  right: 10px;
-  bottom: 5px;
-  font-size: 12px;
-  color: ${Variables.colors.text_alt};
-`;
-
 const QuestionInput = ({ currentQuestionIndex, selectedKeywords, onSubmit }: QuestionInputProps) => {
   const [keyword, setKeyword] = useState('');
   const { openToast } = useToast();
@@ -102,3 +73,32 @@ const QuestionInput = ({ currentQuestionIndex, selectedKeywords, onSubmit }: Que
 };
 
 export default QuestionInput;
+
+const wrapperStyle = css`
+  position: relative;
+  width: 100%;
+  margin-top: ${Variables.spacing.spacing_sm};
+`;
+
+const inputStyle = css`
+  width: 100%;
+  height: 30px;
+  margin-top: 12px;
+  font: ${Variables.typography.font_medium_18};
+  color: ${Variables.colors.text_alt};
+  text-align: center;
+  line-height: 30px;
+  border: none;
+  border-bottom: 1px solid black;
+  outline: none;
+  background-color: transparent;
+  opacity: 1;
+`;
+
+const spanStyle = css`
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  font-size: 12px;
+  color: ${Variables.colors.text_alt};
+`;

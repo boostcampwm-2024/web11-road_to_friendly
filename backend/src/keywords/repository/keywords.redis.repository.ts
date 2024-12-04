@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import Redis from 'ioredis';
 import { OnModuleInit } from '@nestjs/common';
 
@@ -7,6 +5,7 @@ import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 
 import { KeywordsRepository } from './keywords.repository';
+import { cashLuaScript } from '../../common/util/cash-lua-script';
 
 export class KeywordsRedisRepository implements KeywordsRepository, OnModuleInit {
   private addKeywordEval: string;
@@ -16,14 +15,9 @@ export class KeywordsRedisRepository implements KeywordsRepository, OnModuleInit
   constructor(private readonly redis: Redis) {}
 
   async onModuleInit() {
-    this.addKeywordEval = await this.cashScript(this.redis, 'src/keywords/script/add.keyword.lua');
-    this.removeKeywordEval = await this.cashScript(this.redis, 'src/keywords/script/remove.keyword.lua');
-    this.statisticsKeywordEval = await this.cashScript(this.redis, 'src/keywords/script/statistics.keyword.lua');
-  }
-
-  private async cashScript(redis: Redis, path: string) {
-    const luaScript = await readFile(path, 'utf-8');
-    return redis.script('LOAD', luaScript) as unknown as string;
+    this.addKeywordEval = await cashLuaScript(this.redis, 'src/keywords/script/add.keyword.lua');
+    this.removeKeywordEval = await cashLuaScript(this.redis, 'src/keywords/script/remove.keyword.lua');
+    this.statisticsKeywordEval = await cashLuaScript(this.redis, 'src/keywords/script/statistics.keyword.lua');
   }
 
   async addKeyword(roomId: string, questionId: number, keyword: string, participantId: string) {

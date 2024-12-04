@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 
-import { Variables } from '../../styles/Variables';
+import { Variables } from '../../styles/variables';
 
 type Direction = 'UP' | 'DOWN';
 type Position = 'LEFT' | 'CENTER' | 'RIGHT';

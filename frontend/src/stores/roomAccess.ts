@@ -13,7 +13,7 @@ interface RoomAccess {
   disconnect: () => void;
 }
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const IS_PRODUCTION = import.meta.env.MODE === 'production';
 const TIMEOUT = 3000;
 let isConnecting = false;
 

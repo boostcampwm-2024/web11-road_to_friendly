@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { useEffect, useMemo, useState } from 'react';
+import { useErrorBoundary } from 'react-error-boundary';
 import { useBeforeUnload, useParams } from 'react-router-dom';
 
 import useParticipants from '@/hooks/useParticipants';
@@ -9,6 +10,8 @@ import ParticipantListSidebar from '@/components/ParticipantListSidebar';
 import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
+import { roomError } from '@/constants/roomError';
+import { useRoomAccess } from '@/hooks';
 import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
@@ -16,11 +19,8 @@ import { calculatePosition } from '@/utils';
 import LoadingPage from '../LoadingPage';
 import { ContentShareView } from './content-share';
 import ResultInstruction from './resultInstruction';
-import RoomIntroView from './roomIntroView';
-import { useRoomAccess } from '@/hooks';
 import RoomCatchWrapper from './RoomCatchWrapper';
-import { roomError } from '@/constants/roomError';
-import { useErrorBoundary } from 'react-error-boundary';
+import RoomIntroView from './roomIntroView';
 
 const backgroundStyle = css`
   background: ${Variables.colors.surface_default};
@@ -125,6 +125,26 @@ const Room = () => {
     }
   };
 
+  const participantElements = useMemo(
+    () =>
+      Object.keys(participants).map((participantId) => {
+        const index = participants[participantId]?.index || 0;
+        const position = positions[index];
+
+        return position ? (
+          <UserProfile
+            key={participantId}
+            participant={participants[participantId]}
+            isCurrentUser={participantId === currentUserId}
+            isHost={hostId === participantId}
+            position={{ x: position[0], y: position[1] }}
+            isResultView={isResultView}
+          />
+        ) : null;
+      }),
+    [participants, positions, currentUserId, hostId, isResultView]
+  );
+
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
     calculateRadius(Object.keys(participants).length);
@@ -147,21 +167,7 @@ const Room = () => {
         <>
           <div css={backgroundStyle}>
             <div css={ParticipantsContainer(radius[0], radius[1])}>
-              {Object.keys(participants).map((participantId) => {
-                const index = participants[participantId]?.index || 0;
-                const position = positions[index];
-                if (!position) return null;
-                return (
-                  <UserProfile
-                    key={participantId}
-                    participant={participants[participantId]}
-                    isCurrentUser={participantId === currentUserId}
-                    isHost={hostId === participantId}
-                    position={{ x: positions[index][0], y: positions[index][1] }}
-                    isResultView={isResultView}
-                  />
-                );
-              })}
+              {participantElements}
               <div css={SubjectContainer(radius[0], radius[1])}>
                 {isResultView ? (
                   resultLoading ? (
@@ -189,7 +195,7 @@ const Room = () => {
             </div>
             {isIntroViewActive && <ShareButton />}
           </div>
-          <ParticipantListSidebar currentUserId={currentUserId}/>
+          <ParticipantListSidebar currentUserId={currentUserId} />
         </>
       )}
     </>

@@ -53,6 +53,8 @@ https://road-to-friendly.kro.kr/
       + [[FE] 통계 결과 소켓 알림 타이밍 제어 및 웹워커를 사용한 타이머 동기화](#fe--1)
       + [[FE] 사용자가 한 번에 하나의 방에만 입장하게 하고 싶어요!](#fe--2)
       + [[FE] 리팩토링과 최적화, 그리고 성능 개선하기](#fe--3)
+      + [[BE] FE CI/CD 파이프라인 구축하기](#be--2)
+      + [[BE] Let’s Encrypt 이용하여 HTTPS 적용하기](#be--3)
 - [🧩 시스템 아키텍처](#--7)
 - [⚙️ 기술 스택](#--8)
 - [🫶🏻 팀 소개](#--9)
@@ -204,7 +206,7 @@ https://road-to-friendly.kro.kr/
 > 워드 클라우드 UI를 그릴 때 발생하는 reflow 횟수를 줄여서 성능을 개선한 과정을 소개합니다<br><br>
 > [👉 FE 코드 리팩토링 및 최적화, 성능 개선 과정](https://lime-mall-d34.notion.site/FE-cc705396b35a49189bb5a56bd6459c85?pvs=4)
 
-<!-- TOC --><a name="be--1"></a>
+<!-- TOC --><a name="be--2"></a>
 #### **[BE] FE CI/CD 파이프라인 구축하기**
 
 > CI/CD 파이프라인을 어떤 방식으로 설계하고 구성해야 할까요?<br>
@@ -212,7 +214,7 @@ https://road-to-friendly.kro.kr/
 > 배포된 파일을 어디에 저장하고, 어떻게 제공해야 할까요?<br><br>
 > [👉 FE CI/CD 구축하기](https://lime-mall-d34.notion.site/FE-CI-CD-068a37fd8f2d48359c1fdee8c9e1a794?pvs=4)
 
-<!-- TOC --><a name="be--2"></a>
+<!-- TOC --><a name="be--3"></a>
 #### **[BE] Let’s Encrypt 이용하여 HTTPS 적용하기**
 
 > Let’s Encrypt를 사용하여 HTTPS를 연결하면 어떤점이 좋을까요?<br>

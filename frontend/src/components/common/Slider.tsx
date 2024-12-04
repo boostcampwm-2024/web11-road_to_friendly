@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Variables } from '@/styles';
 
@@ -46,63 +46,45 @@ const Slider = ({
   const isMouseDownRef = useRef<boolean>(false);
   const mergedColor = { ...defaultColor, ...color };
 
-  const moveProgress = useCallback(
-    (e) => {
-      const barLeft = sliderRef.current.getBoundingClientRect().left;
-      const clickedX = e.clientX - barLeft;
+  const moveProgress = (e) => {
+    const barLeft = sliderRef.current.getBoundingClientRect().left;
+    const clickedX = e.clientX - barLeft;
 
-      setFraction(clickedX / width);
-    },
-    [setFraction]
-  );
+    setFraction(clickedX / width);
+  };
 
-  const moveProgressNow = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!sliderRef.current) return;
-      moveProgress(e);
-    },
-    [moveProgress]
-  );
+  const moveProgressNow = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!sliderRef.current) return;
+    moveProgress(e);
+  };
 
-  const startDragging = useCallback(() => {
+  const startDragging = () => {
     isMouseDownRef.current = true;
     onMouseDownStateChange(true);
-  }, [onMouseDownStateChange]);
+  };
 
-  const syncProgressWithDrag = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (!isMouseDownRef.current) return;
-      if (!sliderRef.current) return;
+  const syncProgressWithDrag = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!isMouseDownRef.current) return;
+    if (!sliderRef.current) return;
 
-      moveProgress(e);
-    },
-    [moveProgress]
-  );
+    moveProgress(e);
+  };
 
-  const endDragging = useCallback(
-    (e) => {
-      isMouseDownRef.current = false;
-      onMouseDownStateChange(false);
-      moveProgressNow(e);
-    },
-    [onMouseDownStateChange, moveProgress]
-  );
+  const endDragging = (e) => {
+    isMouseDownRef.current = false;
+    onMouseDownStateChange(false);
+    moveProgressNow(e);
+  };
 
-  const handleClick = useCallback(
-    (e) => {
-      isMouseDownRef.current = false;
-      moveProgressNow(e);
-    },
-    [moveProgressNow]
-  );
+  const handleClick = (e) => {
+    isMouseDownRef.current = false;
+    moveProgressNow(e);
+  };
 
-  const handleMouseLeave = useCallback(
-    (e) => {
-      if (!isMouseDownRef.current) return;
-      endDragging(e);
-    },
-    [endDragging]
-  );
+  const handleMouseLeave = (e) => {
+    if (!isMouseDownRef.current) return;
+    endDragging(e);
+  };
 
   useEffect(() => {
     if (sliderRef.current) setWidth(sliderRef.current.getBoundingClientRect().width);

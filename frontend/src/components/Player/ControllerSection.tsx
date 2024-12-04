@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { Socket } from 'socket.io-client';
 
@@ -42,19 +42,16 @@ const ControllerSection = ({
   const hasDragHandledRef = useRef(false);
   const prevVolumeRef = useRef(0);
 
-  const sendDraggingStart = useCallback(() => {
+  const sendDraggingStart = () => {
     socket?.emit('interest:youtube:dragging');
-  }, [socket]);
+  };
 
-  const sendTimelineChange = useCallback(
-    (targetTime: number) => {
-      const playStatus = prevIsPlayingRef.current ? 'play' : 'pause';
-      socket?.emit('interest:youtube:timeline', { targetTime, playStatus, clientTimestamp: Date.now() });
-    },
-    [socket, prevIsPlayingRef]
-  );
+  const sendTimelineChange = (targetTime: number) => {
+    const playStatus = prevIsPlayingRef.current ? 'play' : 'pause';
+    socket?.emit('interest:youtube:timeline', { targetTime, playStatus, clientTimestamp: Date.now() });
+  };
 
-  const handleDragStart = useCallback(() => {
+  const handleDragStart = () => {
     hasDragHandledRef.current = true;
 
     setIsPlaying(false);
@@ -62,37 +59,34 @@ const ControllerSection = ({
     player?.getInternalPlayer().pauseVideo();
 
     sendDraggingStart();
-  }, [player, sendDraggingStart]);
+  };
 
-  const setFractionAndMove = useCallback(
-    (newFraction: number) => {
-      if (!isSharer || !player) return;
+  const setFractionAndMove = (newFraction: number) => {
+    if (!isSharer || !player) return;
 
-      player.seekTo(newFraction, 'fraction');
-      setFraction(newFraction);
+    player.seekTo(newFraction, 'fraction');
+    setFraction(newFraction);
 
-      if (isDraggingSliderRef.current && !hasDragHandledRef.current) {
-        handleDragStart();
+    if (isDraggingSliderRef.current && !hasDragHandledRef.current) {
+      handleDragStart();
+    }
+
+    // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
+    if (!isDraggingSliderRef.current) {
+      const newSec = newFraction * player.getDuration();
+      sendTimelineChange(newSec);
+
+      setIsPlaying(prevIsPlayingRef.current);
+
+      if (prevIsPlayingRef.current) {
+        player.getInternalPlayer().playVideo();
+      } else {
+        player.getInternalPlayer().pauseVideo();
       }
 
-      // 이동 중 임시로 변하는 경우 prevIsPlayingRef를 업데이트 하지 않음
-      if (!isDraggingSliderRef.current) {
-        const newSec = newFraction * player.getDuration();
-        sendTimelineChange(newSec);
-
-        setIsPlaying(prevIsPlayingRef.current);
-
-        if (prevIsPlayingRef.current) {
-          player.getInternalPlayer().playVideo();
-        } else {
-          player.getInternalPlayer().pauseVideo();
-        }
-
-        hasDragHandledRef.current = false;
-      }
-    },
-    [player, handleDragStart, sendTimelineChange, prevIsPlayingRef]
-  );
+      hasDragHandledRef.current = false;
+    }
+  };
 
   return (
     isHovering &&

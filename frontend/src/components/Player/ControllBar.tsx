@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Slider } from '@/components/common';
 import SettingPanel from './SettingPanel';
 import ReactPlayer from 'react-player';
+import { convertSecToHHMMSS } from '@/utils';
 
 interface ControllBarProps {
   isSharer: boolean;
@@ -84,25 +85,6 @@ const volumeContainerStyle = css({
   cursor: 'pointer',
   height: '100%'
 });
-
-function convertSecToHHMMSS(sec: number, minParts: number = 2) {
-  const hour = Math.floor(sec / 3600);
-  const minute = Math.floor((sec % 3600) / 60);
-  const second = sec % 60;
-
-  const HHMMSSArray = [hour, minute, second].map((val: number) => (val < 10 ? `0${val}` : `${val}`));
-
-  let isPrevExist = false;
-  const filteredParts = HHMMSSArray.filter((part: string, idx: number) => {
-    if (isPrevExist || Number(part) > 0 || HHMMSSArray.length - idx <= minParts) {
-      isPrevExist = true;
-      return true;
-    }
-    return false;
-  });
-
-  return filteredParts.join(':');
-}
 
 const ControllBar = ({
   isSharer,

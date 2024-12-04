@@ -1,4 +1,5 @@
 local statsKey = KEYS[1]
+local roomId = statsKey:match("rooms:([^:]+)")
 
 -- 내림차순 검색
 local statistics = redis.call('ZREVRANGE', statsKey, 0, -1, 'WITHSCORES')

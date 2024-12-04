@@ -1,6 +1,7 @@
 import { Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { memo } from 'react';
 
 interface SharerDraggingIndicatorProps {
   isSharerDragging: boolean;
@@ -35,7 +36,7 @@ const textStyle = css({
   font: Variables.typography.font_medium_16
 });
 
-const SharerDraggingIndicator = ({ isSharerDragging }: SharerDraggingIndicatorProps) => {
+const SharerDraggingIndicator = memo(({ isSharerDragging }: SharerDraggingIndicatorProps) => {
   return (
     <div css={sharerDraggingIndicatorStyle(isSharerDragging)}>
       <p css={textStyle}>공유자가 영상을 탐색 중입니다. 잠시만 기다려주세요!</p>
@@ -48,6 +49,6 @@ const SharerDraggingIndicator = ({ isSharerDragging }: SharerDraggingIndicatorPr
       </div>
     </div>
   );
-};
+});
 
 export default SharerDraggingIndicator;

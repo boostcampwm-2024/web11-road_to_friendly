@@ -1,8 +1,4 @@
--- KEYS[1]: roomId
-local roomId = KEYS[1]
-
--- 통계 저장 Sorted Set의 키 생성
-local statsKey = "rooms:" .. roomId .. ":statistics"
+local statsKey = KEYS[1]
 
 -- 내림차순 검색
 local statistics = redis.call('ZREVRANGE', statsKey, 0, -1, 'WITHSCORES')

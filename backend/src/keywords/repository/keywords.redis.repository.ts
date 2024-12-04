@@ -6,7 +6,6 @@ import { OnModuleInit } from '@nestjs/common';
 import { ACTION, KeywordsInfoDto } from '../dto/keywords.info.dto';
 import { KeywordsAlertDto } from '../dto/keywords.alert.dto';
 
-
 import { KeywordsRepository } from './keywords.repository';
 
 export class KeywordsRedisRepository implements KeywordsRepository, OnModuleInit {
@@ -45,7 +44,7 @@ export class KeywordsRedisRepository implements KeywordsRepository, OnModuleInit
   }
 
   async getStatistics(roomId: string) {
-    const result = await this.redis.evalsha(this.statisticsKeywordEval, 1, roomId);
+    const result = await this.redis.evalsha(this.statisticsKeywordEval, 1, `rooms:${roomId}:statistics`);
     return JSON.parse(result as string) as Record<string, KeywordsAlertDto[]>;
   }
 

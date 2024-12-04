@@ -3,17 +3,18 @@ import { getOrCreateValue } from '../../common/util/get-or-create-value';
 import { Interest } from '../domain/interest';
 import { CustomException } from '../../common/exception/custom-exception';
 import { InterestsBroadcastResponseDto } from '../dto/interests.broadcast.response.dto';
+import { InterestsRepository } from './interests.repository';
 
-export class InterestsInMemoryRepository {
+export class InterestsInMemoryRepository implements InterestsRepository {
   private readonly roomInterest = new Map<string, InterestsManager>();
 
-  addInterestIfBroadcasting(roomId: string, interest: Interest) {
+  async addInterestIfBroadcasting(roomId: string, interest: Interest) {
     const interestsManager = getOrCreateValue(this.roomInterest, roomId, () => new InterestsManager());
     const nowQueueSize = interestsManager.addInterestIfBroadcasting(interest);
     return InterestsBroadcastResponseDto.of(interest, nowQueueSize);
   }
 
-  next(roomId: string, hostFlag: boolean, clientId: string) {
+  async next(roomId: string, hostFlag: boolean, clientId: string) {
     const interestsManager = this.roomInterest.get(roomId);
 
     if (hostFlag || interestsManager.isMyInterest(clientId)) {

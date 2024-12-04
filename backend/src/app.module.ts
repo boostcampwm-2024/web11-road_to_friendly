@@ -23,7 +23,7 @@ import { RoomsRepositoryProvider } from './rooms/repository/rooms.repository.pro
 import { KeywordsRepositoryProvider } from './keywords/repository/keywords.repository.provider';
 import { CustomValidationPipe } from './interests/pipe/custom-validation.pipe';
 import { IsYoutubeLinkConstraint } from './interests/decorator/is-youtube-link.decorator';
-import { InterestsInMemoryRepository } from './interests/repository/interests.in-memory.repository';
+import { InterestsRepositoryProvider } from './interests/repository/interests.repository.provider';
 
 @Module({
   imports: [
@@ -59,7 +59,7 @@ import { InterestsInMemoryRepository } from './interests/repository/interests.in
     RedisProvider,
     RoomsRepositoryProvider,
     KeywordsRepositoryProvider,
-    InterestsInMemoryRepository,
+    InterestsRepositoryProvider,
   ],
   exports: ['INTERESTS_IMAGE_REPOSITORY'],
 })

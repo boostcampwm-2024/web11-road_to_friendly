@@ -54,8 +54,8 @@ export class InterestsGateway implements OnModuleInit {
     return this.shareInterest(roomId, interest);
   }
 
-  private shareInterest(roomId: string, interest: Interest) {
-    const interestsBroadcastResponseDto = this.interestsService.addInterest(roomId, interest);
+  private async shareInterest(roomId: string, interest: Interest) {
+    const interestsBroadcastResponseDto = await this.interestsService.addInterest(roomId, interest);
 
     if (interestsBroadcastResponseDto.nowQueueSize === 0) {
       this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);

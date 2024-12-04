@@ -5,25 +5,24 @@ import { InterestsRepository } from '../repository/interests.repository';
 import { InterestsImageDto } from '../dto/interests.image.dto';
 import { TIME_UNITS } from '../definition/time.unit';
 import { InterestsImageRepository } from '../repository/interests.image.repository';
-import { InterestsInMemoryRepository } from '../repository/interests.in-memory.repository';
 
 @Injectable()
 export class InterestsService {
   constructor(
-    private readonly interestsInMemoryRepository: InterestsInMemoryRepository, // redis 사용시 분리
+    private readonly interestsRepository: InterestsRepository,
     @Inject('INTERESTS_IMAGE_REPOSITORY') private readonly interestsImageRepository: InterestsImageRepository,
   ) {}
 
   addInterest(roomId: string, interest: Interest) {
-    return this.interestsInMemoryRepository.addInterestIfBroadcasting(roomId, interest);
+    return this.interestsRepository.addInterestIfBroadcasting(roomId, interest);
   }
 
   next(roomId: string, hostFlag: boolean, clientId: string) {
-    return this.interestsInMemoryRepository.next(roomId, hostFlag, clientId);
+    return this.interestsRepository.next(roomId, hostFlag, clientId);
   }
 
   deleteRoomInterest(roomId: string) {
-    this.interestsInMemoryRepository.deleteRoomInterest(roomId);
+    this.interestsRepository.deleteRoomInterest(roomId);
   }
 
   async uploadImage(data: InterestsImageDto) {

@@ -4,7 +4,7 @@ import { useSocketStore, useParticipantsStore } from '@/stores';
 import { ParticipantItem } from '@/types';
 import { convertArrayToObject } from '@/utils';
 
-const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
+const useParticipants = (roomId: string | null, finishInitialLoading: () => void) => {
   const { socket, connect, disconnect } = useSocketStore();
   const { hostId, setHostId, participants, setParticipants } = useParticipantsStore();
   const [roomExists, setRoomExists] = useState(true);
@@ -25,7 +25,7 @@ const useParticipants = (roomId: string | null, setLoading: React.Dispatch<React
 
       setParticipants(convertArrayToObject(participantsWithIndex));
       setHostId(response.body.hostId);
-      setLoading(false);
+      finishInitialLoading();
     }
     setCurrentUserId(socket?.id || null);
   };

@@ -135,7 +135,7 @@ export class InterestsGateway implements OnModuleInit {
     const clientId = client.id;
     const hostFlag = await this.roomsService.isHost(roomId, clientId);
 
-    const interestsBroadcastResponseDto = this.interestsService.next(roomId, hostFlag, clientId);
+    const interestsBroadcastResponseDto = await this.interestsService.next(roomId, hostFlag, clientId);
 
     this.server.to(roomId).emit('share:interest:broadcast', interestsBroadcastResponseDto);
   }

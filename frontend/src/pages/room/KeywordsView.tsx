@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants/radius';
 import { useToast } from '@/hooks';
@@ -9,54 +9,17 @@ import { useKeywordsStore } from '@/stores/keywords';
 import { keywordStyleMap, scaleIn, Variables } from '@/styles';
 import { Group, Keyword, KeywordInfo, KeywordsCoordinates, PrefixSum } from '@/types';
 
-const KeywordsViewContainer = css`
-  width: 150%;
-  height: 400px;
-  margin-top: 20px;
-  position: relative;
-`;
-
-// 좌표 계산을 위한 보이지 않는 컨테이너
-const HiddenKeywordsContainer = css`
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 1px solid black;
-  position: absolute;
-  overflow: hidden;
-  opacity: 0%;
-  z-index: 1;
-`;
-
-const RealKeywordsContainer = css`
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  opacity: 100%;
-  z-index: 2;
-`;
-
-const KeywordStyle = css`
-  position: absolute;
-  border: 1px solid black;
-  height: fit-content;
-  padding: 0.5rem 0.75rem;
-  background: ${Variables.colors.surface_word_default};
-  text-align: center;
-  min-width: 60px;
-  transition: all 0.3s ease;
-  transform: scale(0); // 초기 스케일 값 0
-  animation: ${scaleIn} 0.3s forwards; // keyframes 애니메이션 호출
-  cursor: pointer;
-`;
-
 interface KeywordsViewProps {
   questionId: number;
   selectedKeywords: Set<string>;
   updateSelectedKeywords: (keyword: string, type: 'add' | 'delete') => void;
+}
+
+interface OffsetValues {
+  offsetWidth: number;
+  offsetHeight: number;
+  offsetLeft: number;
+  offsetTop: number;
 }
 
 function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: PrefixSum): Group {
@@ -74,7 +37,7 @@ function getKeywordGroup(keyword: Keyword, keywordCountSum: number, prefixSum: P
   return 'Tiny';
 }
 
-const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: KeywordsViewProps) => {
+const KeywordsView = memo(({ questionId, selectedKeywords, updateSelectedKeywords }: KeywordsViewProps) => {
   const { socket } = useSocketStore();
   const { openToast } = useToast();
   const { keywords, prefixSumMap, upsertMultipleKeywords } = useKeywordsStore();
@@ -118,6 +81,7 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
   useEffect(() => {
     const container = containerRef.current;
     const wordArray = keywords[questionId] || [];
+    const wordsOffsetValuesMap: Record<string, OffsetValues> = {};
     if (!container || wordArray.length === 0) return;
 
     // 컨테이너 초기화
@@ -130,7 +94,15 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
     const containerAspectRatio = containerWidth / containerHeight;
 
     const hitTest = (elem: HTMLElement, other_elems: HTMLElement[]): boolean => {
-      const overlapTest = (a: HTMLElement, b: HTMLElement, gap: number) => {
+      // 추가할 키워드 엘리먼트의 offset 정보 캐싱
+      const A_offsetValeus: OffsetValues = {
+        offsetLeft: elem.offsetLeft,
+        offsetTop: elem.offsetTop,
+        offsetWidth: elem.offsetWidth,
+        offsetHeight: elem.offsetHeight
+      };
+
+      const overlapTest = (a: OffsetValues, b: OffsetValues, gap: number) => {
         if (
           Math.abs(a.offsetLeft + a.offsetWidth / 2 - b.offsetLeft - b.offsetWidth / 2) <
           a.offsetWidth / 2 + b.offsetWidth / 2 + gap * 4
@@ -148,12 +120,13 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
 
       let i = 0;
       for (i = 0; i < other_elems.length; i++) {
-        if (overlapTest(elem, other_elems[i], 4)) return true;
+        if (overlapTest(A_offsetValeus, wordsOffsetValuesMap[other_elems[i].innerText], 4)) return true;
       }
       return false;
     };
 
     const alreadyPlacedWords: HTMLElement[] = [];
+    const updatedKeywordsCoordinates: KeywordsCoordinates = {};
 
     const drawOneWord = (index: number, word: Keyword) => {
       const wordId = `word-${index}`;
@@ -161,8 +134,6 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
       let radius = 0.0;
       const step = 2.0;
       let weight = 1;
-      const customClass = '';
-      const innerHTML = '';
       const wordSpan: HTMLSpanElement = document.createElement('span');
 
       wordSpan.setAttribute('id', wordId);
@@ -225,16 +196,23 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
       }
 
       alreadyPlacedWords.push(wordSpan);
-      setKeywordsCoordinates((prev) => ({
-        ...prev,
-        [word.keyword]: { x: left, y: top, count: word.count }
-      }));
+      // 키워드 엘리먼트의 offset 정보 캐싱
+      wordsOffsetValuesMap[word.keyword] = {
+        offsetLeft: wordSpan.offsetLeft,
+        offsetTop: wordSpan.offsetTop,
+        offsetWidth: wordSpan.offsetWidth,
+        offsetHeight: wordSpan.offsetHeight
+      };
+      updatedKeywordsCoordinates[word.keyword] = { x: left, y: top, count: word.count };
+      return wordSpan;
     };
 
-    setKeywordsCoordinates({}); // 이전 워드클라우드 좌표정보 초기화
-    wordArray.forEach((word, index) => {
-      drawOneWord(index, word);
-    });
+    const renderWords = () => {
+      wordArray.forEach((word, index) => drawOneWord(index, word));
+      setKeywordsCoordinates(updatedKeywordsCoordinates);
+    };
+
+    requestAnimationFrame(renderWords);
   }, [keywords[questionId]]);
 
   const pickKeyword = async (keyword: string) => {
@@ -289,6 +267,50 @@ const KeywordsView = ({ questionId, selectedKeywords, updateSelectedKeywords }: 
       </div>
     </div>
   );
-};
+});
 
 export default KeywordsView;
+
+const KeywordsViewContainer = css`
+  width: 150%;
+  height: 400px;
+  margin-top: 20px;
+  position: relative;
+`;
+
+// 좌표 계산을 위한 보이지 않는 컨테이너
+const HiddenKeywordsContainer = css`
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+  position: absolute;
+  overflow: hidden;
+  opacity: 0%;
+  z-index: 1;
+`;
+
+const RealKeywordsContainer = css`
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  opacity: 100%;
+  z-index: 2;
+`;
+
+const KeywordStyle = css`
+  position: absolute;
+  border: 1px solid black;
+  height: fit-content;
+  padding: 0.5rem 0.75rem;
+  background: ${Variables.colors.surface_word_default};
+  text-align: center;
+  min-width: 60px;
+  transition: all 0.3s ease;
+  transform: scale(0); // 초기 스케일 값 0
+  animation: ${scaleIn} 0.3s forwards; // keyframes 애니메이션 호출
+  cursor: pointer;
+`;

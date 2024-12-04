@@ -11,7 +11,7 @@ import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
 import { roomError } from '@/constants/roomError';
-import { FADE_OUT_DELAY, CONTENT_SHARE_DELAY } from '@/constants/time';
+import { useLoadingState, useViewState } from '@/hooks';
 import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/Variables';
 import { calculatePosition } from '@/utils';
@@ -25,17 +25,20 @@ import RoomIntroView from './roomIntroView';
 const Room = () => {
   const { showBoundary } = useErrorBoundary();
   const roomId = useParams<{ roomId: string }>().roomId || null;
-  const [initialLoading, setInitialLoading] = useState<boolean>(true);
-  const [resultLoading, setResultLoading] = useState<boolean>(false);
+  const { initialLoading, resultLoading, startResultLoading, finishResultLoading, finishInitialLoading } =
+    useLoadingState();
+  const {
+    isIntroViewActive,
+    isResultView,
+    isResultInstructionVisible,
+    isFadingOut,
+    isContentShareVisible,
+    startResultPage,
+    endIntroView
+  } = useViewState();
 
-  const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, setInitialLoading);
+  const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, finishInitialLoading);
   const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
-
-  const [isIntroViewActive, setIsIntroViewActive] = useState(true);
-  const [isResultView, setIsResultView] = useState(false); //결과 페이지 여부
-  const [isResultInstructionVisible, setIsResultInstructionVisible] = useState(true);
-  const [isFadingOut, setIsFadingOut] = useState(false); // 페이드아웃 상태
-  const [isContentShareVisible, setIsContentShareVisible] = useState(false);
 
   useBeforeUnload((e) => {
     if (!isIntroViewActive) {
@@ -44,47 +47,13 @@ const Room = () => {
     }
   });
 
-  useEffect(() => {
-    if (isResultView) {
-      setIsResultInstructionVisible(true);
-      // 5초 후 페이드아웃 시작
-      // 로딩이 3초
-      const fadeOutTimer = setTimeout(() => {
-        setIsFadingOut(true);
-      }, FADE_OUT_DELAY);
-
-      // 페이드아웃 1초 후 ContentShareView 표시
-      const showContentTimer = setTimeout(() => {
-        setIsResultInstructionVisible(false);
-        setIsContentShareVisible(true);
-      }, CONTENT_SHARE_DELAY);
-
-      return () => {
-        clearTimeout(fadeOutTimer);
-        clearTimeout(showContentTimer);
-      };
-    }
-  }, [isResultView]);
-
-  const startResultPage = () => {
-    setIsResultView(true);
-  };
-
-  const startResultLoading = () => {
-    setResultLoading(true);
-  };
-
-  const finishResultLoading = () => {
-    setResultLoading(false);
-  };
-
   const positions = useMemo(
     () => calculatePosition(Math.min(Object.keys(participants).length, 8), radius[0], radius[1]), //10명으로 제한
     [radius, participants]
   );
 
   const hideIntroView = () => {
-    setIsIntroViewActive(false);
+    endIntroView();
     setOutOfBounds(true);
   };
 

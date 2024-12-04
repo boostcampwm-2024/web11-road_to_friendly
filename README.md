@@ -204,6 +204,22 @@ https://road-to-friendly.kro.kr/
 > 워드 클라우드 UI를 그릴 때 발생하는 reflow 횟수를 줄여서 성능을 개선한 과정을 소개합니다<br><br>
 > [👉 FE 코드 리팩토링 및 최적화, 성능 개선 과정](https://lime-mall-d34.notion.site/FE-cc705396b35a49189bb5a56bd6459c85?pvs=4)
 
+<!-- TOC --><a name="be--1"></a>
+#### **[BE] FE CI/CD 파이프라인 구축하기**
+
+> CI/CD 파이프라인을 어떤 방식으로 설계하고 구성해야 할까요?<br>
+> FE 코드를 배포할 때, 어떤 절차와 도구를 활용해야 할까요?<br>
+> 배포된 파일을 어디에 저장하고, 어떻게 제공해야 할까요?<br><br>
+> [👉 FE CI/CD 구축하기](https://lime-mall-d34.notion.site/FE-CI-CD-068a37fd8f2d48359c1fdee8c9e1a794?pvs=4)
+
+<!-- TOC --><a name="be--2"></a>
+#### **[BE] Let’s Encrypt 이용하여 HTTPS 적용하기**
+
+> Let’s Encrypt를 사용하여 HTTPS를 연결하면 어떤점이 좋을까요?<br>
+> HTTPS 적용을 어떻게 해야할까요?<br>
+> 인증서 발급 후, 관련 파일을 어디에 저장하고, 어떻게 보안을 강화할 수 있을까요?<br><br>
+> [👉 Let’s Encrypt 이용하여 HTTPS 적용하기](https://lime-mall-d34.notion.site/HTTPS-2c3b152d00424993b26619d54a833f84?pvs=4)
+
 <br>
 
 <!-- TOC --><a name="--7"></a>

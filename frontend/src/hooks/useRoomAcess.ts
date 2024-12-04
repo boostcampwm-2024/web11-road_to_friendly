@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
+
 import { roomError } from '@/constants/roomError';
 import { useRoomAccessStore } from '@/stores';
-import { useEffect } from 'react';
 export const useRoomAccess = () => {
   const { canAccess, connect, disconnect } = useRoomAccessStore();
 

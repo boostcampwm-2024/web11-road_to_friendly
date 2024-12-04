@@ -3,42 +3,6 @@ import { css } from '@emotion/react';
 import CloseX from '@/assets/icons/closeX.svg?react';
 import { Variables } from '@/styles';
 
-const ModalOverlayStyle = css`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: ${Variables.colors.surface_transparent_black_50};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-`;
-
-const ModalContentStyle = (top?: string, left?: string, right?: string, bottom?: string, isCenter?: boolean) => css`
-  position: absolute;
-  top: ${top ? top : 'unset'};
-  left: ${left ? left : 'unset'};
-  right: ${right ? right : 'unset'};
-  bottom: ${bottom ? bottom : 'unset'};
-  ${isCenter && 'transform: translate(-50%, -50%);'}
-  background-color: ${Variables.colors.surface_white};
-  max-width: 300px;
-  max-height: 600px;
-  padding: ${Variables.spacing.spacing_sm};
-  text-align: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 999; /* overlay보다 위에 위치 */
-`;
-
-const closeButtonStyle = css`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-`;
-
 // 모달 컴포넌트
 const Modal = ({
   closeButton = false,
@@ -95,3 +59,39 @@ const Modal = ({
 };
 
 export default Modal;
+
+const ModalOverlayStyle = css`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: ${Variables.colors.surface_transparent_black_50};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+`;
+
+const ModalContentStyle = (top?: string, left?: string, right?: string, bottom?: string, isCenter?: boolean) => css`
+  position: absolute;
+  top: ${top ? top : 'unset'};
+  left: ${left ? left : 'unset'};
+  right: ${right ? right : 'unset'};
+  bottom: ${bottom ? bottom : 'unset'};
+  ${isCenter && 'transform: translate(-50%, -50%);'}
+  background-color: ${Variables.colors.surface_white};
+  max-width: 300px;
+  max-height: 600px;
+  padding: ${Variables.spacing.spacing_sm};
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 999; /* overlay보다 위에 위치 */
+`;
+
+const closeButtonStyle = css`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+`;

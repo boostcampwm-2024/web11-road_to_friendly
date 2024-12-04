@@ -1,7 +1,8 @@
-import { Variables } from '@/styles';
 import { css } from '@emotion/react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { memo } from 'react';
+
+import { Variables } from '@/styles';
 
 interface SharerDraggingIndicatorProps {
   isSharerDragging: boolean;

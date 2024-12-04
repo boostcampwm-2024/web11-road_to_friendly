@@ -1,7 +1,8 @@
-import { RoomAlreadyEnter, RoomNotFoundError, RoomDefaultError } from '@/components';
-import { roomError } from '@/constants/roomError';
 import { EmotionJSX } from 'node_modules/@emotion/react/types/jsx-namespace';
 import { ErrorBoundary } from 'react-error-boundary';
+
+import { RoomAlreadyEnter, RoomNotFoundError, RoomDefaultError } from '@/components';
+import { roomError } from '@/constants/roomError';
 
 interface RoomCatchWrapperProps {
   children: React.ReactNode;

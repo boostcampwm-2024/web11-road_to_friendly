@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import LandingPage from '@/pages/LandingPage';
 
-import Room from '@/pages/room/room';
+import Room from '@/pages/room/Room';
 import { GlobalStyle } from '@/styles/GlobalStyle';
 
 import { ToastProvider } from './contexts';

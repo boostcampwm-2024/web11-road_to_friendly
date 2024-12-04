@@ -12,25 +12,6 @@ interface ModalWithOverlayProps {
   closeModal: () => void;
 }
 
-const Overlay = css([
-  {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  flexStyle(0)
-]);
-
-const Wrapper = css({
-  backgroundColor: Variables.colors.surface_white,
-  padding: 24,
-  borderRadius: 16,
-  minWidth: 300
-});
-
 const overlayAnimationVariants = {
   hidden: {
     backdropFilter: 'blur(0px)',
@@ -91,3 +72,22 @@ const ModalWithOverlay = ({ children, isOpen, closeModal }: ModalWithOverlayProp
 };
 
 export default ModalWithOverlay;
+
+const Overlay = css([
+  {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  flexStyle(0)
+]);
+
+const Wrapper = css({
+  backgroundColor: Variables.colors.surface_white,
+  padding: 24,
+  borderRadius: 16,
+  minWidth: 300
+});

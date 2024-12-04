@@ -9,7 +9,7 @@ import { InterestsImageRepository } from '../repository/interests.image.reposito
 @Injectable()
 export class InterestsService {
   constructor(
-    private readonly interestsRepository: InterestsRepository,
+    @Inject('INTERESTS_REPOSITORY') private readonly interestsRepository: InterestsRepository,
     @Inject('INTERESTS_IMAGE_REPOSITORY') private readonly interestsImageRepository: InterestsImageRepository,
   ) {}
 

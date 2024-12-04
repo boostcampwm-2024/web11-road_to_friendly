@@ -1,18 +1,18 @@
-import { Variables } from '@/styles';
 import { css } from '@emotion/react';
+import { memo, useEffect, useRef, useState } from 'react';
+import ReactPlayer from 'react-player';
 
-import PlayIcon from '@/assets/icons/play-fill.svg?react';
+import { Slider } from '@/components/common';
+
 import PauseIcon from '@/assets/icons/pause-line.svg?react';
+import PlayIcon from '@/assets/icons/play-fill.svg?react';
+import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
 import VolumeFillIcon from '@/assets/icons/volume-down-fill.svg?react';
 import VolumneMuteFillIcon from '@/assets/icons/volume-mute-fill.svg?react';
-
-import SettingFillIcon from '@/assets/icons/settings-4-fill.svg?react';
-
-import { memo, useEffect, useRef, useState } from 'react';
-import { Slider } from '@/components/common';
-import SettingPanel from './SettingPanel';
-import ReactPlayer from 'react-player';
+import { Variables } from '@/styles';
 import { convertSecToHHMMSS } from '@/utils';
+
+import SettingPanel from './SettingPanel';
 
 interface ControllBarProps {
   isSharer: boolean;

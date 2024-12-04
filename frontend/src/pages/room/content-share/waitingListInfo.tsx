@@ -1,8 +1,10 @@
 import { css } from '@emotion/react';
 
+import { useModal } from '@/hooks/useModal';
+
 import PlusIcon from '@/assets/icons/plus.svg?react';
 import { flexStyle, Variables } from '@/styles';
-import { useModal } from '@/hooks/useModal';
+
 import ContentEnrollModal from './contentEnrollModal';
 
 interface WaitingListInfoProps {

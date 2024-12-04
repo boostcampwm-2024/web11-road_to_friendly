@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { Variables } from '@/styles';
+
 import { TextSeparate } from '../common';
 
 interface RoomErrorProps {

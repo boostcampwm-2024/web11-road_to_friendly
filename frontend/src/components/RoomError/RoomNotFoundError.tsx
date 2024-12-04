@@ -1,5 +1,6 @@
-import RoomError from './RoomError';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
+import RoomError from './RoomError';
 
 const RoomNotFoundError = () => {
   return (

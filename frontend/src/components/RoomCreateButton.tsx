@@ -8,21 +8,6 @@ import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
 import { LoadingSpinner } from './common';
 
-const startButtonStyle = css(
-  {
-    font: Variables.typography.font_bold_20,
-    color: Variables.colors.text_white,
-    backgroundColor: Variables.colors.surface_point,
-    borderRadius: 999,
-    minWidth: '23.6rem',
-    minHeight: '3.5rem',
-    ':hover': {
-      opacity: 0.8
-    }
-  },
-  hoverGrowJumpAnimation()
-);
-
 const RoomCreateButton = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -73,3 +58,18 @@ const RoomCreateButton = () => {
 };
 
 export default RoomCreateButton;
+
+const startButtonStyle = css(
+  {
+    font: Variables.typography.font_bold_20,
+    color: Variables.colors.text_white,
+    backgroundColor: Variables.colors.surface_point,
+    borderRadius: 999,
+    minWidth: '23.6rem',
+    minHeight: '3.5rem',
+    ':hover': {
+      opacity: 0.8
+    }
+  },
+  hoverGrowJumpAnimation()
+);

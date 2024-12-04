@@ -1,8 +1,9 @@
-import PlayIcon from '@/assets/icons/play-fill.svg?react';
-import PauseIcon from '@/assets/icons/pause-line.svg?react';
 import { css } from '@emotion/react';
-import { growAndDiplay, Variables } from '@/styles';
 import { memo } from 'react';
+
+import PauseIcon from '@/assets/icons/pause-line.svg?react';
+import PlayIcon from '@/assets/icons/play-fill.svg?react';
+import { growAndDiplay, Variables } from '@/styles';
 
 interface StateChangeIndicatorProps {
   isPlaying: boolean;

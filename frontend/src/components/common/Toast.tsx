@@ -8,6 +8,44 @@ import { Variables } from '@/styles';
 import { Position, ToastProps } from '@/types';
 import { parseNumberAndUnit } from '@/utils';
 
+const Toast = ({ icon, text, duration = 1750, position = { bottom: '1.5rem', left: '50%' } }: ToastProps) => {
+  const [timeover, setTimeover] = useTimeout(duration);
+  const { toast, closeToast } = useContext(ToastContext);
+  const Icon = icon;
+
+  function handleAnimationEnd() {
+    if (timeover) {
+      closeToast();
+    }
+  }
+
+  if (!toast) return null;
+
+  return (
+    <div
+      css={[
+        toastCss,
+        position,
+        { animation: `${timeover ? slideDown(position) : slideUp(position)} 0.1s ease-out forwards` }
+      ]}
+      onAnimationEnd={handleAnimationEnd}
+    >
+      <Icon />
+      <div css={{ display: 'flex', justifyContent: 'space-between', flex: '1' }}>
+        {text}
+        <button
+          css={{ width: '1.25rem', cursor: 'pointer', backgroundColor: 'transparent', ':focus': { outline: 'none' } }}
+          onClick={() => setTimeover(true)}
+        >
+          <CloseIcon stroke={Variables.colors.text_white} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Toast;
+
 const slideUp = (position: Position) => {
   const { bottom } = position;
   const [number, unit] = parseNumberAndUnit(bottom);
@@ -55,41 +93,3 @@ const toastCss = css({
   color: Variables.colors.text_white,
   backgroundColor: Variables.colors.surface_strong
 });
-
-const Toast = ({ icon, text, duration = 1750, position = { bottom: '1.5rem', left: '50%' } }: ToastProps) => {
-  const [timeover, setTimeover] = useTimeout(duration);
-  const { toast, closeToast } = useContext(ToastContext);
-  const Icon = icon;
-
-  function handleAnimationEnd() {
-    if (timeover) {
-      closeToast();
-    }
-  }
-
-  if (!toast) return null;
-
-  return (
-    <div
-      css={[
-        toastCss,
-        position,
-        { animation: `${timeover ? slideDown(position) : slideUp(position)} 0.1s ease-out forwards` }
-      ]}
-      onAnimationEnd={handleAnimationEnd}
-    >
-      <Icon />
-      <div css={{ display: 'flex', justifyContent: 'space-between', flex: '1' }}>
-        {text}
-        <button
-          css={{ width: '1.25rem', cursor: 'pointer', backgroundColor: 'transparent', ':focus': { outline: 'none' } }}
-          onClick={() => setTimeover(true)}
-        >
-          <CloseIcon stroke={Variables.colors.text_white} />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-export default Toast;

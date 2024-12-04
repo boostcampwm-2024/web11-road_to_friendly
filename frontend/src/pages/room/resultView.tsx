@@ -7,29 +7,6 @@ import { useKeywordsStore } from '@/stores/keywords';
 import { Variables, StatisticsStyleMap } from '@/styles';
 import { Participant } from '@/types';
 
-const KeywordsContainer = css`
-  width: 100%;
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: 8px;
-`;
-
-const KeywordStyle = css`
-  border: 1px solid black;
-  padding: 3px 10px;
-  background: ${Variables.colors.surface_word_default};
-  border-radius: 50px;
-  text-align: center;
-  min-width: 90px;
-  height: 40px;
-  list-style: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 interface ResultViewProps {
   participant: Participant;
 }
@@ -93,3 +70,26 @@ const ResultView = ({ participant }: ResultViewProps) => {
 };
 
 export default ResultView;
+
+const KeywordsContainer = css`
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+`;
+
+const KeywordStyle = css`
+  border: 1px solid black;
+  padding: 3px 10px;
+  background: ${Variables.colors.surface_word_default};
+  border-radius: 50px;
+  text-align: center;
+  min-width: 90px;
+  height: 40px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

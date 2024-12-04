@@ -1,6 +1,7 @@
+import { create } from 'zustand';
+
 import RoomAccessWorker from '@/workers/roomAccessWorker.js?sharedworker';
 import TimerWorker from '@/workers/timerWorker.js?worker';
-import { create } from 'zustand';
 
 type HandleRoomAccess = () => Promise<SharedWorker | null>;
 

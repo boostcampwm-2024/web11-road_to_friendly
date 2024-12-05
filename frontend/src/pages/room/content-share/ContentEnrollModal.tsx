@@ -40,33 +40,6 @@ const steps: EnrollModalSteps[] = [
   }
 ];
 
-const Container = css([
-  {
-    width: '40vw',
-    minWidth: '400px'
-  },
-  flexStyle(12, 'column')
-]);
-
-const NavBar = css([
-  {
-    width: '100%'
-  },
-  flexStyle(0, 'row', 'space-between')
-]);
-
-const Button = css([
-  {
-    padding: 8,
-    borderRadius: '999px',
-    ':hover': {
-      backgroundColor: '#e9e9e9'
-    },
-    transition: 'background-color 0.5s ease'
-  },
-  flexStyle(0)
-]);
-
 const ContentEnrollModal = ({ closeModal }: ContentEnrollModalProps) => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const changeStepIndex = (index: number) => setCurrentStepIndex(index);
@@ -101,3 +74,30 @@ const ContentEnrollModal = ({ closeModal }: ContentEnrollModalProps) => {
 };
 
 export default ContentEnrollModal;
+
+const Container = css([
+  {
+    width: '40vw',
+    minWidth: '400px'
+  },
+  flexStyle(12, 'column')
+]);
+
+const NavBar = css([
+  {
+    width: '100%'
+  },
+  flexStyle(0, 'row', 'space-between')
+]);
+
+const Button = css([
+  {
+    padding: 8,
+    borderRadius: '999px',
+    ':hover': {
+      backgroundColor: '#e9e9e9'
+    },
+    transition: 'background-color 0.5s ease'
+  },
+  flexStyle(0)
+]);

@@ -1,9 +1,50 @@
 import { css } from '@emotion/react';
-import { useLocation } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { useModal } from '@/hooks/useModal';
 
 import ProfileEditButton from '@/components/ProfileEditButton';
 
 import { flexStyle, Variables } from '@/styles';
+
+import TutorialModal from '../TutorialModal';
+
+interface HeaderProps {
+  paddingY?: number;
+}
+
+const Header = React.memo(
+  ({ paddingY = 12 }: HeaderProps) => {
+    const { ModalWithOverlay: Modal, isOpen, openModal, closeModal } = useModal();
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    return (
+      <>
+        <header css={headerWrapperStyle}>
+          <div css={headerStyle(paddingY)}>
+            <button css={flexStyle(0)} onClick={() => navigate('/')}>
+              <img src="/logo.png" alt="logo" height={'40px'} />
+            </button>
+            <nav css={navStyle}>
+              <button onClick={openModal}>튜토리얼</button>
+              {location.pathname !== '/' && <ProfileEditButton />}
+            </nav>
+          </div>
+        </header>
+        <Modal isOpen={isOpen} closeModal={closeModal}>
+          <TutorialModal closeModal={closeModal} />
+        </Modal>
+      </>
+    );
+  },
+  (prevProps, nextProps) => {
+    return prevProps.paddingY === nextProps.paddingY;
+  }
+);
+
+export default Header;
 
 const headerWrapperStyle = css({
   position: 'fixed',
@@ -35,27 +76,3 @@ const navStyle = css({
   color: Variables.colors.text_default,
   font: Variables.typography.font_medium_16
 });
-
-interface HeaderProps {
-  paddingY?: number;
-}
-
-const Header = ({ paddingY = 12 }: HeaderProps) => {
-  const location = useLocation();
-  return (
-    <header css={headerWrapperStyle}>
-      <div css={headerStyle(paddingY)}>
-        <a css={flexStyle(0)} href="/">
-          <img src="/logo.png" alt="logo" height={'40px'} />
-        </a>
-        <nav css={navStyle}>
-          <button>튜토리얼</button>
-          <button>라이트/다크</button>
-          {location.pathname !== '/' && <ProfileEditButton />}
-        </nav>
-      </div>
-    </header>
-  );
-};
-
-export default Header;

@@ -5,7 +5,7 @@ import ImageIcon from '@/assets/icons/image.svg?react';
 import YoutubeIcon from '@/assets/icons/youtube.svg?react';
 import { flexStyle, Variables } from '@/styles';
 
-import { StepComponentType } from '../contentEnrollModal';
+import { StepComponentType } from '../ContentEnrollModal';
 
 interface OptionProps {
   icon: ReactElement;

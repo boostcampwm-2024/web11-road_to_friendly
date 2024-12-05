@@ -1,10 +1,69 @@
 import { css } from '@emotion/react';
+import React from 'react';
 
 import Crown from '@/assets/icons/crown.svg?react';
-import ResultView from '@/pages/room/resultView';
+import { PROFILE_STYLES } from '@/constants/profile';
+import ResultView from '@/pages/room/ResultView';
 import { useRadiusStore } from '@/stores';
 import { Variables, flexStyle } from '@/styles';
 import { Participant } from '@/types';
+
+interface Positon {
+  x: number;
+  y: number;
+}
+
+interface UserProfileProps {
+  participant: Participant;
+  isCurrentUser: boolean;
+  isHost: boolean;
+  position: Positon;
+  isResultView: boolean;
+}
+
+const areEqual = (prevProps: UserProfileProps, nextProps: UserProfileProps) => {
+  const prevKeywords = prevProps.participant.keywords || [];
+  const nextKeywords = nextProps.participant.keywords || [];
+
+  const areKeywordsEqual =
+    prevKeywords.length === nextKeywords.length &&
+    prevKeywords.every(
+      (data, index) => data.keyword === nextKeywords[index].keyword && data.count === nextKeywords[index].count
+    );
+
+  return (
+    prevProps.participant.nickname === nextProps.participant.nickname &&
+    prevProps.participant.index === nextProps.participant.index &&
+    prevProps.isCurrentUser === nextProps.isCurrentUser &&
+    prevProps.isHost === nextProps.isHost &&
+    prevProps.position.x === nextProps.position.x &&
+    prevProps.position.y === nextProps.position.y &&
+    prevProps.isResultView === nextProps.isResultView &&
+    areKeywordsEqual
+  );
+};
+
+const UserProfile = React.memo(({ participant, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
+  const { radius, isOutOfBounds } = useRadiusStore();
+  const profileStyles = PROFILE_STYLES[(participant?.index || 0) % PROFILE_STYLES.length];
+
+  return (
+    <div css={profileStyle(position.x, position.y, radius[0], radius[1], isOutOfBounds)}>
+      <div css={profileImageStyle(profileStyles[0])}>
+        {isHost && (
+          <div css={hostStyle}>
+            <Crown />
+          </div>
+        )}
+        <div>{profileStyles[1]}</div>
+        <div css={participantNicknameStyle}>{participant.nickname}</div>
+        {isCurrentUser && <div css={selfTagStyle}>나</div>}
+      </div>
+      {isResultView && <ResultView participant={participant} />}
+    </div>
+  );
+}, areEqual);
+export default UserProfile;
 
 const profileStyle = (x: number, y: number, shortRadius: number, longRadius: number, isOutOfBounds: boolean) => css`
   position: absolute;
@@ -60,52 +119,3 @@ const hostStyle = css`
   width: 50px;
   height: 40px;
 `;
-
-const profileColors = [
-  [Variables.colors.player_blue, '🐯'],
-  [Variables.colors.player_grey, '🦊'],
-  [Variables.colors.player_red, '🐱'],
-  [Variables.colors.player_green, '🐼'],
-  [Variables.colors.player_orange, '🐨'],
-  [Variables.colors.player_purple, '🐵'],
-  [Variables.colors.player_yellow, '🐰'],
-  [Variables.colors.player_pink, '🦁'],
-  [Variables.colors.player_cyan, '🐶'],
-  [Variables.colors.player_brown, '🦝']
-];
-
-interface Positon {
-  x: number;
-  y: number;
-}
-
-interface UserProfileProps {
-  participant: Participant;
-  index: number;
-  isCurrentUser: boolean;
-  isHost: boolean;
-  position: Positon;
-  isResultView: boolean;
-}
-
-const UserProfile = ({ participant, index, isCurrentUser, isHost, position, isResultView }: UserProfileProps) => {
-  const { radius, isOutOfBounds } = useRadiusStore();
-
-  return (
-    <div css={profileStyle(position.x, position.y, radius[0], radius[1], isOutOfBounds)}>
-      <div css={profileImageStyle(profileColors[index % profileColors.length][0])}>
-        {isHost && (
-          <div css={hostStyle}>
-            <Crown />
-          </div>
-        )}
-        <div>{profileColors[index % profileColors.length][1]}</div>
-        <div css={participantNicknameStyle}>{participant.nickname}</div>
-        {isCurrentUser && <div css={selfTagStyle}>나</div>}
-      </div>
-      {isResultView && <ResultView participant={participant} />}
-    </div>
-  );
-};
-
-export default UserProfile;

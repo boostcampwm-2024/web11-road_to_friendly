@@ -2,7 +2,7 @@ import { css, SerializedStyles } from '@emotion/react';
 
 import { Group } from '@/types';
 
-import { Variables } from './Variables';
+import { Variables } from './variables';
 
 type StatisticsStyleMap = () => Record<Group, SerializedStyles>;
 

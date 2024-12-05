@@ -4,26 +4,6 @@ import LinkIcon from '@/assets/icons/link.svg?react';
 import { useToast } from '@/hooks';
 import { hoverGrowJumpAnimation, Variables } from '@/styles';
 
-const shareButtonStyle = css({
-  display: 'flex',
-  justifyContent: 'space-evenly',
-  alignItems: 'center',
-
-  width: '180px',
-  borderRadius: '1.75rem',
-  padding: '1rem',
-
-  position: 'fixed',
-  bottom: '2rem',
-  right: '2rem',
-
-  font: Variables.typography.font_medium_16,
-  color: Variables.colors.text_default,
-  backgroundColor: Variables.colors.surface_white,
-  fill: Variables.colors.text_point,
-  filter: `drop-shadow(${Variables.shadow.shadow_floating})`
-});
-
 function copyCurrentLink(callback: Function) {
   const currentUrl = window.location.href;
   navigator.clipboard.writeText(currentUrl).then(() => {
@@ -45,3 +25,23 @@ const ShareButton = () => {
 };
 
 export default ShareButton;
+
+const shareButtonStyle = css({
+  display: 'flex',
+  justifyContent: 'space-evenly',
+  alignItems: 'center',
+
+  width: '180px',
+  borderRadius: '1.75rem',
+  padding: '1rem',
+
+  position: 'fixed',
+  bottom: '2rem',
+  right: '2rem',
+
+  font: Variables.typography.font_medium_16,
+  color: Variables.colors.text_default,
+  backgroundColor: Variables.colors.surface_white,
+  fill: Variables.colors.text_point,
+  filter: `drop-shadow(${Variables.shadow.shadow_floating})`
+});

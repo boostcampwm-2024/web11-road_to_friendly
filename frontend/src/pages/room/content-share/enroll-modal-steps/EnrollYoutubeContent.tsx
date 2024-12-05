@@ -8,7 +8,90 @@ import { useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 import { checkYoutubeURLValidation, getYoutubeEmbedURL } from '@/utils';
 
-import { StepComponentType } from '../contentEnrollModal';
+import { StepComponentType } from '../ContentEnrollModal';
+
+const EnrollYoutubeContent: StepComponentType = ({ closeModal }) => {
+  const { socket } = useSocketStore();
+  const [youtubeURL, setYoutubeURL] = useState('');
+  const [isValid, setIsValid] = useState<boolean | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { openToast } = useToast();
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    setYoutubeURL(inputValue);
+
+    setIsValid(checkYoutubeURLValidation(inputValue));
+  };
+
+  const handleSubmit = async (youtubeURL: string) => {
+    if (isValid) {
+      try {
+        await sendYoutubeEnrollRequest(socket, youtubeURL);
+        openToast({ text: '공유 대기 목록에 컨텐츠를 추가했어요!', type: 'check' });
+        closeModal();
+      } catch (error) {
+        if (error instanceof Error) openToast({ text: error.message, type: 'error' });
+      }
+    }
+  };
+
+  return (
+    <div css={flexStyle(16, 'column')} style={{ width: '100%', marginTop: 12 }}>
+      <div style={{ width: '100%', position: 'relative' }}>
+        <div css={thumbnailSectionStyle}>
+          {isValid ? (
+            <iframe
+              title="YouTube Preview"
+              width="100%"
+              height="100%"
+              src={getYoutubeEmbedURL(youtubeURL)}
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <p css={previewTextStyle}>여기에 미리보기가 표시됩니다.</p>
+          )}
+        </div>
+        {isValid && (
+          <button
+            css={resetButtonStyle}
+            onClick={() => {
+              setYoutubeURL('');
+              setIsValid(false);
+              inputRef.current.focus();
+            }}
+          >
+            -
+          </button>
+        )}
+      </div>
+      <div css={inputWrapperStyle}>
+        <input
+          id="youtube-link"
+          type="text"
+          ref={inputRef}
+          placeholder={isValid === null || youtubeURL === '' ? '유튜브 링크를 입력해주세요!' : undefined}
+          value={youtubeURL}
+          onChange={handleInputChange}
+          css={inputStyle(isValid, youtubeURL)}
+        />
+        <LinkIcon css={inputIconStyle} />
+      </div>
+      <button onClick={() => handleSubmit(youtubeURL)} disabled={!isValid} css={buttonStyle(isValid)}>
+        제출하고 공유 시작하기 ✨
+      </button>
+    </div>
+  );
+};
+
+export default EnrollYoutubeContent;
 
 const thumbnailSectionStyle = css([
   {
@@ -96,86 +179,3 @@ const previewTextStyle = css({
   font: Variables.typography.font_medium_16,
   color: Variables.colors.text_weak
 });
-
-const EnrollYoutubeContent: StepComponentType = ({ changeStepIndex, closeModal }) => {
-  const { socket } = useSocketStore();
-  const [youtubeURL, setYoutubeURL] = useState('');
-  const [isValid, setIsValid] = useState<boolean | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { openToast } = useToast();
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    setYoutubeURL(inputValue);
-
-    setIsValid(checkYoutubeURLValidation(inputValue));
-  };
-
-  const handleSubmit = async (youtubeURL: string) => {
-    if (isValid) {
-      try {
-        await sendYoutubeEnrollRequest(socket, youtubeURL);
-        openToast({ text: '공유 대기 목록에 컨텐츠를 추가했어요!', type: 'check' });
-        closeModal();
-      } catch (error) {
-        if (error instanceof Error) openToast({ text: error.message, type: 'error' });
-      }
-    }
-  };
-
-  return (
-    <div css={flexStyle(16, 'column')} style={{ width: '100%', marginTop: 12 }}>
-      <div style={{ width: '100%', position: 'relative' }}>
-        <div css={thumbnailSectionStyle}>
-          {isValid ? (
-            <iframe
-              title="YouTube Preview"
-              width="100%"
-              height="100%"
-              src={getYoutubeEmbedURL(youtubeURL)}
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          ) : (
-            <p css={previewTextStyle}>여기에 미리보기가 표시됩니다.</p>
-          )}
-        </div>
-        {isValid && (
-          <button
-            css={resetButtonStyle}
-            onClick={() => {
-              setYoutubeURL('');
-              setIsValid(false);
-              inputRef.current.focus();
-            }}
-          >
-            -
-          </button>
-        )}
-      </div>
-      <div css={inputWrapperStyle}>
-        <input
-          id="youtube-link"
-          type="text"
-          ref={inputRef}
-          placeholder={isValid === null || youtubeURL === '' ? '유튜브 링크를 입력해주세요!' : undefined}
-          value={youtubeURL}
-          onChange={handleInputChange}
-          css={inputStyle(isValid, youtubeURL)}
-        />
-        <LinkIcon css={inputIconStyle} />
-      </div>
-      <button onClick={() => handleSubmit(youtubeURL)} disabled={!isValid} css={buttonStyle(isValid)}>
-        제출하고 공유 시작하기 ✨
-      </button>
-    </div>
-  );
-};
-
-export default EnrollYoutubeContent;

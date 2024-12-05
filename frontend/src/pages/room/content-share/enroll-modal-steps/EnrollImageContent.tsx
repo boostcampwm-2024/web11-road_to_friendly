@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 
-import { useModal } from '@/hooks/useModal';
-
-import { LoadingSpinner, Toast } from '@/components/common';
+import { LoadingSpinner } from '@/components/common';
 
 import DeleteButton from '@/assets/icons/deleteButton.svg?react';
 import Image from '@/assets/icons/image.svg?react';
@@ -11,47 +9,9 @@ import { useToast } from '@/hooks';
 import { useSocketStore } from '@/stores';
 import { flexStyle, Variables } from '@/styles';
 
-import { StepComponentType } from '../contentEnrollModal';
+import { StepComponentType } from '../ContentEnrollModal';
 
-const previewStyle = (isActive: boolean) => css`
-  width: 100%;
-  height: 280px;
-  margin: auto;
-  background-color: ${Variables.colors.surface_default};
-  border-radius: 16px;
-  border: 3px dashed ${isActive ? Variables.colors.surface_black : Variables.colors.surface_alt};
-  ${flexStyle(15, 'column', 'center', 'center')};
-  cursor: pointer;
-  font: ${Variables.typography.font_medium_16};
-`;
-
-const selectButtonStyle = css`
-  background-color: ${Variables.colors.surface_white};
-  padding: 12px 8px;
-  color: ${Variables.colors.surface_green_strong};
-  border: 1px solid ${Variables.colors.surface_green_strong};
-  border-radius: 12px;
-`;
-
-const imgShareButtonStyle = (isActive: boolean) => css`
-  width: 100%;
-  background-color: ${isActive ? Variables.colors.surface_green_strong : Variables.colors.surface_alt};
-  color: ${Variables.colors.text_white};
-  padding: 12px 8px;
-  border: none;
-  border-radius: 12px;
-`;
-
-const deleteButtonStyle = () => css`
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-`;
-
-const EnrollImageContent: StepComponentType = ({ changeStepIndex, closeModal  }) => {
+const EnrollImageContent: StepComponentType = ({ closeModal }) => {
   const { socket } = useSocketStore();
   const { openToast } = useToast();
 
@@ -213,3 +173,41 @@ const EnrollImageContent: StepComponentType = ({ changeStepIndex, closeModal  })
 };
 
 export default EnrollImageContent;
+
+const previewStyle = (isActive: boolean) => css`
+  width: 100%;
+  height: 280px;
+  margin: auto;
+  background-color: ${Variables.colors.surface_default};
+  border-radius: 16px;
+  border: 3px dashed ${isActive ? Variables.colors.surface_black : Variables.colors.surface_alt};
+  ${flexStyle(15, 'column', 'center', 'center')};
+  cursor: pointer;
+  font: ${Variables.typography.font_medium_16};
+`;
+
+const selectButtonStyle = css`
+  background-color: ${Variables.colors.surface_white};
+  padding: 12px 8px;
+  color: ${Variables.colors.surface_green_strong};
+  border: 1px solid ${Variables.colors.surface_green_strong};
+  border-radius: 12px;
+`;
+
+const imgShareButtonStyle = (isActive: boolean) => css`
+  width: 100%;
+  background-color: ${isActive ? Variables.colors.surface_green_strong : Variables.colors.surface_alt};
+  color: ${Variables.colors.text_white};
+  padding: 12px 8px;
+  border: none;
+  border-radius: 12px;
+`;
+
+const deleteButtonStyle = () => css`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+`;

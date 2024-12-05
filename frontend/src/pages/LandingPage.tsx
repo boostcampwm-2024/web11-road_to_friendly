@@ -6,19 +6,6 @@ import RoomCreateButton from '@/components/RoomCreateButton';
 import clapImage from '@/assets/landing-clap.png';
 import { Variables } from '@/styles';
 
-const backgroundStyle = css`
-  background:
-    linear-gradient(to top left, #b4fff6, rgba(255, 153, 150, 0), #f3b6a1),
-    linear-gradient(to top right, #ffe7ac, rgba(255, 153, 150, 0), #d9aacc) #ebe4e4;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const headingTextStyle = css({ font: Variables.typography.font_bold_56, color: Variables.colors.text_default });
-
 const LandingPage = () => {
   return (
     <>
@@ -43,3 +30,16 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+const backgroundStyle = css`
+  background:
+    linear-gradient(to top left, #b4fff6, rgba(255, 153, 150, 0), #f3b6a1),
+    linear-gradient(to top right, #ffe7ac, rgba(255, 153, 150, 0), #d9aacc) #ebe4e4;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const headingTextStyle = css({ font: Variables.typography.font_bold_56, color: Variables.colors.text_default });

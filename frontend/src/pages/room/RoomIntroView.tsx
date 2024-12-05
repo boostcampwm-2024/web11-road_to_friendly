@@ -1,6 +1,6 @@
-import HostView from './hostView';
-import ParticipantView from './participantView';
-import QuestionsView from './questionsView';
+import HostView from './HostView';
+import ParticipantView from './ParticipantView';
+import QuestionsView from './QuestionsView';
 
 interface RoomIntroViewProps {
   isIntroViewActive: boolean;

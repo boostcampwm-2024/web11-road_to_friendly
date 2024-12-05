@@ -1,11 +1,6 @@
 import { css } from '@emotion/react';
 
-import { Variables } from '@/styles/Variables';
-
-const InstructionStyle = css`
-  font: ${Variables.typography.font_bold_20};
-  text-align: center;
-`;
+import { Variables } from '@/styles/variables';
 
 const ParticipantView = () => {
   return (
@@ -20,3 +15,8 @@ const ParticipantView = () => {
 };
 
 export default ParticipantView;
+
+const InstructionStyle = css`
+  font: ${Variables.typography.font_bold_20};
+  text-align: center;
+`;

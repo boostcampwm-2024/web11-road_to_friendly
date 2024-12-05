@@ -3,12 +3,7 @@ import { css } from '@emotion/react';
 import QuestionStartButton from '@/components/QuestionStartButton';
 
 import { flexStyle } from '@/styles';
-import { Variables } from '@/styles/Variables';
-
-const InstructionStyle = css`
-  font: ${Variables.typography.font_bold_24};
-  text-align: center;
-`;
+import { Variables } from '@/styles/variables';
 
 interface HostViewProps {
   participantCount: number;
@@ -41,3 +36,8 @@ const HostView = ({ participantCount }: HostViewProps) => {
 };
 
 export default HostView;
+
+const InstructionStyle = css`
+  font: ${Variables.typography.font_bold_24};
+  text-align: center;
+`;

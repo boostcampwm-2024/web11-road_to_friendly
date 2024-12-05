@@ -16,28 +16,6 @@ function getPastelColor(index: number) {
   return `hsla(${COLOR_DIFF * index}, ${SATURATION}, ${LIGHTNESS}, ${ALPHA})`;
 }
 
-const roundStyle = (color: string, duration: number, roundSize: string, delay: number = 0) => {
-  return css({
-    width: roundSize,
-    height: roundSize,
-    borderRadius: '50%',
-    position: 'relative',
-    backgroundColor: color,
-
-    transform: 'scale(0)',
-    animation: `${growAndShrink} ${duration}s ease-in-out infinite`,
-    animationDelay: `${delay}s`
-  });
-};
-
-const loadingSpinnerWaveStyle = css({
-  display: 'flex',
-  gap: '0.5rem',
-  position: 'relative',
-  width: `fit-content`,
-  height: `fit-content`
-});
-
 const Round = ({ colorStartIndex = 0, duration = DEFAULT_DELAY * 10, delay = 0, roundSize = '6rem' }) => {
   const [index, addIndex] = useIndex(HUE_MAX_INDEX, colorStartIndex);
   return (
@@ -77,3 +55,25 @@ const LoadingSpinnerWave = ({ delay = DEFAULT_DELAY, roundSize = '2.5rem' }) => 
 };
 
 export default LoadingSpinnerWave;
+
+const roundStyle = (color: string, duration: number, roundSize: string, delay: number = 0) => {
+  return css({
+    width: roundSize,
+    height: roundSize,
+    borderRadius: '50%',
+    position: 'relative',
+    backgroundColor: color,
+
+    transform: 'scale(0)',
+    animation: `${growAndShrink} ${duration}s ease-in-out infinite`,
+    animationDelay: `${delay}s`
+  });
+};
+
+const loadingSpinnerWaveStyle = css({
+  display: 'flex',
+  gap: '0.5rem',
+  position: 'relative',
+  width: `fit-content`,
+  height: `fit-content`
+});

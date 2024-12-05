@@ -1,5 +1,5 @@
 import { css, keyframes } from '@emotion/react';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import ClockIcon from '@/assets/icons/clock.svg?react';
 import { QuestionInput } from '@/components';
@@ -12,58 +12,6 @@ import { getRemainingSeconds } from '@/utils';
 import TimerWorker from '@/workers/timerWorker.js?worker';
 
 import KeywordsView from './KeywordsView';
-
-const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
-
-const viewContainerStyle = (isFadeIn: boolean) => css`
-  width: ${MAX_LONG_RADIUS * 1.5}px;
-  animation: ${isFadeIn ? fadeIn : fadeOut} 0.5s ease;
-  opacity: ${isFadeIn ? 1 : 0};
-  ${flexStyle(8, 'column')}
-`;
-
-const moveUp = keyframes`
-  to {
-    transform: translate(-50%, -40px)
-  }
-`;
-
-const questionTitleStyle = (isQuestionMovedUp: boolean) =>
-  css({
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    font: Variables.typography.font_bold_32,
-    marginBottom: Variables.spacing.spacing_sm,
-    animation: `${isQuestionMovedUp ? moveUp : 'none'} 1s ease forwards`
-  });
-
-const progressWrapperStyle = css([
-  {
-    width: '100%'
-  },
-  flexStyle(8, 'row')
-]);
-
-const progressBarStyle = css`
-  width: 100%;
-  height: 12px;
-  border-radius: 50px;
-  background-color: #eee;
-
-  ::-webkit-progress-bar {
-    background-color: ${Variables.colors.surface_alt};
-    border-radius: 50px;
-    height: 12px;
-    overflow: hidden;
-  }
-
-  ::-webkit-progress-value {
-    background-color: ${Variables.colors.surface_strong};
-    border-radius: 50px;
-    height: 12px;
-  }
-`;
 
 interface QuestionViewProps {
   onQuestionStart: () => void;
@@ -94,16 +42,20 @@ const QuestionsView = ({
   const resultResponseRef = useRef<CommonResult | null>(null);
 
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(new Set());
-  const updateSelectedKeywords = (keyword: string, type: 'add' | 'delete') => {
-    if (type === 'add') {
-      setSelectedKeywords((prev) => new Set(prev.add(keyword)));
-    } else {
-      setSelectedKeywords((prev) => {
-        prev.delete(keyword);
-        return new Set(prev);
-      });
-    }
-  };
+
+  const updateSelectedKeywords = useCallback(
+    (keyword: string, type: 'add' | 'delete') => {
+      if (type === 'add') {
+        setSelectedKeywords((prev) => new Set(prev.add(keyword)));
+      } else {
+        setSelectedKeywords((prev) => {
+          prev.delete(keyword);
+          return new Set(prev);
+        });
+      }
+    },
+    [setSelectedKeywords]
+  );
 
   const handleResult = (response: CommonResult) => {
     // 통계결과를 임시로 저장
@@ -252,7 +204,6 @@ const QuestionsView = ({
               </div>
             </div>
           )}
-          <div></div>
         </div>
         <KeywordsView
           questionId={questions[currentQuestionIndex].questionId}
@@ -265,3 +216,56 @@ const QuestionsView = ({
 };
 
 export default QuestionsView;
+
+const MainContainer = css([{ width: '100%' }, flexStyle(5, 'column')]);
+
+const viewContainerStyle = (isFadeIn: boolean) => css`
+  width: ${MAX_LONG_RADIUS * 1.5}px;
+  animation: ${isFadeIn ? fadeIn : fadeOut} 0.5s ease;
+  opacity: ${isFadeIn ? 1 : 0};
+  ${flexStyle(8, 'column')}
+`;
+
+const moveUp = keyframes`
+  to {
+    transform: translate(-50%, -40px)
+  }
+`;
+
+const questionTitleStyle = (isQuestionMovedUp: boolean) =>
+  css({
+    position: 'absolute',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    font: Variables.typography.font_bold_32,
+    marginBottom: Variables.spacing.spacing_sm,
+    animation: `${isQuestionMovedUp ? moveUp : 'none'} 1s ease forwards`
+  });
+
+const progressWrapperStyle = css([
+  {
+    width: '100%'
+  },
+  flexStyle(8, 'row')
+]);
+
+const progressBarStyle = css`
+  width: 100%;
+  height: 12px;
+  border-radius: 50px;
+  background-color: #eee;
+
+  ::-webkit-progress-bar {
+    background-color: ${Variables.colors.surface_alt};
+    border-radius: 50px;
+    height: 12px;
+    overflow: hidden;
+  }
+
+  ::-webkit-progress-value {
+    background-color: ${Variables.colors.surface_strong};
+    border-radius: 50px;
+    height: 12px;
+    transition: width 1s linear;
+  }
+`;

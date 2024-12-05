@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import StopIcon from '@/assets/icons/stop.svg?react';
 import { useToast } from '@/hooks';
@@ -10,48 +10,14 @@ import { Content, NextContentResponse, WaitingQueueResponse } from '@/types';
 
 import { ContentPresentSection, WaitingListEmpty, WaitingListInfo } from './index';
 
-const ContentShareViewStyle = css([
-  {
-    position: 'relative',
-    width: '40rem',
-    height: '28.5625rem',
-    backgroundColor: Variables.colors.surface_white,
-    backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23B5B7BFFF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='3' stroke-linecap='square'/%3e%3c/svg%3e")`,
-    borderRadius: 24,
-    transform: 'scale(1)',
-
-    '@media (min-height: 768px) and (max-height: 1200px)': {
-      transform: 'scale(0.7)'
-    }
-  },
-  flexStyle(16, 'column')
-]);
-
-const StopShareButtonStyle = css([
-  flexStyle(8, 'row', 'space-evenly'),
-  {
-    backgroundColor: '#FF7275',
-    color: Variables.colors.text_white,
-    font: Variables.typography.font_bold_16,
-    padding: '6px 12px',
-    backgroundImage: 'none',
-    borderRadius: 8,
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
-    position: 'absolute',
-    bottom: 0,
-    transform: 'translateY(50%)',
-    '&:hover': {
-      opacity: 0.9
-    }
-  }
-]);
-
 const ContentShareView = () => {
   const { socket, connect } = useSocketStore();
   const { openToast } = useToast();
   const { hostId } = useParticipantsStore();
   const [currentContent, setCurrentContent] = useState<Content | null>(null);
   const [numberOfWaiters, setNumberOfWaiters] = useState(0);
+
+  const prevVolumeRef = useRef<number | null>(null);
 
   const stopSharing = async () => {
     try {
@@ -103,7 +69,7 @@ const ContentShareView = () => {
       ) : (
         <>
           <WaitingListInfo numWaiting={numberOfWaiters} />
-          <ContentPresentSection content={currentContent} />
+          <ContentPresentSection content={currentContent} prevVolumeRef={prevVolumeRef} />
           {isHostOrSharer && (
             <button css={StopShareButtonStyle} onClick={stopSharing}>
               <StopIcon fill={Variables.colors.text_white} />
@@ -117,3 +83,39 @@ const ContentShareView = () => {
 };
 
 export default ContentShareView;
+
+const ContentShareViewStyle = css([
+  {
+    position: 'relative',
+    width: '40rem',
+    height: '28.5625rem',
+    backgroundColor: Variables.colors.surface_white,
+    backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23B5B7BFFF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='3' stroke-linecap='square'/%3e%3c/svg%3e")`,
+    borderRadius: 24,
+    transform: 'scale(1)',
+
+    '@media (min-height: 768px) and (max-height: 1200px)': {
+      transform: 'scale(0.7)'
+    }
+  },
+  flexStyle(16, 'column')
+]);
+
+const StopShareButtonStyle = css([
+  flexStyle(8, 'row', 'space-evenly'),
+  {
+    backgroundColor: '#FF7275',
+    color: Variables.colors.text_white,
+    font: Variables.typography.font_bold_16,
+    padding: '6px 12px',
+    backgroundImage: 'none',
+    borderRadius: 8,
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25)',
+    position: 'absolute',
+    bottom: 0,
+    transform: 'translateY(50%)',
+    '&:hover': {
+      opacity: 0.9
+    }
+  }
+]);

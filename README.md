@@ -227,6 +227,16 @@ https://road-to-friendly.kro.kr/
 <!-- TOC --><a name="--7"></a>
 ## 🧩 시스템 아키텍처
 
+### 현재 아키텍처
+
+<div align=center>
+  <img width="670" alt="image" src="https://github.com/user-attachments/assets/3820a63a-1703-4328-a3db-7b2158f9684e">
+</div>
+
+<br>
+
+### 개선 예정 아키텍처
+
 <div align=center>
   <img width="670" alt="image" src="https://github.com/user-attachments/assets/e15ec6fa-efaa-4a04-92e3-c2d840f6dc82">
 </div>

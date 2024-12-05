@@ -11,7 +11,7 @@ import UserProfile from '@/components/UserProfile';
 
 import { ShareButton } from '@/components';
 import { roomError } from '@/constants/roomError';
-import { useLoadingState, useViewState } from '@/hooks';
+import { useCheckRoomAccess, useLoadingState, useViewState } from '@/hooks';
 import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/variables';
 import { calculatePosition } from '@/utils';
@@ -39,6 +39,7 @@ const Room = () => {
 
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, finishInitialLoading);
   const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
+  useCheckRoomAccess();
 
   useBeforeUnload((e) => {
     if (!isIntroViewActive) {

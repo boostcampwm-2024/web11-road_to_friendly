@@ -5,6 +5,7 @@ import { MIN_SHORT_RADIUS, MIN_LONG_RADIUS, MAX_SHORT_RADIUS, MAX_LONG_RADIUS } 
 interface RadiusStore {
   radius: [number, number];
   isOutOfBounds: boolean; // 화면 밖으로 벗어나는지 여부 플래그
+  setRadius: (radius: [number, number]) => void;
   increaseRadius: () => void;
   increaseLongRadius: () => void;
   setOutOfBounds: (isOutOfBounds: boolean) => void;
@@ -12,6 +13,7 @@ interface RadiusStore {
 
 export const useRadiusStore = create<RadiusStore>((set, get) => ({
   radius: [MIN_SHORT_RADIUS, MIN_LONG_RADIUS],
+  setRadius: (radius) => set({ radius }),
   isOutOfBounds: false,
   increaseRadius: () => set({ radius: [MAX_SHORT_RADIUS, MAX_LONG_RADIUS] }),
   increaseLongRadius: () => {

@@ -3,7 +3,7 @@ import React from 'react';
 
 import Crown from '@/assets/icons/crown.svg?react';
 import { PROFILE_STYLES } from '@/constants/profile';
-import ResultView from '@/pages/room/resultView';
+import ResultView from '@/pages/room/ResultView';
 import { useRadiusStore } from '@/stores';
 import { Variables, flexStyle } from '@/styles';
 import { Participant } from '@/types';

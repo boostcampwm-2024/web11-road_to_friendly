@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 import { BIG_THRESHOLD, MIDEIUM_THRESHOLD, SMALL_THRESHOLD } from '@/constants/radius';
-import { useSocketStore } from '@/stores';
 import { useKeywordsStore } from '@/stores/keywords';
 import { Variables, StatisticsStyleMap } from '@/styles';
 import { Participant } from '@/types';
@@ -12,28 +11,11 @@ interface ResultViewProps {
 }
 
 const ResultView = ({ participant }: ResultViewProps) => {
-  const { socket } = useSocketStore();
   const { statisticsKeywords } = useKeywordsStore();
-  const [allKeywords, setAllKeywords] = useState<{ [keyword: string]: number }>({});
 
-  // 비율에 따라 스타일 적용
-  const getKeywordStyle = useCallback(
-    (keyword: string) => {
-      const ratio = allKeywords[keyword];
-
-      if (ratio < BIG_THRESHOLD) return 'Big';
-      if (ratio < MIDEIUM_THRESHOLD) return 'Medium';
-      if (ratio < SMALL_THRESHOLD) return 'Small';
-      return 'Tiny';
-    },
-    [allKeywords]
-  );
-
-  useEffect(() => {
-    const allKeywordsFlat = Object.values(statisticsKeywords).flat();
-
+  const calculateKeywordRatios = (keywords: { keyword: string; count: number }[]) => {
     // 중복 키워드를 제외하고 Map(키워드 : 카운트) 생성
-    const keywordCountMap = allKeywordsFlat.reduce((acc: { [keyword: string]: number }, { keyword, count }) => {
+    const keywordCountMap = keywords.reduce((acc: { [keyword: string]: number }, { keyword, count }) => {
       !acc[keyword] && (acc[keyword] = count);
       return acc;
     }, {});
@@ -41,7 +23,7 @@ const ResultView = ({ participant }: ResultViewProps) => {
     const sortedKeywords = Object.entries(keywordCountMap).sort((a, b) => b[1] - a[1]);
     const totalCount = sortedKeywords.reduce((sum, arr) => sum + arr[1], 0);
 
-    const ratioData = sortedKeywords.reduce((acc: { [keyword: string]: number }, [keyword, count], index) => {
+    return sortedKeywords.reduce((acc: { [keyword: string]: number }, [keyword, count], index) => {
       // 자신과 같거나 더 큰 카운트를 모두 합산
       const sumGreaterOrEqual = sortedKeywords
         .filter(([_, otherCount]) => otherCount >= count)
@@ -54,9 +36,23 @@ const ResultView = ({ participant }: ResultViewProps) => {
 
       return acc;
     }, {});
+  };
 
-    setAllKeywords(ratioData);
+  // useMemo로 키워드 비율 계산
+  const allKeywords = useMemo(() => {
+    const allKeywordsFlat = Object.values(statisticsKeywords).flat();
+    return calculateKeywordRatios(allKeywordsFlat);
   }, [statisticsKeywords]);
+
+  // 비율에 따라 스타일 적용
+  const getKeywordStyle = (keyword: string) => {
+    const ratio = allKeywords[keyword];
+
+    if (ratio < BIG_THRESHOLD) return 'Big';
+    if (ratio < MIDEIUM_THRESHOLD) return 'Medium';
+    if (ratio < SMALL_THRESHOLD) return 'Small';
+    return 'Tiny';
+  };
 
   return (
     <ul css={KeywordsContainer}>

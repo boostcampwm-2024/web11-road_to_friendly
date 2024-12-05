@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useErrorBoundary } from 'react-error-boundary';
 import { useBeforeUnload, useParams } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ import { roomError } from '@/constants/roomError';
 import { useCheckRoomAccess, useLoadingState, useViewState } from '@/hooks';
 import { useRadiusStore } from '@/stores/';
 import { Variables } from '@/styles/variables';
-import { calculatePosition } from '@/utils';
+import { calculatePosition, calculateRadius } from '@/utils';
 
 import LoadingPage from '../LoadingPage';
 import { ContentShareView } from './content-share';
@@ -38,7 +38,7 @@ const Room = () => {
   } = useViewState();
 
   const { participants, hostId, currentUserId, roomExists } = useParticipants(roomId, finishInitialLoading);
-  const { radius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
+  const { radius, setRadius, increaseRadius, increaseLongRadius, setOutOfBounds } = useRadiusStore();
   useCheckRoomAccess();
 
   useBeforeUnload((e) => {
@@ -56,12 +56,6 @@ const Room = () => {
   const hideIntroView = () => {
     endIntroView();
     setOutOfBounds(true);
-  };
-
-  const calculateRadius = (count: number) => {
-    if (count > 3) {
-      increaseRadius();
-    }
   };
 
   const participantElements = useMemo(
@@ -86,8 +80,26 @@ const Room = () => {
 
   // 참여자 수가 변경될 때마다 반지름 계산
   useEffect(() => {
-    calculateRadius(Object.keys(participants).length);
+    const count = Object.keys(participants).length;
+    if (count > 3) {
+      increaseRadius();
+    }
   }, [participants]);
+
+  useEffect(() => {
+    // 화면 크기 변경 시 호출될 함수
+    const handleResize = () => {
+      const newRadius: [number, number] = calculateRadius();
+      setRadius(newRadius);
+    };
+
+    // resize 이벤트 리스너 등록
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [setRadius]);
 
   useEffect(() => {
     if (isResultView) {

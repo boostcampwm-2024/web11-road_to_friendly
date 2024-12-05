@@ -14,3 +14,10 @@ export const calculatePosition = (count: number, shortRadius: number, longRadius
 
   return positions;
 };
+
+// 화면 크기가 변경될 때 반지름을 재계산하는 함수
+export const calculateRadius = (): [number, number] => {
+  const newShortRadius = Math.floor(window.innerHeight * 0.3);
+  const newLongRadius = Math.floor((newShortRadius * 4) / 3);
+  return [newShortRadius, newLongRadius];
+};

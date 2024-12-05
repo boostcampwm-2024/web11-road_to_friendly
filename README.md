@@ -194,8 +194,7 @@ https://road-to-friendly.kro.kr/
 
 > 사용자가 중복 입장할 수 있다면 어떤 문제가 발생할까요?<br>
 > 탭마다 독립적인 브라우징 컨텍스트를 가지는데, 어떻게 한 번에 하나의 방에 입장하도록 만들 수 있을까요?<br>
-> Shared Worker라는 개념이 있다는데… Shared Worker를 이용하면 사용자의 방 입장 여부를 저장해서 해결할 수 있지 않을까요?<br>
-> Shared Worker에서 방 입장 여부는 어떻게 관리할 수 있을까요?<br><br>
+> 각각의 탭끼리 정보를 공유할 수 있는 방법이 존재할까요?<br><br>
 > [👉 방 중복 입장 막기 우당탕탕 개발 과정](https://www.notion.so/dcb514d3a83c4266bd28e6ad641c712d?pvs=21)
 
 <!-- TOC --><a name="fe--3"></a>
